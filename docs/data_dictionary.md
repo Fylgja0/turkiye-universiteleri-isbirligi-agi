@@ -40,10 +40,12 @@ OpenAlex API'den indirilen toplam 35.114 yayın ile ağ kurma scriptinin (`build
   - `country_code değişikliği / affiliation eşleşmesi`: **1 çalışma**
 - Bu 641 çalışma, üniversiteler arası iş birliği ağının düğüm tanımına uymadığı için ağ dışı kalmıştır.
 
-### 1.4. Düğüm Evreni Kapsamları (Kapsam A vs. Kapsam B vs. Kapsam B1)
-- **Kapsam A (Geniş Eğitim Kurumu Kapsamı):** OpenAlex'te `country_code: TR` ve `type: education` olan tüm kurumlar (205 düğüm, 3.970 kenar).
-- **Kapsam B (Yalnızca Üniversiteler - Tarihsel Dahil):** Yükseköğretim kurumları içinden bağımsız meslek yüksekokulları (2), askeri/polis okulları (5), idari/sağlık birimleri (3) ve kısıtlı/doğrulanmamış kurumlar (2: Lefke Avrupa ve İstanbul Şehir) çıkarılarak elde edilen **193 üniversite** (3.883 kenar).
-- **Kapsam B1 (Yalnızca Halen Aktif Üniversiteler):** 2016'da 667 KHK ile kapatılmış 7 tarihsel üniversite (Turgut Özal, Fatih, Gediz, Şifa, Bursa Orhangazi, Canik Başarı, İzmir Üniversitesi) de çıkarıldığında geriye kalan **186 aktif üniversite** (3.848 kenar).
+### 1.4. YÖK Kurumsal Evreni ve Düğüm Kapsamları (Kapsam A vs. Kapsam B vs. Kapsam B1)
+- **Resmî YÖK Evreni:** [YÖK Resmî İstatistikleri](https://www.yok.gov.tr/universiteler/universitelerimiz) (2025–2026 / 2026 Güz) verilerine göre Türkiye'de **129 Devlet Üniversitesi** ve **75 Vakıf Üniversitesi** olmak üzere toplam **204 üniversite** ve ayrıca **4 Bağımsız Vakıf Meslek Yüksekokulu** (toplam **208 yükseköğretim kurumu**) yer almaktadır.
+- **OpenAlex `type:education` Evreni:** API'de TR koduyla 222 kurum yer almakta olup, askeri/polis akademileri, kapatılan kurumlar, bağımsız MYO'lar ve KKTC'deki Lefke Avrupa Üniversitesi'ni de içerir.
+- **Kapsam A (Geniş Eğitim Kurumu Kapsamı):** 2020–2025 döneminde bilgisayar bilimi yayını bulunan tüm kurumlar (205 düğüm, 3.970 kenar).
+- **Kapsam B (Yalnızca Üniversiteler - Tarihsel Dahil):** Yükseköğretim kurumları içinden bağımsız MYO'lar (2), askeri/polis okulları (5), idari/sağlık birimleri (3) ve kısıtlı/doğrulanmamış kurumlar (2: Lefke Avrupa ve İstanbul Şehir) çıkarılarak elde edilen **193 üniversite** (3.883 kenar).
+- **Kapsam B1 (Kural Tabanlı Aktif Üniversiteler):** 2016'da 667 KHK ile kapatılmış 7 tarihsel üniversite (Turgut Özal, Fatih, Gediz, Şifa, Bursa Orhangazi, Canik Başarı, İzmir Üniversitesi) çıkarıldığında geriye kalan ve algoritmik kural tabanlı ad/durum filtresiyle belirlenen **186 aktif üniversite** (3.848 kenar).
 
 ---
 
@@ -88,7 +90,7 @@ Ağdaki düğümleri (kurumları) ve hem tüm zamanlar hem de dönem bazlı üre
 
 > [!WARNING] **Coğrafi Koordinat Tekrarı ve $\ln(0)$ Problemi:**
 > OpenAlex veri tabanında yer alan coğrafi koordinatlar (`latitude`, `longitude`), kampüsün kesin konumundan ziyade genellikle ilgili şehrin merkez koordinatını temsil etmektedir:
-> - İncelenen 205 kurum için ham float hassasiyetinde **122 tekil koordinat**, 4 ondalık basamağa yuvarlandığında (şehir merkezi seviyesinde) ise **112 tekil koordinat** bulunmaktadır.
+> - İncelenen 205 kurum için ham float hassasiyetinde **122 tekil koordinat**, `round(4)` yöntemiyle 4 ondalık basamağa yuvarlandığında (şehir merkezi seviyesinde) ise **112 tekil koordinat** bulunmaktadır.
 > - **İstanbul:** 49 farklı kuruma tek bir merkez koordinatı verilmiştir `(41.0138, 28.9497)`.
 > - **Ankara:** 20 farklı kuruma tek bir merkez koordinatı verilmiştir `(39.9199, 32.8543)`.
 > - **İzmir:** 9 farklı kuruma tek bir merkez koordinatı verilmiştir `(38.4127, 27.1384)`.

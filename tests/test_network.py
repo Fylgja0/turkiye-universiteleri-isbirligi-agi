@@ -14,6 +14,7 @@ import tempfile
 import pytest
 import networkx as nx
 import pandas as pd
+from typing import List, Dict, Any, Set, Tuple
 
 from scripts.build_network import (
     normalize_id,
@@ -290,6 +291,38 @@ def test_processed_files_deep_consistency():
             assert is_u is False, f"{r['display_name']} ({cat}) is_university False olmalı!"
 
 
+def parse_markdown_table_rows(markdown_text: str, header_keyword: str) -> List[Dict[str, str]]:
+    """
+    Markdown metni içerisindeki belirli bir başlığı içeren tabloyu bulur
+    ve satırlarını sözlük listesi olarak ayrıştırır.
+    """
+    lines = markdown_text.splitlines()
+    in_table = False
+    headers = []
+    rows = []
+
+    for i, line in enumerate(lines):
+        striped = line.strip()
+        if not in_table:
+            if striped.startswith("|") and header_keyword in striped:
+                # Tablo başlığı bulundu
+                in_table = True
+                headers = [c.strip() for c in striped.split("|")[1:-1]]
+        else:
+            if not striped.startswith("|"):
+                # Tablo bitti
+                break
+            if re.match(r"^\|?\s*[-:]+[-| :]*$", striped):
+                # Ayırıcı satır (---)
+                continue
+            cells = [c.strip() for c in striped.split("|")[1:-1]]
+            if len(cells) == len(headers):
+                row_dict = {h: c for h, c in zip(headers, cells)}
+                rows.append(row_dict)
+
+    return rows
+
+
 def test_scopes_metrics_exact_values():
     """
     Kapsam A, Kapsam B (193 düğüm) ve Kapsam B1 (186 düğüm) için
@@ -325,38 +358,159 @@ def test_scopes_metrics_exact_values():
     assert len(list(nx.isolates(G_B1))) == 0
     assert len(max(nx.connected_components(G_B1), key=len)) == 186
 
+    # Markdown Kapsam Tablolarının (ara_kontrol.md ve README.md) grafikten dinamik doğrulanması
+    with open("reports/ara_kontrol.md", "r", encoding="utf-8") as f:
+        rep_text = f.read()
+    scope_rows = parse_markdown_table_rows(rep_text, "Kapsam A (Tüm Education Kurumları)")
+    assert len(scope_rows) >= 6, "Kapsam tablosu parse edilemedi!"
+
+    # Tablo satırlarını metrik adına göre sözlüğe dönüştür
+    scope_map = {}
+    for r in scope_rows:
+        m_name = list(r.values())[0].replace("*", "").strip()
+        scope_map[m_name] = r
+
+    # Düğüm Sayısı
+    node_row = [v for k, v in scope_map.items() if "Düğüm Sayısı" in k][0]
+    assert int(node_row["Kapsam A (Tüm Education Kurumları)"].replace("*", "")) == G.number_of_nodes()
+    assert int(node_row["Kapsam B (Üniversiteler - Tarihsel Dahil)"].replace("*", "")) == G_B.number_of_nodes()
+    assert int(node_row["Kapsam B1 (Kural Tabanlı Aktif Üniversiteler)"].replace("*", "")) == G_B1.number_of_nodes()
+
+    # Kenar Sayısı
+    edge_row = [v for k, v in scope_map.items() if "Kenar Sayısı" in k][0]
+    assert int(edge_row["Kapsam A (Tüm Education Kurumları)"].replace("*", "").replace(".", "")) == G.number_of_edges()
+    assert int(edge_row["Kapsam B (Üniversiteler - Tarihsel Dahil)"].replace("*", "").replace(".", "")) == G_B.number_of_edges()
+    assert int(edge_row["Kapsam B1 (Kural Tabanlı Aktif Üniversiteler)"].replace("*", "").replace(".", "")) == G_B1.number_of_edges()
+
+    # Ağ Yoğunluğu
+    density_row = [v for k, v in scope_map.items() if "Yoğunluğu" in k][0]
+    assert abs(float(density_row["Kapsam A (Tüm Education Kurumları)"].replace("*", "")) - nx.density(G)) < 1e-4
+    assert abs(float(density_row["Kapsam B (Üniversiteler - Tarihsel Dahil)"].replace("*", "")) - nx.density(G_B)) < 1e-4
+    assert abs(float(density_row["Kapsam B1 (Kural Tabanlı Aktif Üniversiteler)"].replace("*", "")) - nx.density(G_B1)) < 1e-4
+
+    # Bağlı Bileşen Sayısı
+    comp_row = [v for k, v in scope_map.items() if "Bileşen Sayısı" in k][0]
+    assert int(comp_row["Kapsam A (Tüm Education Kurumları)"].replace("*", "")) == nx.number_connected_components(G)
+    assert int(comp_row["Kapsam B (Üniversiteler - Tarihsel Dahil)"].replace("*", "")) == nx.number_connected_components(G_B)
+    assert int(comp_row["Kapsam B1 (Kural Tabanlı Aktif Üniversiteler)"].replace("*", "")) == nx.number_connected_components(G_B1)
+
+    # İzole Düğüm Sayısı
+    iso_row = [v for k, v in scope_map.items() if "İzole Düğüm" in k][0]
+    assert int(iso_row["Kapsam A (Tüm Education Kurumları)"].replace("*", "")) == len(list(nx.isolates(G)))
+    assert int(iso_row["Kapsam B (Üniversiteler - Tarihsel Dahil)"].split()[0].replace("*", "")) == len(list(nx.isolates(G_B)))
+    assert int(iso_row["Kapsam B1 (Kural Tabanlı Aktif Üniversiteler)"].replace("*", "")) == len(list(nx.isolates(G_B1)))
+
+    # Dev Bileşen Büyüklüğü
+    giant_row = [v for k, v in scope_map.items() if "Dev Bileşen" in k][0]
+    assert int(giant_row["Kapsam A (Tüm Education Kurumları)"].split()[0].replace("*", "")) == len(max(nx.connected_components(G), key=len))
+    assert int(giant_row["Kapsam B (Üniversiteler - Tarihsel Dahil)"].split()[0].replace("*", "")) == len(max(nx.connected_components(G_B), key=len))
+    assert int(giant_row["Kapsam B1 (Kural Tabanlı Aktif Üniversiteler)"].split()[0].replace("*", "")) == len(max(nx.connected_components(G_B1), key=len))
+
+
+def test_graphml_and_csv_node_attributes_deep_match():
+    """
+    GraphML ve CSV'deki tüm düğüm özniteliklerinin (display_name, category, is_university,
+    period_cs_works_count, all_time_works_count, city, is_egean) ve grafikten
+    hesaplanan derece / ağırlıklı derece değerlerinin tam eşleştiğini doğrular.
+    """
+    G = nx.read_graphml("data/processed/collaboration.graphml")
+    inst_df = pd.read_csv("data/processed/institutions.csv")
+
+    assert set(G.nodes()) == set(inst_df["id"]), "GraphML ve CSV düğüm ID setleri uyuşmuyor!"
+
+    for _, r in inst_df.iterrows():
+        nid = r["id"]
+        g_data = G.nodes[nid]
+        
+        assert g_data.get("display_name") == r["display_name"], f"{nid} display_name uyumsuz!"
+        assert g_data.get("category") == r["category"], f"{nid} category uyumsuz!"
+        assert bool(g_data.get("is_university")) == bool(r["is_university"]), f"{nid} is_university uyumsuz!"
+        assert int(g_data.get("period_cs_works_count", 0)) == int(r["period_cs_works_count"]), f"{nid} period_cs_works_count uyumsuz!"
+        assert int(g_data.get("all_time_works_count", 0)) == int(r["all_time_works_count"]), f"{nid} all_time_works_count uyumsuz!"
+        assert bool(g_data.get("is_egean")) == bool(r["is_egean"]), f"{nid} is_egean uyumsuz!"
+        
+        # Grafiğin topolojisinden bağımsız hesaplanan derece ve ağırlıklı derece
+        deg_calc = G.degree(nid)
+        wdeg_calc = int(G.degree(nid, weight="weight"))
+        assert deg_calc == int(r["degree"]), f"{nid} derece uyumsuz! GraphML={deg_calc}, CSV={r['degree']}"
+        assert wdeg_calc == int(r["weighted_degree"]), f"{nid} ağırlıklı derece uyumsuz! GraphML={wdeg_calc}, CSV={r['weighted_degree']}"
+
 
 def test_report_critical_tables_match_csv():
     """
-    reports/ara_kontrol.md içindeki kritik sayısal değerlerin (ODTÜ, Boğaziçi vb.)
-    gerçek data/processed/institutions.csv ile bire bir aynı olduğunu denetler.
+    reports/ara_kontrol.md içindeki kritik tabloları (İlk 10 ve Ege Tablosu)
+    doğrudan Markdown tablosunu ayrıştırarak CSV'deki gerçek değerlerle karşılaştırır.
     """
     inst_df = pd.read_csv("data/processed/institutions.csv")
     with open("reports/ara_kontrol.md", "r", encoding="utf-8") as f:
         report_text = f.read()
 
-    # ODTÜ kontrolleri
-    metu_row = inst_df[inst_df["id"] == "https://openalex.org/I201799495"].iloc[0]
-    assert f"**1.320**" in report_text or f"1.320" in report_text
-    assert "50.160" in report_text, "ODTÜ all_time_works_count (50.160) raporda bulunamadı!"
-    assert "| 91 | 408 |" in report_text, "ODTÜ derece (91) ve ağırlıklı derece (408) raporda eşleşmedi!"
+    # 1. İlk 10 Tablosu Ayrıştırma ve Hücre Bazlı Karşılaştırma
+    top10_rows = parse_markdown_table_rows(report_text, "2020–2025 CS Eser Sayısı")
+    assert len(top10_rows) >= 10, f"İlk 10 tablosu parse edilemedi! Bulunan satır: {len(top10_rows)}"
 
-    # Boğaziçi kontrolleri
-    boun_row = inst_df[inst_df["id"] == "https://openalex.org/I4405392"].iloc[0]
-    assert "24.497" in report_text, "Boğaziçi all_time_works_count (24.497) raporda bulunamadı!"
-    assert "| 71 | 322 |" in report_text, "Boğaziçi derece (71) ve ağırlıklı derece (322) raporda eşleşmedi!"
+    top10_csv = inst_df.sort_values(by="period_cs_works_count", ascending=False).head(10).reset_index(drop=True)
 
-    # 641 dışlanan çalışma dosyası
-    assert os.path.exists("data/processed/excluded_works_summary.csv")
-    excluded_df = pd.read_csv("data/processed/excluded_works_summary.csv")
-    assert len(excluded_df) == 641
+    for i in range(10):
+        row = top10_rows[i]
+        csv_row = top10_csv.iloc[i]
+
+        rep_cs = int(row["2020–2025 CS Eser Sayısı"].replace("*", "").replace(".", "").strip())
+        rep_all = int(row["Tüm Zamanlar Eser Sayısı"].replace("*", "").replace(".", "").strip())
+        rep_deg = int(row["Derece ($k_i$)"].replace("*", "").strip())
+        rep_wdeg = int(row["Ağırlıklı Derece ($s_i$)"].replace("*", "").strip())
+
+        assert rep_cs == csv_row["period_cs_works_count"], f"Sıra {i+1} period_cs uyumsuz: Rapor={rep_cs}, CSV={csv_row['period_cs_works_count']}"
+        assert rep_all == csv_row["all_time_works_count"], f"Sıra {i+1} all_time uyumsuz: Rapor={rep_all}, CSV={csv_row['all_time_works_count']}"
+        assert rep_deg == csv_row["degree"], f"Sıra {i+1} degree uyumsuz: Rapor={rep_deg}, CSV={csv_row['degree']}"
+        assert rep_wdeg == csv_row["weighted_degree"], f"Sıra {i+1} weighted_degree uyumsuz: Rapor={rep_wdeg}, CSV={csv_row['weighted_degree']}"
+
+    # MCBÜ satırı kontrolü (Tablo 3'ün son satırı)
+    mcbu_row = inst_df[inst_df["id"] == "https://openalex.org/I16748637"].iloc[0]
+    mcbu_tab_rows = [r for r in top10_rows if "Celal Bayar" in r["Üniversite Adı"]]
+    assert len(mcbu_tab_rows) == 1, "İlk 10 tablosundaki MCBÜ referans satırı bulunamadı!"
+    mcbu_tab = mcbu_tab_rows[0]
+    assert int(mcbu_tab["2020–2025 CS Eser Sayısı"].replace("*", "").replace(".", "").strip()) == mcbu_row["period_cs_works_count"]
+    assert int(mcbu_tab["Tüm Zamanlar Eser Sayısı"].replace("*", "").replace(".", "").strip()) == mcbu_row["all_time_works_count"]
+    assert int(mcbu_tab["Derece ($k_i$)"].replace("*", "").strip()) == mcbu_row["degree"]
+    assert int(mcbu_tab["Ağırlıklı Derece ($s_i$)"].replace("*", "").strip()) == mcbu_row["weighted_degree"]
+
+    # 2. Ege Tablosu (14 Aktif Kurum) Ayrıştırma ve Sıralama Karşılaştırması
+    ege_rows = parse_markdown_table_rows(report_text, "Sıra (CS Hacmine Göre)")
+    assert len(ege_rows) == 14, f"Ege tablosunda 14 aktif kurum bekleniyordu, {len(ege_rows)} bulundu!"
+
+    ege_active_csv = inst_df[(inst_df["is_egean"] == True) & (inst_df["category"] == "active_university")].sort_values(
+        by="period_cs_works_count", ascending=False
+    ).reset_index(drop=True)
+
+    for i in range(14):
+        row = ege_rows[i]
+        csv_row = ege_active_csv.iloc[i]
+
+        rep_cs = int(row["2020–25 CS Eser"].replace("*", "").replace(".", "").strip())
+        rep_deg = int(row["Derece ($k_i$)"].replace("*", "").strip())
+        rep_wdeg = int(row["Ağırlıklı Derece ($s_i$)"].replace("*", "").strip())
+        rep_all = int(row["Tüm Zamanlar Eser"].replace("*", "").replace(".", "").strip())
+
+        assert rep_cs == csv_row["period_cs_works_count"], f"Ege Sıra {i+1} CS eser uyumsuz!"
+        assert rep_deg == csv_row["degree"], f"Ege Sıra {i+1} degree uyumsuz!"
+        assert rep_wdeg == csv_row["weighted_degree"], f"Ege Sıra {i+1} weighted_degree uyumsuz!"
+        assert rep_all == csv_row["all_time_works_count"], f"Ege Sıra {i+1} all_time uyumsuz!"
+
+    # MCBÜ Sıralama ve Metin Doğrulaması (Tablo ve Metin Uyumu)
+    assert mcbu_row["period_cs_works_count"] == 322
+    assert mcbu_row["degree"] == 66
+    assert mcbu_row["weighted_degree"] == 198
+    assert "3. sırada" in report_text, "MCBÜ'nün CS üretimindeki 3. sırası raporda bulunamadı!"
+    assert "4. sırada" in report_text, "MCBÜ'nün derece merkeziliğindeki 4. sırası raporda bulunamadı!"
+    assert "2. sırada" in report_text, "MCBÜ'nün ağırlıklı derecedeki 2. sırası raporda bulunamadı!"
 
 
 def test_documentation_cross_consistency():
     """
     README.md, docs/data_dictionary.md ve reports/ara_kontrol.md
-    arasındaki kapsam sayıları (193, 186), YÖK 208 / OpenAlex 222 ayrımı
-    ve 122 / 112 koordinat sayılarının tam uyumlu olduğunu denetler.
+    arasındaki kapsam sayıları (193, 186), YÖK 204+4=208 ayrımı
+    ve 122 ham / 112 round(4) koordinat sayılarının tam uyumlu olduğunu denetler.
     """
     with open("README.md", "r", encoding="utf-8") as f:
         readme_text = f.read()
@@ -372,14 +526,42 @@ def test_documentation_cross_consistency():
         assert "3.883" in doc_text or "3883" in doc_text, f"{doc_name} içinde Kapsam B kenar sayısı (3.883) bulunamadı!"
         assert "3.848" in doc_text or "3848" in doc_text, f"{doc_name} içinde Kapsam B1 kenar sayısı (3.848) bulunamadı!"
 
-    # 208 YÖK ve 222 OpenAlex sayıları açıklanmış olmalı
+    # 204 üniversite, 4 MYO ve 208 yükseköğretim kurumu dağılımı
+    for doc_name, doc_text in [("README.md", readme_text), ("docs/data_dictionary.md", dict_text), ("reports/ara_kontrol.md", report_text)]:
+        assert "204" in doc_text, f"{doc_name} içinde 204 üniversite sayısı bulunamadı!"
+        assert "208" in doc_text, f"{doc_name} içinde toplam 208 yükseköğretim kurumu sayısı bulunamadı!"
+
     for doc_name, doc_text in [("README.md", readme_text), ("reports/ara_kontrol.md", report_text)]:
-        assert "208" in doc_text, f"{doc_name} içinde YÖK resmi üniversite sayısı (208) bulunamadı!"
         assert "222" in doc_text, f"{doc_name} içinde OpenAlex education kurum sayısı (222) bulunamadı!"
         assert "yok.gov.tr" in doc_text, f"{doc_name} içinde YÖK resmi kaynak bağlantısı bulunamadı!"
 
-    # Tekil koordinatlar (122 ham float, 112 yuvarlanmış/merkez)
+    # Tekil koordinatlar (122 ham float, 112 round(4) yuvarlanmış/merkez)
+    inst_df = pd.read_csv("data/processed/institutions.csv")
+    raw_unique_coords = len(inst_df[["latitude", "longitude"]].dropna().drop_duplicates())
+    round4_unique_coords = len(inst_df[["latitude", "longitude"]].dropna().round(4).drop_duplicates())
+    assert raw_unique_coords == 122, f"Beklenen ham tekil koordinat 122, bulunan: {raw_unique_coords}"
+    assert round4_unique_coords == 112, f"Beklenen round(4) tekil koordinat 112, bulunan: {round4_unique_coords}"
+
     for doc_name, doc_text in [("docs/data_dictionary.md", dict_text), ("reports/ara_kontrol.md", report_text)]:
         assert "122" in doc_text, f"{doc_name} içinde 122 ham tekil koordinat sayısı bulunamadı!"
         assert "112" in doc_text, f"{doc_name} içinde 112 yuvarlanmış tekil koordinat sayısı bulunamadı!"
+
+
+def test_excluded_works_integrity_and_provenance():
+    """
+    data/processed/excluded_works_summary.csv dosyasının 641 tekil kaydını,
+    yıllara göre tam dağılımını ve etiket tutarlılığını doğrular.
+    """
+    excluded_path = "data/processed/excluded_works_summary.csv"
+    assert os.path.exists(excluded_path), f"Eksik dosya: {excluded_path}"
+    df = pd.read_csv(excluded_path)
+
+    assert len(df) == 641, f"Beklenen 641 dışlanan çalışma, bulunan: {len(df)}"
+    assert df["work_id"].nunique() == 641, "Dışlanan çalışmalar içinde mükerrer work_id var!"
+
+    # Yıllara göre dağılım
+    year_counts = df["publication_year"].value_counts().to_dict()
+    expected_years = {2020: 69, 2021: 76, 2022: 106, 2023: 132, 2024: 106, 2025: 152}
+    assert year_counts == expected_years, f"Yıllık dışlanan yayın dağılımı uyuşmuyor: {year_counts}"
+
 

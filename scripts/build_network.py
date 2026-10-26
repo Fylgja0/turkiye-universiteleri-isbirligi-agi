@@ -120,13 +120,20 @@ def load_tr_institutions(metadata_file: str = "data/raw/institutions_tr.json") -
 
 def classify_institution(iid: str, display_name: str, raw_status: Optional[str] = None) -> Tuple[str, bool]:
     """
-    Kurumu ROR/OpenAlex ve resmi kayıtlar doğrultusunda sınıflandırır:
-    - active_university (Halen aktif üniversiteler ve yüksek teknoloji enstitüleri)
-    - closed_2016_khk (2016 KHK ile kapatılmış tarihsel vakıf üniversiteleri)
-    - vocational_college (Vakıf Meslek Yüksekokulları - Bağımsız MYO)
-    - academy_or_institute (Harp Okulları, Polis Akademisi, yabancı enstitüler)
-    - hospital_or_other (EAH, İl MEM, araştırma merkezleri vb.)
-    - unverified (Resmi üniversite statüsü doğrulanamamış/kanıtlanmamış kurumlar)
+    Kurumu ROR/OpenAlex verileri ve mevzuat kayıtları doğrultusunda sınıflandırır:
+    - active_university: Kural tabanlı aktif üniversiteler (Adında university/universite/institute of technology
+      geçen ve raw_status değeri kapalı/inaktif olmayan kurumlar. Bu bir kural tabanlı algoritmik atamadır;
+      tüm kurumlar tek tek resmi YÖK sicilinden elle doğrulanmamıştır).
+    - closed_2016_khk: 2016 yılında 667 sayılı KHK ile kapatılmış tarihsel vakıf üniversiteleri (ID bazında kesin doğrulama).
+    - vocational_college: Bağımsız Vakıf Meslek Yüksekokulları (MYO).
+    - academy_or_institute: Askeri ve Polis Akademileri, Harp Okulları, yabancı enstitüler.
+    - hospital_or_other: Eğitim ve Araştırma Hastaneleri, İl Millî Eğitim Müdürlükleri, araştırma merkezleri.
+    - unverified: Resmi üniversite statüsü doğrulanamayan veya KKTC/kapatma gibi özel kısıtı bulunan kurumlar.
+
+    Not: OpenAlex/ROR 'status' alanı Türkiye Cumhuriyeti'ndeki güncel hukuki statüyü tek başına kanıtlamaz
+    (Örn. 2016'da kapatılan İzmir Üni veya 2020'de kapatılan İstanbul Şehir Üni OpenAlex'te 'active' kalabilmektedir).
+    Mevcut veri kümesinde 222 kurumun tamamında status alanı doludur (220 active, 2 inactive).
+
     Dönüş: (kategori_adi, is_university_flag)
     """
     name_l = display_name.lower().strip()

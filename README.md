@@ -30,9 +30,14 @@ Bu araştırma, Türkiye yükseköğretim ekosistemindeki bilgisayar bilimi ara�
 
 ## 3. Önemli Kapsam Değerlendirmesi: "500 Düğüm Kuralı"
 Genel ders yönergesi en az 500 düğümlü bir ağ istemektedir. Ancak bu kişisel ödev kartında düğüm **"Türkiye'deki Üniversiteler"** olarak tanımlanmıştır:
-1. [YÖK Resmî İstatistikleri](https://www.yok.gov.tr/universiteler/universitelerimiz) verilerine göre Türkiye'de güncel olarak **208 üniversite** bulunmaktadır (129 Devlet Üniversitesi, 75 Vakıf Üniversitesi; 4 bağımsız Vakıf Meslek Yüksekokulu hariç. MYO'lar dahil edildiğinde 212 yükseköğretim kurumudur).
+1. [YÖK Resmî İstatistikleri](https://www.yok.gov.tr/universiteler/universitelerimiz) (YÖK Bilgi Yönetim Sistemi, 2025–2026 akademik yılı / 2026 Güz dönemi güncel listesi, erişim: 26 Ekim 2026) verilerine göre Türkiye'de:
+   - **129 Devlet Üniversitesi**
+   - **75 Vakıf Üniversitesi**
+   - Toplam **204 Üniversite**
+   - Ayrıca **4 Bağımsız Vakıf Meslek Yüksekokulu** (Ataşehir Adıgüzel MYO, İstanbul Şişli MYO, İzmir Kavram MYO, Avrupa MYO)
+   bulunmaktadır. Dolayısıyla Türkiye'deki toplam yükseköğretim kurumu sayısı **208** (204 üniversite + 4 vakıf MYO)'dir.
 2. OpenAlex veritabanında `country_code: TR` ve `type: education` sorgusunda ise toplam **222 kurum** yer almaktadır (Bu sayı üniversitelerin yanı sıra askeri okulları, kapatılan kurumları, bağımsız MYO'ları ve KKTC'deki Lefke Avrupa Üniversitesi gibi kurumları da kapsar).
-3. Bilgisayar bilimi (2020–2025) alanında yayın yapan Türkiye üniversiteleri sayısı bu evrenin alt kümesidir: Kapsam B'de **193 üniversite** (kapatılan tarihsel kurumlar dahil), halen aktif olan Kapsam B1'de ise **186 üniversite**dir.
+3. Bilgisayar bilimi (2020–2025) alanında yayın yapan Türkiye üniversiteleri sayısı bu evrenin alt kümesidir: Kapsam B'de **193 üniversite** (kapatılan tarihsel kurumlar dahil), kural tabanlı aktif olan Kapsam B1'de ise **186 üniversite**dir.
 4. **Bilimsel Dürüstlük İlkesi:** 500 sayısına ulaşmak amacıyla yapay/sahte düğüm eklenmemiş ya da kurum tanımı bozulmamıştır. İlgili kısıt öğretim elemanının değerlendirmesine sunulmak üzere ara kontrol raporunda ve dokümantasyonda açıkça belgelenmiştir.
 
 ---
@@ -51,10 +56,10 @@ Genel ders yönergesi en az 500 düğümlü bir ağ istemektedir. Ancak bu kişi
 - **Türkiye Eğitim Kurumu İçeren Çalışma:** 34.473 yayın (*641 yayın farkı, yazarlarının tamamı özel sektör/kamu Ar-Ge [ASELSAN, TÜBİTAK vb.] olan ve hiç üniversite içermeyen çalışmalardır*).
 - **En Az İki Türk Kurumu Arasında Ortak Yayın:** 7.470 yayın
 
-| Metrik | Kapsam A (Tüm Education Kurumları) | Kapsam B (Yalnızca Üniversiteler - Tarihsel Dahil) | Kapsam B1 (Yalnızca Halen Aktif Üniversiteler) |
+| Metrik | Kapsam A (Tüm Education Kurumları) | Kapsam B (Yalnızca Üniversiteler - Tarihsel Dahil) | Kapsam B1 (Kural Tabanlı Aktif Üniversiteler) |
 | :--- | :---: | :---: | :---: |
-| **Düğüm Sayısı ($|V|$)** | **205** | **193** | **186** |
-| **Kenar Sayısı ($|E|$)** | **3.970** | **3.883** | **3.848** |
+| **Düğüm Sayısı (N)** | **205** | **193** | **186** |
+| **Kenar Sayısı (M)** | **3.970** | **3.883** | **3.848** |
 | **Ağ Yoğunluğu (Density)** | 0.189861 | 0.209575 | **0.223656** |
 | **Bağlı Bileşen Sayısı** | 4 | 2 | **1** |
 | **İzole Düğüm Sayısı** | 3 | 1 (Canik Başarı Üni) | **0** |
@@ -70,23 +75,26 @@ turkiye-universiteleri-isbirligi-agi/
 ├── requirements.txt
 ├── README.md
 ├── docs/
-│   └── data_dictionary.md          # Veri sözlüğü ve alan açıklamaları
+│   ├── data_dictionary.md          # Veri sözlüğü ve alan açıklamaları
+│   └── data_manifest.md            # Veri manifestosu, ham veri hash ve boyutları
 ├── reports/
 │   └── ara_kontrol.md              # Ara kontrol istatistikleri ve metrik raporu
 ├── scripts/
 │   ├── __init__.py
 │   ├── fetch_openalex.py           # Tekrar çalıştırılabilir veri toplama scripti
-│   └── build_network.py            # Ham veriden ağ kurma scripti
+│   ├── build_network.py            # Ham veriden ağ kurma scripti
+│   └── audit_excluded_works.py     # 641 dışlanan yayını denetleme ve doğrulama scripti
 ├── tests/
-│   └── test_network.py             # Birim testler ve kural doğrulamaları
+│   └── test_network.py             # Birim testler ve otomatik denetim paketi
 └── data/
-    ├── raw/                        # OpenAlex'ten çekilen ham json/jsonl dosyaları
+    ├── raw/                        # Yerel ham json/jsonl dosyaları (.gitignore ile korunur)
     │   ├── institutions_tr.json
     │   └── works_*.jsonl
     └── processed/                  # İşlenmiş nihai ağ çıktıları
         ├── edges.csv               # source, target, weight
         ├── institutions.csv        # Düğüm üstverileri ve merkezilikler
-        └── collaboration.graphml   # NetworkX GraphML ağ dosyası
+        ├── collaboration.graphml   # NetworkX GraphML ağ dosyası
+        └── excluded_works_summary.csv # Dışlanan 641 çalışmanın ID ve gerekçeleri
 ```
 
 ---
