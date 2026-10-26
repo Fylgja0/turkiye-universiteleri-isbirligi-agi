@@ -22,7 +22,7 @@ Bu araştırma, Türkiye yükseköğretim ekosistemindeki bilgisayar bilimi ara�
 - **Alan Doğrulaması (`primary_topic.field.id`):**
   OpenAlex resmi `/fields` endpoint'i taranarak "Computer Science" disiplininin tam kimliği `https://openalex.org/fields/17` (`fields/17`) olarak teyit edilmiştir. Yayınların ana ekseninin bilgisayar bilimi olduğunu garanti etmek amacıyla `primary_topic.field.id:fields/17` filtresi kullanılmıştır.
 - **Kurum Türü ve Ülke Sınırlaması:**
-  OpenAlex API seviyesinde `country_code: TR` ve `type: education` filtresi kullanılmıştır. Ancak OpenAlex `education` türü üniversitelerin yanı sıra askeri/polis akademilerini, bağımsız meslek yüksekokullarını (MYO), hastane eğitim birimlerini ve kapatılmış tarihsel kurumları da içeren geniş bir sınıftır. Bu projede ham kurumlar doğrulanmış resmi mevzuat ve YÖK statülerine göre kategorize edilmiş; analizler hem geniş eğitim kurumu (Kapsam A) hem de salt üniversiteler (Kapsam B/B1) düzeyinde modellenmiştir.
+  OpenAlex API seviyesinde `country_code: TR` ve `type: education` filtresi kullanılmıştır. Ancak OpenAlex `education` türü üniversitelerin yanı sıra askeri/polis akademilerini, bağımsız meslek yüksekokullarını (MYO), hastane eğitim birimlerini ve kapatılmış tarihsel kurumları da içeren geniş bir sınıftır. Bu projede kurumlar OpenAlex üstveri analizi ve kural tabanlı algoritmik filtreleme (ad ve durum kontrolü) ile sınıflandırılmış; 2016 KHK ile kapatılan kurumlar ise ID bazında doğrulanmıştır. Analizler hem geniş eğitim kurumu (Kapsam A) hem de kural tabanlı üniversiteler (Kapsam B/B1) düzeyinde modellenmiştir.
 - **Sayfalama Yöntemi:**
   Cursor paging kullanılmamış; `per_page=100` ile standart `page` sayfalaması yapılmıştır. OpenAlex'in 10.000 kayıt sınırı nedeniyle veriler yıl bazlı sorgulanmıştır.
 
@@ -30,14 +30,14 @@ Bu araştırma, Türkiye yükseköğretim ekosistemindeki bilgisayar bilimi ara�
 
 ## 3. Önemli Kapsam Değerlendirmesi: "500 Düğüm Kuralı"
 Genel ders yönergesi en az 500 düğümlü bir ağ istemektedir. Ancak bu kişisel ödev kartında düğüm **"Türkiye'deki Üniversiteler"** olarak tanımlanmıştır:
-1. [YÖK Resmî İstatistikleri](https://www.yok.gov.tr/universiteler/universitelerimiz) (YÖK Bilgi Yönetim Sistemi, 2025–2026 akademik yılı / 2026 Güz dönemi güncel listesi, erişim: 26 Ekim 2026) verilerine göre Türkiye'de:
+1. [YÖK Resmî Web Portalı](https://www.yok.gov.tr/universiteler/universitelerimiz) (erişim: 26 Ekim 2026) verilerine göre Türkiye'de:
    - **129 Devlet Üniversitesi**
    - **75 Vakıf Üniversitesi**
    - Toplam **204 Üniversite**
    - Ayrıca **4 Bağımsız Vakıf Meslek Yüksekokulu** (Ataşehir Adıgüzel MYO, İstanbul Şişli MYO, İzmir Kavram MYO, Avrupa MYO)
    bulunmaktadır. Dolayısıyla Türkiye'deki toplam yükseköğretim kurumu sayısı **208** (204 üniversite + 4 vakıf MYO)'dir.
 2. OpenAlex veritabanında `country_code: TR` ve `type: education` sorgusunda ise toplam **222 kurum** yer almaktadır (Bu sayı üniversitelerin yanı sıra askeri okulları, kapatılan kurumları, bağımsız MYO'ları ve KKTC'deki Lefke Avrupa Üniversitesi gibi kurumları da kapsar).
-3. Bilgisayar bilimi (2020–2025) alanında yayın yapan Türkiye üniversiteleri sayısı bu evrenin alt kümesidir: Kapsam B'de **193 üniversite** (kapatılan tarihsel kurumlar dahil), kural tabanlı aktif olan Kapsam B1'de ise **186 üniversite**dir.
+3. Bilgisayar bilimi (2020–2025) alanında yayın yapan Türkiye üniversiteleri sayısı bu evrenin alt kümesidir: Kapsam B'de **193 üniversite** (186 kural tabanlı aktif üniversite + 2016 KHK ile kapatılan 7 tarihsel vakıf üniversitesi; 2020 CBK ile kapatılan İstanbul Şehir Üniversitesi bu kapsama dahil edilmemiştir), kural tabanlı aktif olan Kapsam B1'de ise **186 üniversite**dir.
 4. **Bilimsel Dürüstlük İlkesi:** 500 sayısına ulaşmak amacıyla yapay/sahte düğüm eklenmemiş ya da kurum tanımı bozulmamıştır. İlgili kısıt öğretim elemanının değerlendirmesine sunulmak üzere ara kontrol raporunda ve dokümantasyonda açıkça belgelenmiştir.
 
 ---
@@ -52,11 +52,11 @@ Genel ders yönergesi en az 500 düğümlü bir ağ istemektedir. Ancak bu kişi
 
 ### 4.1. Doğrulanmış Ağ İstatistikleri ve Kapsam Karşılaştırması (Ara Kontrol Verisi)
 
-- **İndirilen Toplam Çalışma (2020–2025):** 35.114 yayın
+- **İndirilen Toplam Çalışma (2020–2025):** 35.114 yayın (Yerel ham boyutu: 128.229.572 bayt / 122,29 MB; SHA-256 hash'leri `docs/data_manifest.md` dosyasındadır).
 - **Türkiye Eğitim Kurumu İçeren Çalışma:** 34.473 yayın (*641 yayın farkı, yazarlarının tamamı özel sektör/kamu Ar-Ge [ASELSAN, TÜBİTAK vb.] olan ve hiç üniversite içermeyen çalışmalardır*).
 - **En Az İki Türk Kurumu Arasında Ortak Yayın:** 7.470 yayın
 
-| Metrik | Kapsam A (Tüm Education Kurumları) | Kapsam B (Yalnızca Üniversiteler - Tarihsel Dahil) | Kapsam B1 (Kural Tabanlı Aktif Üniversiteler) |
+| Metrik | Kapsam A (Tüm 205 Education Kurumu) | Kapsam B (186 Kural Tabanlı Aktif + 7 KHK Kurumu, 193 Düğüm) | Kapsam B1 (186 Kural Tabanlı Aktif Üniversite) |
 | :--- | :---: | :---: | :---: |
 | **Düğüm Sayısı (N)** | **205** | **193** | **186** |
 | **Kenar Sayısı (M)** | **3.970** | **3.883** | **3.848** |

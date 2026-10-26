@@ -75,7 +75,7 @@ OpenAlex veri tabanındaki `country_code: TR` ve `type: education` filtrelemesin
 
 ### 2.1. Karşılaştırmalı Ağ Topolojisi Tablosu
 
-| Metrik | Kapsam A (Tüm Education Kurumları) | Kapsam B (Üniversiteler - Tarihsel Dahil) | Kapsam B1 (Kural Tabanlı Aktif Üniversiteler) |
+| Metrik | Kapsam A (Tüm 205 Education Kurumu) | Kapsam B (186 Kural Tabanlı Aktif + 7 KHK Kurumu, 193 Düğüm) | Kapsam B1 (186 Kural Tabanlı Aktif Üniversite) |
 | :--- | :---: | :---: | :---: |
 | **Düğüm Sayısı (N)** | **205** | **193** | **186** |
 | **Kenar Sayısı (M)** | **3.970** | **3.883** | **3.848** |
@@ -84,8 +84,9 @@ OpenAlex veri tabanındaki `country_code: TR` ve `type: education` filtrelemesin
 | **İzole Düğüm Sayısı** | 3 | 1 (Canik Başarı Üni) | **0** |
 | **Dev Bileşen Büyüklüğü** | 202 (%98.5) | 192 (%99.5) | **186 (%100.0)** |
 
-> **Metodolojik Çıkarım:**
-> Kapsam B1'e (kural tabanlı aktif üniversitelere) odaklanıldığında Türkiye'deki üniversiteler **tek bir dev bileşen** içinde toplanmakta, hiçbir üniversite izole kalmamaktadır ($density = 0.223656$).
+> **Metodolojik Çıkarım ve Kapsam Sınırları:**
+> - **Kapsam B (193 düğüm):** 186 kural tabanlı aktif üniversite ile 2016'da 667 sayılı KHK ile kapatılan 7 tarihsel üniversiteyi kapsar. 2020'de 2814 sayılı CBK ile kapatılan İstanbul Şehir Üniversitesi ve KKTC'de yer alan Lefke Avrupa Üniversitesi bu kapsama dahil edilmemiş, `unverified` kategorisinde bırakılmıştır.
+> - **Kapsam B1 (186 düğüm):** Yalnızca kural tabanlı aktif üniversitelere odaklanıldığında Türkiye'deki üniversiteler **tek bir dev bileşen** içinde toplanmakta, hiçbir üniversite izole kalmamaktadır ($density = 0.223656$).
 
 ---
 
@@ -174,14 +175,14 @@ Ege Bölgesi'nde yer alan toplam 18 kurum bulunmaktadır. Bu kurumlar nitelikler
 > **Öğretim Görevlisinin Değerlendirmesine:**  
 > Genel ders izlencesi en az 500 düğümlü bir ağ talep etmektedir. Ancak tarafıma iletilen ödev kartında düğüm **"Türkiye'deki Üniversiteler"** olarak sınırlandırılmıştır.  
 > 
-> 1. [YÖK Resmî İstatistikleri](https://www.yok.gov.tr/universiteler/universitelerimiz) (YÖK Bilgi Yönetim Sistemi, 2025–2026 akademik yılı / 2026 Güz dönemi güncel listesi, erişim: 26 Ekim 2026) verilerine göre Türkiye'de:  
+> 1. [YÖK Resmî Web Portalı](https://www.yok.gov.tr/universiteler/universitelerimiz) (erişim: 26 Ekim 2026) verilerine göre Türkiye'de:  
 >    - **129 Devlet Üniversitesi**  
 >    - **75 Vakıf Üniversitesi**  
 >    - Toplam **204 Üniversite**  
 >    - Ayrıca **4 Bağımsız Vakıf Meslek Yüksekokulu** (Ataşehir Adıgüzel MYO, İstanbul Şişli MYO, İzmir Kavram MYO, Avrupa MYO)  
 >    bulunmaktadır. Dolayısıyla Türkiye'deki toplam yükseköğretim kurumu sayısı **208** (204 üniversite + 4 vakıf MYO)'dir.  
 > 2. OpenAlex veritabanında ise `country_code: TR` ve `type: education` filtresinde toplam **222 kurum** yer almaktadır. Bu sayı üniversitelerin yanı sıra askeri/polis akademilerini (5), 2016 KHK ile kapatılan tarihsel kurumları (7), 2020 CBK ile kapatılan İstanbul Şehir Üniversitesi'ni, bağımsız MYO'ları (2), hastane/idari eğitim merkezlerini (3) ve KKTC'de yer alan Lefke Avrupa Üniversitesi'ni de kapsayan geniş eğitim havuzudur.  
-> 3. Bilgisayar bilimi alanında 2020–2025'te yayın yapan tekil eğitim kurumu sayısı **205** (Kapsam A), üniversite niteliğindeki kurum sayısı **193** (Kapsam B - tarihsel dahil), kural tabanlı aktif üniversite sayısı ise **186** (Kapsam B1)'dir.  
+> 3. Bilgisayar bilimi alanında 2020–2025'te yayın yapan tekil eğitim kurumu sayısı **205** (Kapsam A), 186 kural tabanlı aktif üniversite ile 7 KHK kapatılan kurumu kapsayan Kapsam B'de **193 kurum**, kural tabanlı aktif üniversite sayısı ise **186** (Kapsam B1)'dir.  
 > 
 > Ağın 500 düğüme ulaşması evrenin fiziksel sınırlılığı nedeniyle imkansızdır. Sahte veri üretilmemiş, bilimsel dürüstlük ilkesi gereği gerçek sayılar raporlanmıştır.
 

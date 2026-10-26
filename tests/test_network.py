@@ -10,6 +10,7 @@ Kapsam A/B/B1 metrik tutarlılığı ve rapor tabloları çapraz kontrolü.
 import os
 import re
 import json
+import glob
 import tempfile
 import pytest
 import networkx as nx
@@ -361,7 +362,7 @@ def test_scopes_metrics_exact_values():
     # Markdown Kapsam Tablolarının (ara_kontrol.md ve README.md) grafikten dinamik doğrulanması
     with open("reports/ara_kontrol.md", "r", encoding="utf-8") as f:
         rep_text = f.read()
-    scope_rows = parse_markdown_table_rows(rep_text, "Kapsam A (Tüm Education Kurumları)")
+    scope_rows = parse_markdown_table_rows(rep_text, "Kapsam A (Tüm 205 Education Kurumu)")
     assert len(scope_rows) >= 6, "Kapsam tablosu parse edilemedi!"
 
     # Tablo satırlarını metrik adına göre sözlüğe dönüştür
@@ -370,41 +371,45 @@ def test_scopes_metrics_exact_values():
         m_name = list(r.values())[0].replace("*", "").strip()
         scope_map[m_name] = r
 
+    col_a = "Kapsam A (Tüm 205 Education Kurumu)"
+    col_b = "Kapsam B (186 Kural Tabanlı Aktif + 7 KHK Kurumu, 193 Düğüm)"
+    col_b1 = "Kapsam B1 (186 Kural Tabanlı Aktif Üniversite)"
+
     # Düğüm Sayısı
     node_row = [v for k, v in scope_map.items() if "Düğüm Sayısı" in k][0]
-    assert int(node_row["Kapsam A (Tüm Education Kurumları)"].replace("*", "")) == G.number_of_nodes()
-    assert int(node_row["Kapsam B (Üniversiteler - Tarihsel Dahil)"].replace("*", "")) == G_B.number_of_nodes()
-    assert int(node_row["Kapsam B1 (Kural Tabanlı Aktif Üniversiteler)"].replace("*", "")) == G_B1.number_of_nodes()
+    assert int(node_row[col_a].replace("*", "")) == G.number_of_nodes()
+    assert int(node_row[col_b].replace("*", "")) == G_B.number_of_nodes()
+    assert int(node_row[col_b1].replace("*", "")) == G_B1.number_of_nodes()
 
     # Kenar Sayısı
     edge_row = [v for k, v in scope_map.items() if "Kenar Sayısı" in k][0]
-    assert int(edge_row["Kapsam A (Tüm Education Kurumları)"].replace("*", "").replace(".", "")) == G.number_of_edges()
-    assert int(edge_row["Kapsam B (Üniversiteler - Tarihsel Dahil)"].replace("*", "").replace(".", "")) == G_B.number_of_edges()
-    assert int(edge_row["Kapsam B1 (Kural Tabanlı Aktif Üniversiteler)"].replace("*", "").replace(".", "")) == G_B1.number_of_edges()
+    assert int(edge_row[col_a].replace("*", "").replace(".", "")) == G.number_of_edges()
+    assert int(edge_row[col_b].replace("*", "").replace(".", "")) == G_B.number_of_edges()
+    assert int(edge_row[col_b1].replace("*", "").replace(".", "")) == G_B1.number_of_edges()
 
     # Ağ Yoğunluğu
     density_row = [v for k, v in scope_map.items() if "Yoğunluğu" in k][0]
-    assert abs(float(density_row["Kapsam A (Tüm Education Kurumları)"].replace("*", "")) - nx.density(G)) < 1e-4
-    assert abs(float(density_row["Kapsam B (Üniversiteler - Tarihsel Dahil)"].replace("*", "")) - nx.density(G_B)) < 1e-4
-    assert abs(float(density_row["Kapsam B1 (Kural Tabanlı Aktif Üniversiteler)"].replace("*", "")) - nx.density(G_B1)) < 1e-4
+    assert abs(float(density_row[col_a].replace("*", "")) - nx.density(G)) < 1e-4
+    assert abs(float(density_row[col_b].replace("*", "")) - nx.density(G_B)) < 1e-4
+    assert abs(float(density_row[col_b1].replace("*", "")) - nx.density(G_B1)) < 1e-4
 
     # Bağlı Bileşen Sayısı
     comp_row = [v for k, v in scope_map.items() if "Bileşen Sayısı" in k][0]
-    assert int(comp_row["Kapsam A (Tüm Education Kurumları)"].replace("*", "")) == nx.number_connected_components(G)
-    assert int(comp_row["Kapsam B (Üniversiteler - Tarihsel Dahil)"].replace("*", "")) == nx.number_connected_components(G_B)
-    assert int(comp_row["Kapsam B1 (Kural Tabanlı Aktif Üniversiteler)"].replace("*", "")) == nx.number_connected_components(G_B1)
+    assert int(comp_row[col_a].replace("*", "")) == nx.number_connected_components(G)
+    assert int(comp_row[col_b].replace("*", "")) == nx.number_connected_components(G_B)
+    assert int(comp_row[col_b1].replace("*", "")) == nx.number_connected_components(G_B1)
 
     # İzole Düğüm Sayısı
     iso_row = [v for k, v in scope_map.items() if "İzole Düğüm" in k][0]
-    assert int(iso_row["Kapsam A (Tüm Education Kurumları)"].replace("*", "")) == len(list(nx.isolates(G)))
-    assert int(iso_row["Kapsam B (Üniversiteler - Tarihsel Dahil)"].split()[0].replace("*", "")) == len(list(nx.isolates(G_B)))
-    assert int(iso_row["Kapsam B1 (Kural Tabanlı Aktif Üniversiteler)"].replace("*", "")) == len(list(nx.isolates(G_B1)))
+    assert int(iso_row[col_a].replace("*", "")) == len(list(nx.isolates(G)))
+    assert int(iso_row[col_b].split()[0].replace("*", "")) == len(list(nx.isolates(G_B)))
+    assert int(iso_row[col_b1].replace("*", "")) == len(list(nx.isolates(G_B1)))
 
     # Dev Bileşen Büyüklüğü
     giant_row = [v for k, v in scope_map.items() if "Dev Bileşen" in k][0]
-    assert int(giant_row["Kapsam A (Tüm Education Kurumları)"].split()[0].replace("*", "")) == len(max(nx.connected_components(G), key=len))
-    assert int(giant_row["Kapsam B (Üniversiteler - Tarihsel Dahil)"].split()[0].replace("*", "")) == len(max(nx.connected_components(G_B), key=len))
-    assert int(giant_row["Kapsam B1 (Kural Tabanlı Aktif Üniversiteler)"].split()[0].replace("*", "")) == len(max(nx.connected_components(G_B1), key=len))
+    assert int(giant_row[col_a].split()[0].replace("*", "")) == len(max(nx.connected_components(G), key=len))
+    assert int(giant_row[col_b].split()[0].replace("*", "")) == len(max(nx.connected_components(G_B), key=len))
+    assert int(giant_row[col_b1].split()[0].replace("*", "")) == len(max(nx.connected_components(G_B1), key=len))
 
 
 def test_graphml_and_csv_node_attributes_deep_match():
@@ -563,5 +568,111 @@ def test_excluded_works_integrity_and_provenance():
     year_counts = df["publication_year"].value_counts().to_dict()
     expected_years = {2020: 69, 2021: 76, 2022: 106, 2023: 132, 2024: 106, 2025: 152}
     assert year_counts == expected_years, f"Yıllık dışlanan yayın dağılımı uyuşmuyor: {year_counts}"
+
+
+def test_audit_excluded_works_synthetic_pipeline():
+    """
+    Yerel ham veriler olmadan da çalışan, sentetik veriyle
+    dışlama tespit ve CSV karşılaştırma motorunu uçtan uca doğrulayan test.
+    """
+    from scripts.audit_excluded_works import extract_excluded_from_raw, compare_with_processed_csv
+
+    mock_institutions = [
+        {"id": "https://openalex.org/I1", "display_name": "Test University", "type": "education", "country_code": "TR"}
+    ]
+
+    mock_works = [
+        # 1. Dahil edilecek çalışma (TR eğitim kurumu var)
+        {
+            "id": "https://openalex.org/W_INC",
+            "title": "Included Paper",
+            "publication_year": 2023,
+            "authorships": [{"institutions": [{"id": "https://openalex.org/I1", "country_code": "TR", "type": "education"}]}]
+        },
+        # 2. Dışlanacak çalışma: Yalnızca özel sektör Ar-Ge (company)
+        {
+            "id": "https://openalex.org/W_EXC_CORP",
+            "title": "Corporate Research Work",
+            "publication_year": 2022,
+            "authorships": [{"institutions": [{"id": "https://openalex.org/I_CORP", "display_name": "Defense Industry Inc.", "country_code": "TR", "type": "company"}]}]
+        },
+        # 3. Dışlanacak çalışma: Türkiye kurumu hiç yok
+        {
+            "id": "https://openalex.org/W_EXC_FOREIGN",
+            "title": "Foreign Collab Work",
+            "publication_year": 2024,
+            "authorships": [{"institutions": [{"id": "https://openalex.org/I_FOR", "display_name": "Foreign University", "country_code": "DE", "type": "education"}]}]
+        }
+    ]
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        meta_file = os.path.join(tmpdir, "institutions_tr.json")
+        works_file = os.path.join(tmpdir, "works_mock.jsonl")
+        ref_csv = os.path.join(tmpdir, "excluded_ref.csv")
+
+        with open(meta_file, "w", encoding="utf-8") as f:
+            json.dump(mock_institutions, f)
+
+        with open(works_file, "w", encoding="utf-8") as f:
+            for w in mock_works:
+                f.write(json.dumps(w) + "\n")
+
+        # Ham veriden ayıklama
+        df_raw, stats = extract_excluded_from_raw(
+            raw_pattern=os.path.join(tmpdir, "works_*.jsonl"),
+            metadata_file=meta_file
+        )
+
+        assert stats["total_works_processed"] == 3
+        assert stats["included_in_network"] == 1
+        assert stats["total_excluded"] == 2
+        assert len(df_raw) == 2
+
+        # Referans CSV ile tam eşleşme testi
+        df_raw.to_csv(ref_csv, index=False)
+        comp_perfect = compare_with_processed_csv(df_raw, csv_path=ref_csv)
+        assert comp_perfect["success"] is True
+        assert comp_perfect["raw_count"] == 2
+        assert comp_perfect["diff_reason_count"] == 0
+
+        # Bilinçli alan uyuşmazlığı testi (hata tespit kontrolü)
+        df_tampered = df_raw.copy()
+        df_tampered.loc[0, "exclusion_reason"] = "tampered_reason"
+        df_tampered.to_csv(ref_csv, index=False)
+        comp_mismatch = compare_with_processed_csv(df_raw, csv_path=ref_csv)
+        assert comp_mismatch["success"] is False
+        assert comp_mismatch["diff_reason_count"] == 1
+
+
+def test_audit_excluded_works_real_data_match():
+    """
+    Yerel data/raw/ dizininde gerçek OpenAlex ham verileri mevcut olduğunda,
+    641 dışlanan çalışmanın tamamını sıfırdan türetir ve
+    data/processed/excluded_works_summary.csv ile ALAN BAZINDA TAM EŞLEŞTİĞİNİ doğrular.
+    """
+    from scripts.audit_excluded_works import extract_excluded_from_raw, compare_with_processed_csv
+
+    raw_files = glob.glob("data/raw/works_*.jsonl")
+    if not raw_files or not os.path.exists("data/raw/institutions_tr.json"):
+        pytest.skip("Yerel ham veriler (data/raw/) bulunamadığı için gerçek veri karşılaştırma testi atlandı.")
+
+    df_raw, stats = extract_excluded_from_raw(
+        raw_pattern="data/raw/works_*.jsonl",
+        metadata_file="data/raw/institutions_tr.json"
+    )
+
+    csv_path = "data/processed/excluded_works_summary.csv"
+    comp = compare_with_processed_csv(df_raw, csv_path=csv_path)
+
+    assert comp["success"] is True, f"Ham veri ile CSV arasında uyumsuzluk tespit edildi: {comp}"
+    assert comp["raw_count"] == 641, f"Beklenen 641 kayıt, bulunan: {comp['raw_count']}"
+    assert comp["csv_count"] == 641
+    assert comp["missing_in_csv_count"] == 0
+    assert comp["extra_in_csv_count"] == 0
+    assert comp["diff_year_count"] == 0
+    assert comp["diff_reason_count"] == 0
+    assert comp["diff_title_count"] == 0
+    assert comp["diff_aff_count"] == 0
+
 
 
