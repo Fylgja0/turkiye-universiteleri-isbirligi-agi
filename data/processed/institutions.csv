@@ -1,0 +1,206 @@
+id,display_name,country_code,type,latitude,longitude,city,works_count,is_egean,degree,weighted_degree,is_isolated
+https://openalex.org/I95634034,Gazi University,TR,education,39.91987,32.85427,Ankara,61742,False,121,582,False
+https://openalex.org/I4101805,Yıldız Technical University,TR,education,41.01383972167969,28.94965934753418,Istanbul,31362,False,116,553,False
+https://openalex.org/I67581229,Istanbul University,TR,education,41.01384,28.94966,Istanbul,89232,False,116,754,False
+https://openalex.org/I66514158,Hacettepe University,TR,education,39.91986846923828,32.854270935058594,Ankara,83559,False,116,588,False
+https://openalex.org/I48912391,Istanbul Technical University,TR,education,41.01384,28.94966,Istanbul,53448,False,109,569,False
+https://openalex.org/I149218525,Ankara University,TR,education,39.91986846923828,32.854270935058594,Ankara,71659,False,106,440,False
+https://openalex.org/I4210112471,Istanbul University-Cerrahpaşa,TR,education,41.01383972167969,28.94965934753418,Istanbul,41259,False,97,611,False
+https://openalex.org/I162720556,Karadeniz Technical University,TR,education,41.005001068115234,39.7269401550293,Trabzon,27642,False,96,328,False
+https://openalex.org/I143396566,Fırat University,TR,education,38.67431,39.22321,Elâzığ,30163,False,94,538,False
+https://openalex.org/I201799495,Middle East Technical University,TR,education,39.91987,32.85427,Ankara,50160,False,91,408,False
+https://openalex.org/I74897591,Marmara University,TR,education,41.01383972167969,28.94965934753418,Istanbul,47607,False,91,346,False
+https://openalex.org/I103703290,Sakarya University,TR,education,40.78056,30.40333,Adapazarı,28396,False,82,250,False
+https://openalex.org/I133743585,Anadolu University,TR,education,39.776668548583984,30.520559310913086,Eskişehir,19660,False,76,186,False
+https://openalex.org/I41641357,Ege University,TR,education,38.41273,27.13838,Izmir,53427,True,75,280,False
+https://openalex.org/I197907453,Akdeniz University,TR,education,36.908119201660156,30.695560455322266,Antalya,31861,False,74,187,False
+https://openalex.org/I87673952,Erciyes University,TR,education,38.73222,35.48528,Kayseri,35790,False,74,299,False
+https://openalex.org/I51826884,Kocaeli Üniversitesi,TR,education,40.76499,29.92928,İzmit,26125,False,73,180,False
+https://openalex.org/I137996928,Selçuk University,TR,education,37.87135,32.48464,Konya,38993,False,73,215,False
+https://openalex.org/I128277893,Bahçeşehir University,TR,education,41.01383972167969,28.94965934753418,Istanbul,11591,False,72,232,False
+https://openalex.org/I193615760,Dokuz Eylül University,TR,education,38.41273,27.13838,Izmir,42239,True,72,187,False
+https://openalex.org/I4210107659,Necmettin Erbakan University,TR,education,37.87135,32.48464,Konya,21432,False,71,176,False
+https://openalex.org/I4405392,Boğaziçi University,TR,education,41.01383972167969,28.94965934753418,Istanbul,24497,False,71,322,False
+https://openalex.org/I173761726,Karabük University,TR,education,41.20487976074219,32.627681732177734,Karabük,13504,False,71,172,False
+https://openalex.org/I3133171086,Bandırma Onyedi Eylül University,TR,education,40.35221862792969,27.976669311523438,Bandırma,5507,False,70,207,False
+https://openalex.org/I48843708,Pamukkale University,TR,education,37.774169921875,29.087499618530273,Denizli,23604,True,69,171,False
+https://openalex.org/I51780484,Mersin Üniversitesi,TR,education,36.81195831298828,34.638858795166016,Mersin,19946,False,68,142,False
+https://openalex.org/I109297418,Gebze Technical University,TR,education,40.80276,29.43068,Gebze,12549,False,66,147,False
+https://openalex.org/I16748637,Manisa Celal Bayar University,TR,education,38.61202,27.42647,Manisa,18434,True,66,198,False
+https://openalex.org/I12700597,Sivas Cumhuriyet Üniversitesi,TR,education,39.748329162597656,37.016109466552734,Sivas,22953,False,64,187,False
+https://openalex.org/I4210150808,Ankara Yıldırım Beyazıt University,TR,education,39.91987,32.85427,Ankara,18360,False,62,153,False
+https://openalex.org/I4387154021,Alanya Alaaddin Keykubat Üniversitesi,TR,education,36.54375,31.99982,Alanya,4668,False,61,104,False
+https://openalex.org/I4210128276,Sağlık Bilimleri Üniversitesi,TR,education,41.01384,28.94966,Istanbul,54287,False,61,124,False
+https://openalex.org/I4210121333,Istinye University,TR,education,41.01383972167969,28.94965934753418,Istanbul,11080,False,60,196,False
+https://openalex.org/I131835042,Bursa Uludağ Üni̇versi̇tesi̇,TR,education,40.19559,29.06013,Bursa,30516,False,60,156,False
+https://openalex.org/I1351752,Koç University,TR,education,41.01384,28.94966,Istanbul,24616,False,60,229,False
+https://openalex.org/I64134780,Atatürk University,TR,education,39.90861,41.27694,Erzurum,42918,False,59,177,False
+https://openalex.org/I254571519,Bartin University,TR,education,41.63582992553711,32.337501525878906,Bartın,8771,False,59,137,False
+https://openalex.org/I76973811,Bolu Abant İzzet Baysal University,TR,education,40.7358283996582,31.606109619140625,Bolu,15844,False,59,96,False
+https://openalex.org/I115953327,Çanakkale Onsekiz Mart Üniversitesi,TR,education,40.155521392822266,26.412710189819336,Çanakkale,22448,False,58,92,False
+https://openalex.org/I179948855,Istanbul Aydın University,TR,education,41.01383972167969,28.94965934753418,Istanbul,10249,False,58,142,False
+https://openalex.org/I45542416,Atilim University,TR,education,39.91986846923828,32.854270935058594,Ankara,6577,False,58,168,False
+https://openalex.org/I20126385,Inonu University,TR,education,38.35018,38.31667,Malatya,23859,False,58,213,False
+https://openalex.org/I59738393,Gaziantep University,TR,education,37.05944061279297,37.38249969482422,Gaziantep,21954,False,57,115,False
+https://openalex.org/I51209816,Eskişehir Osmangazi University,TR,education,39.776668548583984,30.520559310913086,Eskişehir,23647,False,57,166,False
+https://openalex.org/I134235054,Sabancı Üniversitesi,TR,education,41.01383972167969,28.94965934753418,Istanbul,12536,False,56,174,False
+https://openalex.org/I4210091955,Eskisehir Technical University,TR,education,39.776668548583984,30.520559310913086,Eskişehir,5793,False,55,157,False
+https://openalex.org/I132286405,Kadir Has University,TR,education,41.01383972167969,28.94965934753418,Istanbul,4133,False,55,160,False
+https://openalex.org/I55931168,Cukurova University,TR,education,36.986148834228516,35.32530975341797,Adana,33882,False,53,158,False
+https://openalex.org/I175124709,Süleyman Demirel Üniversitesi,TR,education,37.76444,30.55222,Isparta,24208,False,53,179,False
+https://openalex.org/I52407163,Afyon Kocatepe University,TR,education,38.75667190551758,30.5433292388916,Afyonkarahisar,14582,True,52,122,False
+https://openalex.org/I4210098942,Milli Savunma Üniversitesi,TR,education,41.01384,28.94966,Istanbul,3137,False,52,244,False
+https://openalex.org/I46017,Kahramanmaraş Sütçü İmam University,TR,education,37.58470153808594,36.92641067504883,Kahramanmaraş,15081,False,51,135,False
+https://openalex.org/I54001450,Düzce Üniversitesi,TR,education,40.838890075683594,31.163890838623047,Düzce,15314,False,51,168,False
+https://openalex.org/I95293974,Abdullah Gül University,TR,education,38.73763656616211,35.47346878051758,Kayseri,2706,False,51,107,False
+https://openalex.org/I123466251,Dicle University,TR,education,37.913631439208984,40.21720886230469,Diyarbakır,19677,False,50,127,False
+https://openalex.org/I238144855,Tokat Gaziosmanpaşa Üniversitesi,TR,education,40.31388854980469,36.554439544677734,Tokat Province,15942,False,49,87,False
+https://openalex.org/I2799303410,Yozgat Bozok Üniversitesi,TR,education,39.82,34.80444,Yozgat,10441,False,49,98,False
+https://openalex.org/I4210115299,TED University,TR,education,39.91986846923828,32.854270935058594,Ankara,2356,False,49,120,False
+https://openalex.org/I250383648,Izmir Kâtip Çelebi University,TR,education,38.41273,27.13838,Izmir,14921,True,49,127,False
+https://openalex.org/I54515432,Burdur Mehmet Akif Ersoy Üniversitesi,TR,education,37.720279693603516,30.290830612182617,Burdur,10376,False,48,137,False
+https://openalex.org/I12387023,Trakya University,TR,education,41.677188873291016,26.55596923828125,Edirne,16101,False,48,120,False
+https://openalex.org/I204483917,Ahi Evran University,TR,education,39.14583,34.16389,Kırşehir,9902,False,48,95,False
+https://openalex.org/I45642913,Kırıkkale University,TR,education,39.845279693603516,33.50638961791992,Kırıkkale,15305,False,47,112,False
+https://openalex.org/I198587356,Adıyaman University,TR,education,37.76441,38.27629,Adıyaman,9958,False,47,126,False
+https://openalex.org/I8666313,Beykent University,TR,education,41.01384,28.94966,Istanbul,4882,False,47,107,False
+https://openalex.org/I176037994,Erzincan Binali Yıldırım University,TR,education,39.73919,39.49015,Erzincan,10545,False,47,129,False
+https://openalex.org/I169255954,Bilecik Şeyh Edebali Üniversitesi,TR,education,40.14192,29.97932,Bilecik,7724,False,46,106,False
+https://openalex.org/I227306068,Ondokuz Mayıs University,TR,education,41.27975845336914,36.33610153198242,Samsun,32894,False,46,154,False
+https://openalex.org/I3018710136,Kütahya Dumlupınar Üniversitesi,TR,education,39.42417,29.98333,Kütahya,10253,True,46,81,False
+https://openalex.org/I137265801,Osmaniye Korkut Ata University,TR,education,37.07417,36.24778,Osmaniye,5455,False,46,111,False
+https://openalex.org/I115600380,Balıkesir University,TR,education,39.649169921875,27.886110305786133,Balıkesir,13284,False,46,88,False
+https://openalex.org/I121596126,Aksaray University,TR,education,38.37255096435547,34.02537155151367,Aksaray,10637,False,46,85,False
+https://openalex.org/I4210091267,İstanbul Gelişim Üniversitesi,TR,education,41.01384,28.94966,Istanbul,6882,False,46,128,False
+https://openalex.org/I147699246,Bingöl University,TR,education,38.88471984863281,40.49388885498047,Bingöl,8159,False,45,138,False
+https://openalex.org/I98905743,Kastamonu University,TR,education,41.3780517578125,33.7752799987793,Kastamonu,10604,False,44,89,False
+https://openalex.org/I118036225,Istanbul Bilgi University,TR,education,41.01383972167969,28.94965934753418,Istanbul,5265,False,44,83,False
+https://openalex.org/I118567650,Van Yüzüncü Yıl Üniversitesi,TR,education,38.49457,43.38323,Van,22088,False,44,115,False
+https://openalex.org/I322491407,Acıbadem University,TR,education,41.01384,28.94966,Istanbul,11138,False,43,92,False
+https://openalex.org/I120217413,Izmir Institute of Technology,TR,education,38.4127311706543,27.13838005065918,Izmir,8333,True,43,106,False
+https://openalex.org/I46464968,Karamanoğlu Mehmetbey University,TR,education,37.18111038208008,33.21500015258789,Karaman,8306,False,43,161,False
+https://openalex.org/I76806599,Adnan Menderes University,TR,education,37.84501,27.83963,Aydin,17810,True,43,82,False
+https://openalex.org/I4210155859,İskenderun Technical University,TR,education,36.58718,36.17347,İskenderun,3828,False,42,87,False
+https://openalex.org/I79946792,Muğla University,TR,education,37.21807,28.3665,Muğla,16929,True,41,99,False
+https://openalex.org/I59944920,Yaşar University,TR,education,38.4127311706543,27.13838005065918,Izmir,3841,True,41,73,False
+https://openalex.org/I161597582,Recep Tayyip Erdoğan University,TR,education,41.02083,40.52194,Rize,14268,False,40,114,False
+https://openalex.org/I2802529618,Istanbul Topkapi University,TR,education,41.01383972167969,28.94965934753418,Istanbul,1472,False,40,112,False
+https://openalex.org/I80538482,Harran University,TR,education,37.16707992553711,38.79391860961914,Sanliurfa,15114,False,39,80,False
+https://openalex.org/I3125470973,Istanbul Medipol University,TR,education,41.01383972167969,28.94965934753418,Istanbul,15533,False,39,110,False
+https://openalex.org/I4210104933,Biruni University,TR,education,40.99441,28.90417,Zeytinburnu,6340,False,39,83,False
+https://openalex.org/I3017902709,Zonguldak Bülent Ecevit University,TR,education,41.45139,31.79305,Zonguldak,13263,False,39,80,False
+https://openalex.org/I76257594,Sinop University,TR,education,42.02682876586914,35.16252899169922,Sinop,6309,False,39,59,False
+https://openalex.org/I168864056,Bilkent University,TR,education,39.91986846923828,32.854270935058594,Ankara,21384,False,39,164,False
+https://openalex.org/I140912994,Muş Alparslan University,TR,education,38.73162841796875,41.48482131958008,Muş,6087,False,39,95,False
+https://openalex.org/I57913696,Istanbul Medeniyet University,TR,education,41.01384,28.94966,Istanbul,13122,False,39,85,False
+https://openalex.org/I188740104,Başkent University,TR,education,39.91986846923828,32.854270935058594,Ankara,23064,False,38,89,False
+https://openalex.org/I192257213,Bursa Technical University,TR,education,40.19559097290039,29.060129165649414,Bursa,5045,False,38,84,False
+https://openalex.org/I4210154391,Hasan Kalyoncu University,TR,education,37.05944061279297,37.38249969482422,Gaziantep,3445,False,37,75,False
+https://openalex.org/I15059493,İzmir University of Economics,TR,education,38.41273,27.13838,Izmir,5384,True,37,88,False
+https://openalex.org/I100072489,Yeditepe University,TR,education,41.01383972167969,28.94965934753418,Istanbul,11304,False,37,97,False
+https://openalex.org/I1281109512,Nevşehir Hacı Bektaş Veli University,TR,education,38.625,34.71221923828125,Nevşehir,7882,False,37,77,False
+https://openalex.org/I198265615,Niğde Ömer Halisdemir Üniversitesi,TR,education,37.9658317565918,34.679351806640625,Niğde,12652,False,36,82,False
+https://openalex.org/I143914637,Gümüşhane University,TR,education,40.46001052856445,39.47175979614258,Gümüşhane,6247,False,36,55,False
+https://openalex.org/I32481161,Batman University,TR,education,37.88737869262695,41.13220977783203,Batman,5261,False,36,116,False
+https://openalex.org/I197185219,Istanbul Kültür University,TR,education,41.01383972167969,28.94965934753418,Istanbul,3484,False,36,103,False
+https://openalex.org/I3129222432,Ankara Hacı Bayram Veli University,TR,education,39.91987,32.85427,Ankara,7095,False,36,59,False
+https://openalex.org/I282159120,İstanbul Nişantaşı Üniversitesi,TR,education,41.01384,28.94966,Istanbul,4445,False,36,145,False
+https://openalex.org/I264262938,Kırklareli University,TR,education,41.73508,27.22521,Kırklareli,5644,False,35,74,False
+https://openalex.org/I148202161,Giresun University,TR,education,40.9169807434082,38.38740921020508,Giresun,10220,False,35,65,False
+https://openalex.org/I224962290,Çankırı Karatekin University,TR,education,40.59995,33.6153,Çankırı,7315,False,35,80,False
+https://openalex.org/I4210155103,Ostim Technical University,TR,education,39.91986846923828,32.854270935058594,Ankara,1769,False,35,61,False
+https://openalex.org/I344703621,Iğdır Üniversitesi,TR,education,39.923709869384766,44.04499816894531,Iğdır,5435,False,35,51,False
+https://openalex.org/I204585392,Usak University,TR,education,38.67351150512695,29.405799865722656,Uşak,11559,True,34,115,False
+https://openalex.org/I70387731,Amasya Üniversitesi,TR,education,40.6533317565918,35.83306121826172,Amasya,6880,False,34,55,False
+https://openalex.org/I41055640,Bitlis Eren University,TR,education,38.40115,42.10784,Bitlis,4875,False,34,90,False
+https://openalex.org/I46000314,Mustafa Kemal University,TR,education,36.20655,36.15722,Antakya,12457,False,34,75,False
+https://openalex.org/I149717392,Siirt Üniversitesi,TR,education,37.9293,41.94134,Siirt,7479,False,34,107,False
+https://openalex.org/I4210115931,Samsun University,TR,education,41.27975845336914,36.33610153198242,Samsun,4163,False,33,105,False
+https://openalex.org/I4387154747,Kayseri Üniversitesi,TR,education,38.73695,35.49683,Kayseri,2042,False,33,129,False
+https://openalex.org/I50627504,Istanbul Arel University,TR,education,41.020721435546875,28.585020065307617,Büyükçekmece,3168,False,33,84,False
+https://openalex.org/I42317466,Altınbaş University,TR,education,41.01383972167969,28.94965934753418,Istanbul,4093,False,33,84,False
+https://openalex.org/I140940799,Bayburt University,TR,education,40.256309509277344,40.2228889465332,Bayburt,4870,False,33,86,False
+https://openalex.org/I1281256770,Üsküdar University,TR,education,41.02273941040039,29.013660430908203,Üsküdar,4745,False,32,41,False
+https://openalex.org/I4210117254,Konya Technical University,TR,education,37.86725997924805,32.528629302978516,Karatay,4241,False,32,148,False
+https://openalex.org/I50379099,Adana Science and Technology University,TR,education,36.98615,35.32531,Adana,3887,False,32,87,False
+https://openalex.org/I140106629,Artvin Coruh University,TR,education,41.181610107421875,41.821720123291016,Artvin,5016,False,31,61,False
+https://openalex.org/I123758333,İstanbul Sabahattin Zaim Üniversitesi,TR,education,41.01383972167969,28.94965934753418,Istanbul,3919,False,31,85,False
+https://openalex.org/I44457188,Maltepe University,TR,education,41.01383972167969,28.94965934753418,Istanbul,4308,False,30,48,False
+https://openalex.org/I164120614,Mimar Sinan Güzel Sanatlar Üniversitesi,TR,education,41.01383972167969,28.94965934753418,Istanbul,2625,False,30,53,False
+https://openalex.org/I4210110665,Malatya Turgut Özal Üniversitesi,TR,education,38.42285919189453,38.35850143432617,Battalgazi,3954,False,29,195,False
+https://openalex.org/I4210151619,Kilis 7 Aralık University,TR,education,36.71611022949219,37.1150016784668,Kilis,3714,False,29,40,False
+https://openalex.org/I135987583,Kafkas University,TR,education,40.59825134277344,43.085479736328125,Kars,9740,False,29,71,False
+https://openalex.org/I2799360972,Hitit Üniversitesi,TR,education,40.54888916015625,34.953330993652344,Çorum,9367,False,29,59,False
+https://openalex.org/I307617284,Ağrı İbrahim Çeçen University,TR,education,39.71466827392578,43.0401496887207,Ağrı,4296,False,29,47,False
+https://openalex.org/I64957398,Ordu University,TR,education,40.977821350097656,37.89046859741211,Ordu,9577,False,28,49,False
+https://openalex.org/I44925452,Özyeğin University,TR,education,41.01384,28.94966,Istanbul,5157,False,28,85,False
+https://openalex.org/I4210161067,Gedik University,TR,education,40.901851654052734,29.21912384033203,Istanbul,1945,False,28,45,False
+https://openalex.org/I125454184,Tekirdağ Namık Kemal University,TR,education,40.9781,27.51101,Tekirdağ,11348,False,27,50,False
+https://openalex.org/I265519392,Erzurum Technical University,TR,education,39.90861129760742,41.276939392089844,Erzurum,4275,False,27,83,False
+https://openalex.org/I6573832,Turgut Özal University,TR,education,39.97228240966797,32.825164794921875,Ankara,3351,False,26,167,False
+https://openalex.org/I106245021,Çankaya University,TR,education,39.91986846923828,32.854270935058594,Ankara,5898,False,25,70,False
+https://openalex.org/I4210118295,Isparta University of Applied Sciences,TR,education,37.76443862915039,30.55221939086914,Isparta,6350,False,25,95,False
+https://openalex.org/I25010766,Haliç University,TR,education,41.01384,28.94966,Istanbul,3172,False,25,70,False
+https://openalex.org/I4210146544,Fatih Sultan Mehmet Waqf University,TR,education,41.01384,28.94966,Istanbul,2478,False,24,97,False
+https://openalex.org/I4210132115,Tarsus University,TR,education,36.91766,34.89277,Tarsus,3150,False,24,65,False
+https://openalex.org/I64925351,Munzur University,TR,education,39.09920883178711,39.54351043701172,Tunceli,4515,False,24,94,False
+https://openalex.org/I4210153056,KTO Karatay University,TR,education,37.8713493347168,32.48463821411133,Konya,2967,False,24,41,False
+https://openalex.org/I129994210,Doğuş University,TR,education,41.01383972167969,28.94965934753418,Istanbul,4882,False,23,52,False
+https://openalex.org/I13236232,TOBB University of Economics and Technology,TR,education,39.91986846923828,32.854270935058594,Ankara,6987,False,23,86,False
+https://openalex.org/I40790370,Yalova University,TR,education,40.64537811279297,29.124500274658203,Çınarcık,5131,False,23,27,False
+https://openalex.org/I157637111,Naval Academy,TR,education,41.01384,28.94966,Istanbul,1208,False,22,103,False
+https://openalex.org/I4210151063,İzmir Kavram Meslek Yüksekokulu,TR,education,38.41273,27.13838,Izmir,435,True,22,26,False
+https://openalex.org/I53210213,Istanbul Commerce University,TR,education,41.01383972167969,28.94965934753418,Istanbul,4869,False,22,61,False
+https://openalex.org/I2799958217,Konya Food and Agriculture University,TR,education,37.8713493347168,32.48463821411133,Konya,787,False,22,34,False
+https://openalex.org/I94294566,Galatasaray University,TR,education,41.01383972167969,28.94965934753418,Istanbul,2803,False,22,53,False
+https://openalex.org/I240986617,Şırnak University,TR,education,37.51393127441406,42.45431900024414,Şırnak,2496,False,22,50,False
+https://openalex.org/I4210101260,Türkisch-Deutsche Universität,TR,education,41.01384,28.94966,Istanbul,1501,False,21,47,False
+https://openalex.org/I167234411,Işık University,TR,education,41.01383972167969,28.94965934753418,Istanbul,2415,False,21,42,False
+https://openalex.org/I133229071,Ardahan University,TR,education,41.10871,42.70222,Ardahan,2781,False,20,50,False
+https://openalex.org/I217764696,Mardin Artuklu University,TR,education,37.31309127807617,40.743568420410156,Mardin,5056,False,20,42,False
+https://openalex.org/I96268669,Okan University,TR,education,41.01383972167969,28.94965934753418,Istanbul,5237,False,19,35,False
+https://openalex.org/I3132756774,Fenerbahçe University,TR,education,41.01383972167969,28.94965934753418,Istanbul,1452,False,19,26,False
+https://openalex.org/I4387154028,Sivas Bilim ve Teknoloji Üniversitesi,TR,education,39.74833,37.01611,Sivas,1433,False,19,35,False
+https://openalex.org/I1301968116,MEF University,TR,education,41.01384,28.94966,Istanbul,1200,False,18,47,False
+https://openalex.org/I4210100577,Antalya Bilim University,TR,education,36.908119201660156,30.695560455322266,Antalya,2063,False,18,61,False
+https://openalex.org/I101840525,Piri Reis University,TR,education,41.01383972167969,28.94965934753418,Istanbul,1589,False,18,40,False
+https://openalex.org/I4210098488,Antalya Bilim Üniversitesi,TR,education,37.02333,30.60247,Döşemealtı,1965,False,17,60,False
+https://openalex.org/I4210145505,University of Turkish Aeronautical Association,TR,education,39.91986846923828,32.854270935058594,Ankara,1047,False,17,38,False
+https://openalex.org/I160534799,Hakkari University,TR,education,37.574440002441406,43.74082946777344,Hakkâri,2658,False,16,30,False
+https://openalex.org/I99312532,Turkish Air Force Academy,TR,education,41.01383972167969,28.94965934753418,Istanbul,1042,False,16,96,False
+https://openalex.org/I4210112365,Beykoz Üniversitesi,TR,education,41.01384,28.94966,Istanbul,678,False,15,21,False
+https://openalex.org/I4387154678,Antalya Belek Üni̇versi̇tesi̇,TR,education,36.90812,30.69556,Antalya,350,False,14,16,False
+https://openalex.org/I4387156072,Kahramanmaraş İstiklal Üniversitesi,TR,education,37.5847,36.92641,Kahramanmaraş,904,False,14,20,False
+https://openalex.org/I3125175737,Bezmiâlem Vakıf Üniversitesi,TR,education,41.01384,28.94966,Istanbul,9090,False,13,24,False
+https://openalex.org/I1329879541,Avrasya University,TR,education,41.005001068115234,39.7269401550293,Trabzon,958,False,12,15,False
+https://openalex.org/I4210135744,Sanko University,TR,education,37.07181167602539,37.36668014526367,Gaziantep,1064,False,11,11,False
+https://openalex.org/I311431067,Istanbul Yeni Yüzyıl University,TR,education,41.0184326171875,28.906265258789062,Istanbul,2623,False,11,31,False
+https://openalex.org/I4210139404,Lokman Hekim Üniversitesi,TR,education,39.91986846923828,32.854270935058594,Ankara,2533,False,10,11,False
+https://openalex.org/I4210108073,Cappadocia University,TR,education,38.629600524902344,34.911991119384766,Ürgüp,1288,False,9,11,False
+https://openalex.org/I116528569,European University of Lefke,TR,education,36.81195831298828,34.638858795166016,Mersin,2905,False,9,10,False
+https://openalex.org/I4210104389,Istanbul 29 Mayis University,TR,education,41.01383972167969,28.94965934753418,Istanbul,645,False,9,10,False
+https://openalex.org/I12685407,Toros University,TR,education,36.81195831298828,34.638858795166016,Mersin,1221,False,8,13,False
+https://openalex.org/I165891364,Ufuk University,TR,education,39.91986846923828,32.854270935058594,Ankara,2524,False,7,11,False
+https://openalex.org/I4405255026,Istanbul Provincial Directorate of National Education,TR,education,41.01384,28.94966,Istanbul,89,False,7,7,False
+https://openalex.org/I4210123170,Ibn Haldun University,TR,education,41.01383972167969,28.94965934753418,Istanbul,1507,False,7,10,False
+https://openalex.org/I4210116999,Alanya University,TR,education,36.54375,31.99982,Alanya,543,False,7,8,False
+https://openalex.org/I2801662971,Ankara Sosyal Bilimler Üniversitesi,TR,education,39.91986846923828,32.854270935058594,Ankara,1459,False,7,7,False
+https://openalex.org/I4210138939,Yüksek İhtisas Üniversitesi,TR,education,40.049407958984375,32.842044830322266,Ankara,1363,False,6,8,False
+https://openalex.org/I32172342,Çağ University,TR,education,36.977439880371094,35.051971435546875,Yenice,918,False,5,5,False
+https://openalex.org/I4387152873,İzmir Tınaztepe Üniversitesi,TR,education,38.41273,27.13838,Izmir,800,True,5,5,False
+https://openalex.org/I13419840,Istanbul Şehir University,TR,education,41.01383972167969,28.94965934753418,Istanbul,702,False,4,5,False
+https://openalex.org/I94871006,Turkish Military Academy,TR,education,39.91986846923828,32.854270935058594,Ankara,801,False,3,7,False
+https://openalex.org/I132257509,Izmir University,TR,education,38.33935546875,27.024309158325195,Izmir,1536,True,3,3,False
+https://openalex.org/I32462889,Fatih University,TR,education,41.01384,28.94966,Istanbul,3926,False,2,2,False
+https://openalex.org/I167138147,Istanbul Bilim University,TR,education,41.06536865234375,29.00515365600586,Istanbul,1826,False,2,2,False
+https://openalex.org/I149028718,Gediz University,TR,education,38.4127311706543,27.13838005065918,Izmir,396,True,2,2,False
+https://openalex.org/I334480368,Şifa University,TR,education,38.44899368286133,27.181560516357422,Izmir,800,True,2,2,False
+https://openalex.org/I4405260540,SBÜ Beyhekim Training and Research Hospital,TR,education,38.16667,32.5,Konya,475,False,2,2,False
+https://openalex.org/I3003364,Bursa Orhangazi University,TR,education,40.18842697143555,29.12997817993164,Bursa,212,False,1,1,False
+https://openalex.org/I4405262963,Research Center for Built Environment and Design,TR,education,39.91987,32.85427,Ankara,10,False,1,1,False
+https://openalex.org/I181033969,Police Academy,TR,education,39.91926193237305,32.84477615356445,Ankara,741,False,1,1,False
+https://openalex.org/I4210109286,Istanbul Kent University,TR,education,41.03284454345703,28.98358726501465,Istanbul,1230,False,1,1,False
+https://openalex.org/I2801336597,Nuh Naci Yazgan University,TR,education,38.73221969604492,35.48527908325195,Kayseri,987,False,1,5,False
+https://openalex.org/I264664839,Canik Başarı University,TR,education,41.231727600097656,36.36936950683594,Samsun,167,False,0,0,True
+https://openalex.org/I4210160827,British Institute at Ankara,TR,education,39.91986846923828,32.854270935058594,Ankara,120,False,0,0,True
+https://openalex.org/I4210097416,İstanbul Sisli Meslek Yüksekokulu,TR,education,41.06045913696289,28.98716926574707,Şişli,108,False,0,0,True

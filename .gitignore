@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Data cache (ham API yanıtları çok büyük olabilir veya yerel cache tutulur)
+# Ara kontrol için processed CSV ve graphml depoda tutulmalıdır, raw cache isteğe bağlı
+data/raw/*.json
+data/raw/*.jsonl
+data/cache/
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Test / Coverage
+.pytest_cache/
+.coverage
+htmlcov/
