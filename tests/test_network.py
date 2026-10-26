@@ -675,4 +675,24 @@ def test_audit_excluded_works_real_data_match():
     assert comp["diff_aff_count"] == 0
 
 
+def test_audit_excluded_works_main_exit_codes():
+    """
+    scripts/audit_excluded_works.py betiğinin:
+    - Gerçek ham veri mevcut olduğunda 0 (başarılı) döndüğünü,
+    - Ham veri bulunamadığında ise 2 (DOĞRULANAMADI) döndüğünü doğrular.
+    """
+    from unittest.mock import patch
+    from scripts import audit_excluded_works
+
+    # 1. Ham veriler mevcutken main() çağrısı -> 0
+    if os.path.exists("data/raw/works_2020.jsonl"):
+        assert audit_excluded_works.main() == 0
+
+    # 2. Ham veri bulunamadığında main() çağrısı -> 2 (DOĞRULANAMADI)
+    with patch("scripts.audit_excluded_works.extract_excluded_from_raw", return_value=(pd.DataFrame(), {})):
+        exit_code = audit_excluded_works.main()
+        assert exit_code == 2, f"Ham veri yokken beklenen çıkış kodu 2, alınan: {exit_code}"
+
+
+
 

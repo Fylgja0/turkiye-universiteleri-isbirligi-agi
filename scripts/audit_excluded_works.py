@@ -8,8 +8,10 @@ mevcut data/processed/excluded_works_summary.csv dosyasıyla
 BÜTÜN KAYIT VE ALANLARI (work_id, publication_year, title, exclusion_reason, affiliation_sample)
 bire bir karşılaştırır.
 
-Fark tespit edilirse ayrıntılı raporlar ve çıkış kodu 1 (hata) ile sonlanır.
-Kayıtlar eksiksiz eşleştiğinde çıkış kodu 0 ile başarı bildirir.
+Çıkış Kodları:
+- 0: Başarılı doğrulama (Ham veriler mevcut ve CSV ile tüm alanlarda bire bir eşleşti).
+- 1: Alan uyuşmazlığı hatası (Ham veri ile CSV arasında fark veya eksik kayıt tespit edildi).
+- 2: Doğrulanamadı (Ham veri dosyaları bulunamadığı için karşılaştırmalı denetim yapılamadı).
 """
 
 import os
@@ -196,14 +198,21 @@ def main() -> int:
     df_raw, stats = extract_excluded_from_raw(raw_pattern, meta_path)
 
     if df_raw.empty:
-        logger.warning("Ham yayın dosyaları bulunamadı (.gitignore kuralı gereği yerel depoda olmayabilir).")
+        logger.warning("Ham yayın dosyaları bulunamadı (data/raw/works_*.jsonl mevcut değil).")
+        print("\n" + "=" * 60)
+        print("641 DIŞLANAN YAYIN KARŞILAŞTIRMALI DENETİM RAPORU")
+        print("=" * 60)
+        print("[DOĞRULANAMADI] Ham veriler yerel dizinde (data/raw/) bulunamadığı için")
+        print("alan bazlı karşılaştırmalı doğrulama GERÇEKLEŞTİRİLEMEDİ.")
         if os.path.exists(csv_path):
             df_csv = pd.read_csv(csv_path)
-            logger.info(f"Mevcut {csv_path} dosyası doğrulandı: {len(df_csv)} kayıt, {df_csv['work_id'].nunique()} tekil.")
-            return 0
+            print(f"Bilgi: Mevcut {csv_path} dosyasında {len(df_csv)} kayıt bulunmaktadır;")
+            print("ancak ham veri olmadan salt satır sayısı kontrolü bilimsel doğrulama sayılamaz.")
         else:
-            logger.error("Ne ham veriler ne de CSV dosyası bulunabildi!")
-            return 1
+            print(f"Hata: Referans CSV dosyası da bulunamadı: {csv_path}")
+        print("=" * 60)
+        print("Sonuç: DOĞRULANAMADI (Eksik ham veri nedeniyle işlem tamamlanamadı)")
+        return 2
 
     comparison = compare_with_processed_csv(df_raw, csv_path)
 

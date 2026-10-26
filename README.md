@@ -52,7 +52,7 @@ Genel ders yönergesi en az 500 düğümlü bir ağ istemektedir. Ancak bu kişi
 
 ### 4.1. Doğrulanmış Ağ İstatistikleri ve Kapsam Karşılaştırması (Ara Kontrol Verisi)
 
-- **İndirilen Toplam Çalışma (2020–2025):** 35.114 yayın (Yerel ham boyutu: 128.229.572 bayt / 122,29 MB; SHA-256 hash'leri `docs/data_manifest.md` dosyasındadır).
+- **İndirilen Toplam Çalışma (2020–2025):** 35.114 yayın (Yerel ham boyutu: 128.229.572 bayt / 122,29 MiB; SHA-256 hash'leri `docs/data_manifest.md` dosyasındadır).
 - **Türkiye Eğitim Kurumu İçeren Çalışma:** 34.473 yayın (*641 yayın farkı, yazarlarının tamamı özel sektör/kamu Ar-Ge [ASELSAN, TÜBİTAK vb.] olan ve hiç üniversite içermeyen çalışmalardır*).
 - **En Az İki Türk Kurumu Arasında Ortak Yayın:** 7.470 yayın
 
