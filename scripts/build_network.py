@@ -26,6 +26,7 @@ import glob
 import json
 import logging
 import itertools
+import unicodedata
 from collections import defaultdict
 from typing import Dict, Set, Tuple, Any, Optional
 
@@ -109,6 +110,7 @@ def load_tr_institutions(metadata_file: str = "data/raw/institutions_tr.json") -
             "longitude": lon if lon is not None else None,
             "city": city if city is not None else "",
             "works_count": item.get("works_count", 0),
+            "status": item.get("status", "active"),
             "is_egean": is_egean_institution(display_name, city)
         }
 
@@ -124,36 +126,48 @@ def classify_institution(iid: str, display_name: str, raw_status: Optional[str] 
     - vocational_college (Vakıf Meslek Yüksekokulları - Bağımsız MYO)
     - academy_or_institute (Harp Okulları, Polis Akademisi, yabancı enstitüler)
     - hospital_or_other (EAH, İl MEM, araştırma merkezleri vb.)
+    - unverified (Resmi üniversite statüsü doğrulanamamış/kanıtlanmamış kurumlar)
     Dönüş: (kategori_adi, is_university_flag)
     """
     name_l = display_name.lower().strip()
     
-    # KHK ile 2016'da kapatılan üniversiteler
+    # 1. 2016 yılında 667 sayılı KHK ile kapatılan vakıf üniversiteleri (ID bazında kesin doğrulama)
     closed_2016_map = {
         "https://openalex.org/I6573832": "Turgut Özal University",
         "https://openalex.org/I32462889": "Fatih University",
         "https://openalex.org/I149028718": "Gediz University",
         "https://openalex.org/I334480368": "Şifa University",
         "https://openalex.org/I3003364": "Bursa Orhangazi University",
-        "https://openalex.org/I264664839": "Canik Başarı University"
+        "https://openalex.org/I264664839": "Canik Başarı University",
+        "https://openalex.org/I132257509": "Izmir University"
     }
     if iid in closed_2016_map:
         return "closed_2016_khk", True
+
+    # 2. OpenAlex raw_status kontrolü (aktif olmayan kayıtlar doğrudan aktif üniversite olamaz)
+    if raw_status and str(raw_status).strip().lower() in ["inactive", "closed", "defunct"]:
+        return "unverified", False
         
-    # Bağımsız Meslek Yüksekokulları (MYO)
+    # 3. Bağımsız Meslek Yüksekokulları (MYO)
     if "meslek yüksekokulu" in name_l or "vocational school" in name_l:
         return "vocational_college", False
         
-    # Askeri / Polis Akademileri ve Yabancı Enstitüler
+    # 4. Askeri / Polis Akademileri ve Yabancı Enstitüler
     if any(k in name_l for k in ["naval academy", "air force academy", "military academy", "police academy", "british institute"]):
         return "academy_or_institute", False
         
-    # Sağlık / İdari / Araştırma Merkezleri
+    # 5. Sağlık / İdari / Araştırma Merkezleri
     if any(k in name_l for k in ["hospital", "hastanesi", "directorate of national education", "research center for built environment"]):
         return "hospital_or_other", False
         
-    # Üniversiteler (Devlet, Vakıf, İYTE ve Gebze Teknik dahil)
-    return "active_university", True
+    # 6. Doğrulanmış Aktif Üniversiteler
+    norm_name = unicodedata.normalize("NFKD", display_name).encode("ASCII", "ignore").decode("utf-8").lower()
+    is_uni_named = any(k in norm_name for k in ["university", "universite", "institute of technology", "universitat"])
+    if is_uni_named and (raw_status is None or str(raw_status).strip().lower() == "active"):
+        return "active_university", True
+
+    # 7. Kanıtlanmamış / resmi üniversite statüsü belirsiz olan kurumlar
+    return "unverified", False
 
 
 def process_works_and_build_network(
@@ -266,7 +280,8 @@ def process_works_and_build_network(
         lon = meta.get("longitude")
         all_time_w = meta.get("works_count", 0)
         period_w = period_cs_works.get(node_id, 0)
-        cat, is_uni = classify_institution(node_id, disp_name)
+        raw_stat = meta.get("status")
+        cat, is_uni = classify_institution(node_id, disp_name, raw_status=raw_stat)
 
         node_attrs = {
             "name": disp_name,
@@ -275,6 +290,7 @@ def process_works_and_build_network(
             "type": "education",
             "category": cat,
             "is_university": bool(is_uni),
+            "raw_status": str(raw_stat) if raw_stat else "active",
             "city": city or "",
             "is_egean": bool(is_ege),
             "works_count": int(all_time_w) if all_time_w is not None else 0,
@@ -316,6 +332,7 @@ def process_works_and_build_network(
             "type": attrs.get("type", "education"),
             "category": attrs.get("category", "active_university"),
             "is_university": attrs.get("is_university", True),
+            "raw_status": attrs.get("raw_status", "active"),
             "latitude": attrs.get("latitude", None),
             "longitude": attrs.get("longitude", None),
             "city": attrs.get("city", ""),
@@ -419,6 +436,9 @@ def print_network_summary(G: nx.Graph, inst_df: pd.DataFrame, edges_df: pd.DataF
     print(f"Ağ Yoğunluğu (Density)      : {density_b1:.6f}")
     print(f"Bağlı Bileşen Sayısı        : {num_comp_b1}")
     print(f"İzole Düğüm Sayısı          : {len(isolates_b1)}")
+    if num_comp_b1 > 0 and num_nodes_b1 > 0:
+        largest_cc_b1 = max(nx.connected_components(G_B1), key=len)
+        print(f"Dev Bileşen (Giant Comp.)   : {len(largest_cc_b1)} düğüm ({len(largest_cc_b1)/num_nodes_b1*100:.1f}%)")
 
     if not inst_df.empty:
         top_inst = inst_df.head(5)

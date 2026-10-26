@@ -4,7 +4,7 @@
 **Ders:** Sosyal Ağ Analizi  
 **Aşama:** 26 Ekim 2026 — 23:59 Ara Kontrol Raporu (Bilimsel Denetim ve Doğrulama Sürümü)  
 **Yazar:** Proje Ekibi  
-**Raporlama Zamanı:** 26 Ekim 2026, 22:12 (TSİ)  
+**Raporlama Zamanı:** 26 Ekim 2026, 22:36 (TSİ)  
 
 ---
 
@@ -20,15 +20,15 @@
 ### 1.2. 35.114 İndirilen Yayın vs. 34.473 İşlenen Yayın (641 Kayıt Farkı)
 API sorgusu sonucunda inen 35.114 kayıt ile ağ algoritmasının işlediği 34.473 yayın arasındaki **641 kayıtlık fark**, ham verilerin satır satır incelenmesiyle doğrulanmıştır:
 
-| Yıl | İndirilen Ham Yayın | Üniversite/Eğitim İçeren | Fark (Yalnızca Sanayi/Kamu) |
-| :---: | :---: | :---: | :---: |
-| **2020** | 4.153 | 4.084 | 69 |
-| **2021** | 5.045 | 4.969 | 76 |
-| **2022** | 5.422 | 5.316 | 106 |
-| **2023** | 6.166 | 6.034 | 132 |
-| **2024** | 6.516 | 6.410 | 106 |
-| **2025** | 7.812 | 7.660 | 152 |
-| **TOPLAM** | **35.114** | **34.473** | **641** |
+| Yıl | (1) İndirilen Ham Yayın | (2) Türkiye Eğitim Kurumu İçeren | (3) Fark (Salt Sanayi/Kamu/Sağlık) | (4) Ortak Yayın (En Az 2 Türk Kurumu) |
+| :---: | :---: | :---: | :---: | :---: |
+| **2020** | 4.153 | 4.084 | 69 | 851 |
+| **2021** | 5.045 | 4.969 | 76 | 1.059 |
+| **2022** | 5.422 | 5.316 | 106 | 1.144 |
+| **2023** | 6.166 | 6.034 | 132 | 1.282 |
+| **2024** | 6.516 | 6.410 | 106 | 1.408 |
+| **2025** | 7.812 | 7.660 | 152 | 1.726 |
+| **TOPLAM** | **35.114** | **34.473** | **641** | **7.470** |
 
 **641 Farkın Nedeni ve Sektörel Dökümü:**
 API düzeyinde `institutions.country_code:TR` filtresi uygulandığı için Türkiye'de yerleşik şirketler, bakanlıklar ve kamu araştırma merkezleri de yanıta dahil olmuştur. Bu 641 çalışmada yazarlar arasında **hiçbir üniversite veya eğitim kurumu yer almamakta**, yalnızca sanayi/kamu/sağlık kuruluşları bulunmaktadır:
@@ -40,41 +40,52 @@ API düzeyinde `institutions.country_code:TR` filtresi uygulandığı için Tür
 - `nonprofit`: **3 çalışma**
 - `other`: **2 çalışma**
 - `facility + government`: **1 çalışma**
-- `no_TR_country_institutions` (veri entegrasyonu kaynaklı): **1 çalışma**
+- `no_TR_country_institutions` (OpenAlex veri entegrasyonu kaynaklı): **1 çalışma**
 
-Üniversiteler arası iş birliği ağı kurulurken eğitim kurumu niteliği taşımayan bu 641 yayın kapsam dışı bırakılmıştır.
+Eğitim kurumu niteliği taşımayan bu 641 yayın kapsam kararı gereği ağ dışı bırakılmıştır.
 
 ---
 
 ## 2. Kurum Sınıflandırması ve Düğüm Evreni Karşılaştırması
 
-OpenAlex'teki `country_code:TR` ve `type:education` filtrelemesine uyan 205 kurum ROR kimlikleri, mevzuat statüleri ve tarihsel durumları üzerinden incelenmiş ve 5 kategoriye ayrılmıştır:
+OpenAlex'teki `country_code:TR` ve `type:education` filtrelemesine uyan 205 kurum ROR kimlikleri, mevzuat statüleri, `raw_status` verileri ve Resmî Gazete kayıtları üzerinden incelenmiş ve doğrulanmıştır:
 
-1. **Halen Aktif Üniversiteler (`active_university`):** **189 kurum** (Devlet ve Vakıf üniversiteleri, İYTE ve Gebze Teknik Enstitüleri).
-2. **2016 KHK ile Kapatılmış Tarihsel Üniversiteler (`closed_2016_khk`):** **6 kurum** (Turgut Özal, Fatih, Gediz, Şifa, Bursa Orhangazi, Canik Başarı Üniversiteleri). Bu kurumlar, geçmiş çalışmaların atıf/düzeltme veya geç taranan kayıtları nedeniyle veri tabanında yer almaktadır.
-3. **Bağımsız Meslek Yüksekokulları (`vocational_college`):** **2 kurum** (İzmir Kavram MYO, İstanbul Şişli MYO).
-4. **Harp/Polis Akademileri ve Yabancı Enstitüler (`academy_or_institute`):** **6 kurum** (Deniz, Hava, Kara Harp Okulları, Polis Akademisi, British Institute at Ankara).
-5. **Sağlık/İdari Merkezler (`hospital_or_other`):** **2 kurum** (İstanbul İl MEM, SBÜ Beyhekim EAH).
+1. **Halen Aktif Üniversiteler (`active_university`):** **188 kurum** (Devlet ve Vakıf üniversiteleri, İYTE ve Gebze Teknik).
+2. **2016 KHK ile Kapatılan Tarihsel Üniversiteler (`closed_2016_khk`):** **7 kurum**
+   - `Turgut Özal University` (Ankara, `https://openalex.org/I6573832`)
+   - `Fatih University` (İstanbul, `https://openalex.org/I32462889`)
+   - `Gediz University` (İzmir, `https://openalex.org/I149028718`)
+   - `Şifa University` (İzmir, `https://openalex.org/I334480368`)
+   - `Bursa Orhangazi University` (Bursa, `https://openalex.org/I3003364`)
+   - `Canik Başarı University` (Samsun, `https://openalex.org/I264664839` - İzole)
+   - `Izmir University` (İzmir, `https://openalex.org/I132257509` - 667 KHK ile kapatılmıştır; daha önce active_university'de kalmış olan statüsü düzeltilmiştir).  
+   *(Not: 2018'de 7141 sayılı kanunla kurulan aktif devlet üniversitesi 'Malatya Turgut Özal Üniversitesi' (`I4210110665`) ile 'Fatih Sultan Mehmet Vakıf Üniversitesi' (`I4210146544`) kapatılan adaşlarından ID bazında ayrıştırılarak aktif üniversite olarak korunmuştur).*
+3. **Bağımsız Meslek Yüksekokulları (`vocational_college`):** **2 kurum** (`İzmir Kavram Meslek Yüksekokulu`, `İstanbul Şişli Meslek Yüksekokulu`).
+4. **Harp/Polis Okulları ve Yabancı Enstitüler (`academy_or_institute`):** **5 kurum** (`Naval Academy`, `Turkish Air Force Academy`, `Turkish Military Academy`, `Police Academy`, `British Institute at Ankara`).
+5. **Sağlık/İdari Merkezler (`hospital_or_other`):** **3 kurum** (`Istanbul Provincial Directorate of National Education`, `SBÜ Beyhekim Training and Research Hospital`, `Research Center for Built Environment and Design`).
+6. **Statüsü Doğrulanamayan Kurumlar (`unverified`):** **0 kurum** (Tüm 205 kurum yukarıdaki doğrulanmış sınıflara yerleşmiştir).
+
+**Toplam Düğüm Sayısı:** 188 + 7 + 2 + 5 + 3 = **205 kurum** (tam tutarlı).
 
 ### 2.1. Karşılaştırmalı Ağ Topolojisi Tablosu
 
 | Metrik | Kapsam A (Tüm Education Kurumları) | Kapsam B (Üniversiteler - Tarihsel Dahil) | Kapsam B1 (Yalnızca Halen Aktif Üniversiteler) |
 | :--- | :---: | :---: | :---: |
-| **Düğüm Sayısı ($|V|$)** | **205** | **195** | **189** |
-| **Kenar Sayısı ($|E|$)** | **3.970** | **3.896** | **3.864** |
-| **Ağ Yoğunluğu (Density)** | 0.189861 | 0.205974 | 0.217494 |
-| **Bağlı Bileşen Sayısı** | 4 | 2 | 1 |
+| **Düğüm Sayısı ($|V|$)** | **205** | **195** | **188** |
+| **Kenar Sayısı ($|E|$)** | **3.970** | **3.896** | **3.861** |
+| **Ağ Yoğunluğu (Density)** | 0.189861 | 0.205974 | **0.219650** |
+| **Bağlı Bileşen Sayısı** | 4 | 2 | **1** |
 | **İzole Düğüm Sayısı** | 3 | 1 (Canik Başarı Üni) | **0** |
-| **Dev Bileşen Büyüklüğü** | 202 (%98.5) | 194 (%99.5) | **189 (%100.0)** |
+| **Dev Bileşen Büyüklüğü** | 202 (%98.5) | 194 (%99.5) | **188 (%100.0)** |
 
 > **Metodolojik Çıkarım:**
-> Kapsam B1'e (aktif üniversitelere) odaklanıldığında Türkiye'deki tüm üniversiteler **tek bir dev bileşen** oluşturmakta, hiçbir üniversite izole kalmamaktadır ($density = 0.217$). Bu durum Türkiye akademik ağının yüksek derecede bütünleşik olduğunu göstermektedir.
+> Kapsam B1'e (halen aktif üniversitelere) odaklanıldığında Türkiye'deki tüm üniversiteler **tek bir dev bileşen** içinde toplanmakta, hiçbir üniversite izole kalmamaktadır ($density = 0.219650$).
 
 ---
 
 ## 3. Kurumsal Üretim Hacmi Düzeltmesi (All-time vs. Period CS Works)
 
-Önceki taslakta yer alan "Toplam Eser" sütunu OpenAlex'in tüm zamanlara ve tüm disiplinlere ait `works_count` verisiydi. Bilgisayar bilimi alanındaki 2020–2025 dönem üretim hacmi (`period_cs_works_count`) gerçek verilerden ayrı bir değişken olarak hesaplanmış ve netleştirilmiştir:
+OpenAlex `works_count` verisi tüm zamanlara ve tüm disiplinlere aittir. Bilgisayar bilimi alanındaki 2020–2025 dönem üretim hacmi (`period_cs_works_count`) indirilen gerçek yayınlardan ayrı bir sütun olarak hesaplanmıştır:
 
 ### En Çok CS Yayını Üreten İlk 10 Üniversite (2020–2025 Dönemi)
 
@@ -92,48 +103,55 @@ OpenAlex'teki `country_code:TR` ve `type:education` filtrelemesine uyan 205 kuru
 | 10 | **Ege Üniversitesi** | İzmir | **670** | 53.427 | 75 | 280 |
 | ... | **Manisa Celal Bayar Üniversitesi**| Manisa | **322** | 18.434 | 66 | 198 |
 
-*Not:* Tüm zamanlar toplamında en yüksek olan İstanbul Üniversitesi (89k) ve Hacettepe (83k), tıp ve fen bilimleri ağırlıklı iken; bilgisayar biliminde İTÜ (1.670), ODTÜ (1.320) ve Fırat Üniversitesi (1.173) lider konumdadır.
-
 ---
 
-## 4. Ege Bölgesi Üniversitelerinin Ağdaki Yeri
+## 4. Ege Bölgesi Kurumlarının Ağdaki Yeri (Kategori Bazlı Döküm)
 
-Ege Bölgesi'nde yer alan 18 üniversitenin tamamı ağın dev bileşeni içindedir:
+Ege Bölgesi'nde yer alan toplam 18 kurum bulunmaktadır. Bu kurumlar niteliklerine göre ayrıştırılmış; meslek yüksekokulları üniversite gibi sunulmamış, kapatılan kurumlar aktif üniversiteye dahil edilmemiştir:
 
-| Sıra | Üniversite | İl | Statü | 2020–25 CS Eser | Derece ($k_i$) | Ağırlıklı Derece ($s_i$) |
+### 4.1. Halen Aktif Ege Bölgesi Üniversiteleri (14 Kurum)
+
+| Sıra | Üniversite Adı | İl | 2020–25 CS Eser | Derece ($k_i$) | Ağırlıklı Derece ($s_i$) | Tüm Zamanlar Eser |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| 1 | **Ege Üniversitesi** | İzmir | Aktif | 670 | 75 | 280 |
-| 2 | **Dokuz Eylül Üniversitesi** | İzmir | Aktif | 436 | 72 | 187 |
-| 3 | **Pamukkale Üniversitesi** | Denizli | Aktif | 345 | 69 | 171 |
-| 4 | **Manisa Celal Bayar Üniversitesi** | Manisa | Aktif | **322** | **66** | **198** |
-| 5 | **Afyon Kocatepe Üniversitesi** | Afyon | Aktif | 215 | 52 | 122 |
-| 6 | **İzmir Kâtip Çelebi Üniversitesi** | İzmir | Aktif | 195 | 49 | 127 |
-| 7 | **Kütahya Dumlupınar Üniversitesi** | Kütahya | Aktif | 148 | 46 | 81 |
-| 8 | **İzmir Yüksek Teknoloji Enstitüsü** | İzmir | Aktif | 260 | 43 | 106 |
-| 9 | **Aydın Adnan Menderes Üniversitesi**| Aydın | Aktif | 161 | 43 | 82 |
-| 10 | **Muğla Sıtkı Koçman Üniversitesi** | Muğla | Aktif | 178 | 41 | 99 |
-| 11 | **Yaşar Üniversitesi** | İzmir | Aktif | 152 | 41 | 73 |
-| 12 | **İzmir Ekonomi Üniversitesi** | İzmir | Aktif | 145 | 37 | 88 |
-| 13 | **Uşak Üniversitesi** | Uşak | Aktif | 144 | 34 | 115 |
-| 14 | **İzmir Kavram Meslek Yüksekokulu** | İzmir | MYO | 33 | 22 | 26 |
-| 15 | **İzmir Tınaztepe Üniversitesi** | İzmir | Aktif | 14 | 5 | 5 |
-| 16 | **İzmir Üniversitesi** | İzmir | Kapatılan | 2 | 3 | 3 |
-| 17 | **Gediz Üniversitesi** | İzmir | Kapatılan | 3 | 2 | 2 |
-| 18 | **Şifa Üniversitesi** | İzmir | Kapatılan | 4 | 2 | 2 |
+| 1 | **Ege Üniversitesi** | İzmir | 670 | 75 | 280 | 53.427 |
+| 2 | **Dokuz Eylül Üniversitesi** | İzmir | 517 | 72 | 187 | 42.239 |
+| 3 | **Pamukkale Üniversitesi** | Denizli | 244 | 69 | 171 | 23.604 |
+| 4 | **Manisa Celal Bayar Üniversitesi** | Manisa | **322** | **66** | **198** | **18.434** |
+| 5 | **Afyon Kocatepe Üniversitesi** | Afyon | 212 | 52 | 122 | 14.582 |
+| 6 | **İzmir Kâtip Çelebi Üniversitesi** | İzmir | 249 | 49 | 127 | 14.921 |
+| 7 | **Kütahya Dumlupınar Üniversitesi** | Kütahya | 250 | 46 | 81 | 10.253 |
+| 8 | **İzmir Yüksek Teknoloji Enstitüsü** | İzmir | 260 | 43 | 106 | 8.333 |
+| 9 | **Aydın Adnan Menderes Üniversitesi**| Aydın | 153 | 43 | 82 | 17.810 |
+| 10 | **Muğla Sıtkı Koçman Üniversitesi** | Muğla | 279 | 41 | 99 | 16.929 |
+| 11 | **Yaşar Üniversitesi** | İzmir | 146 | 41 | 73 | 3.841 |
+| 12 | **İzmir Ekonomi Üniversitesi** | İzmir | 173 | 37 | 88 | 5.384 |
+| 13 | **Uşak Üniversitesi** | Uşak | 140 | 34 | 115 | 11.559 |
+| 14 | **İzmir Tınaztepe Üniversitesi** | İzmir | 2 | 5 | 5 | 800 |
 
-> **Bulgu:** Manisa Celal Bayar Üniversitesi, Ege Bölgesi'nde en çok ortaklık kuran 4. üniversitedir. Ağırlıklı derecede ise (198) Dokuz Eylül ve Pamukkale'nin önünde, Ege Üniversitesi'nden sonra **2. sıradadır**.
+### 4.2. 2016 KHK ile Kapatılan Tarihsel Ege Üniversiteleri (3 Kurum)
+*Geçmiş yayınların geç taranması/düzeltilmesi kaynaklı dönem verisinde yer almaktadır; aktif üniversite sayılmamaktadır:*
+1. **İzmir Üniversitesi** (İzmir) - 4 CS eseri, Derece: 3, Ağırlıklı Derece: 3
+2. **Gediz Üniversitesi** (İzmir) - 2 CS eseri, Derece: 2, Ağırlıklı Derece: 2
+3. **Şifa Üniversitesi** (İzmir) - 1 CS eseri, Derece: 2, Ağırlıklı Derece: 2
+
+### 4.3. Bağımsız Meslek Yüksekokulu (1 Kurum)
+*Üniversite statüsünde olmayıp vakıf MYO niteliğindedir:*
+1. **İzmir Kavram Meslek Yüksekokulu** (İzmir) - 13 CS eseri, Derece: 22, Ağırlıklı Derece: 26
+
+> **Özet Bulgu:**  
+> Manisa Celal Bayar Üniversitesi, aktif Ege üniversiteleri arasında en çok ortaklık kuran 4. üniversitedir. Ağırlıklı derecede ise (198) Dokuz Eylül ve Pamukkale'nin önünde, Ege Üniversitesi'nden sonra **2. sıradadır**.
 
 ---
 
-## 5. Çekim Modeli (Gravity Model) ve Coğrafi Mesafe Metodolojik Kısıtı
+## 5. Çekim Modeli (Gravity Model) ve Tekrarlanan Koordinatlar Sorunu
 
 > [!CAUTION] **Tekrarlanan Koordinatlar ve $\ln(0)$ Problemi:**
 > OpenAlex'ten çekilen koordinatlar incelendiğinde, 205 kurum için yalnızca **112 tekil koordinat** bulunduğu tespit edilmiştir:
-> - **İstanbul:** 49 kuruma `(41.0138, 28.9497)` şehir merkezi koordinatı verilmiştir.
+> - **İstanbul:** 49 kuruma `(41.0138, 28.9497)` şehir merkezi koordinatı atanmıştır.
 > - **Ankara:** 20 kuruma `(39.9199, 32.8543)` merkez koordinatı atanmıştır.
 > - **İzmir:** 9 kuruma `(38.4127, 27.1384)` merkez koordinatı atanmıştır.
 >
-> **Sorun:** Aynı ilde yer alan iki üniversite arasındaki coğrafi mesafe $d_{ij} = 0\text{ km}$ çıkmaktadır. Çekim modelindeki standart formülasyon olan $\ln(d_{ij})$ hesaplandığında $\ln(0) = -\infty$ tanımsızlığı ortaya çıkmaktadır.
+> **Metodolojik Sorun:** Aynı ilde yer alan iki üniversite arasındaki coğrafi mesafe formülle hesaplandığında $d_{ij} = 0\text{ km}$ çıkmaktadır. Çekim modelindeki standart formülasyon olan $\ln(d_{ij})$ terimi hesaplandığında $\ln(0) = -\infty$ tanımsızlığı ortaya çıkmaktadır.
 >
 > **Dönem Sonu Çözüm Planı:** Çekim modeli regresyonunda mesafe terimi için ya $d_{ij} + 1\text{ km}$ taban düzeltmesi kullanılacak ya da yerleşke bazlı hassas koordinatlar harici coğrafi API'lerle zenginleştirilecektir.
 
@@ -144,7 +162,7 @@ Ege Bölgesi'nde yer alan 18 üniversitenin tamamı ağın dev bileşeni içinde
 > **Öğretim Görevlisinin Değerlendirmesine:**  
 > Genel ders izlencesi en az 500 düğümlü bir ağ talep etmektedir. Ancak tarafıma iletilen ödev kartında düğüm **"Türkiye'deki Üniversiteler"** olarak sınırlandırılmıştır.  
 > 
-> YÖK resmi istatistiklerinde ve OpenAlex veritabanında Türkiye'deki toplam üniversite sayısı **222**'dir. Bilgisayar bilimi alanında 2020–2025'te yayın yapan tekil üniversite sayısı **195** (halen aktif olanlar **189**)'dur.  
+> YÖK resmi istatistiklerinde ve OpenAlex veritabanında Türkiye'deki toplam üniversite sayısı **222**'dir. Bilgisayar bilimi alanında 2020–2025'te yayın yapan tekil üniversite sayısı **195** (halen aktif olanlar **188**)'dir.  
 > 
 > Ağın 500 düğüme ulaşması evrenin fiziksel sınırlılığı nedeniyle imkansızdır. Sahte veri üretilmemiş, bilimsel dürüstlük ilkesi gereği gerçek sayılar raporlanmıştır.
 
@@ -154,8 +172,8 @@ Ege Bölgesi'nde yer alan 18 üniversitenin tamamı ağın dev bileşeni içinde
 - `scripts/fetch_openalex.py`: Canlı veri toplama scripti.
 - `scripts/build_network.py`: Çoklu kapsam analizli, dönem CS eser sayaçlı ağ kurucu.
 - `data/processed/edges.csv`: 3.970 ağırlıklı kenar listesi.
-- `data/processed/institutions.csv`: 205 kurumun koordinatları, `all_time_works_count`, `period_cs_works_count`, kategori ve merkezilikleri.
+- `data/processed/institutions.csv`: 205 kurumun koordinatları, `all_time_works_count`, `period_cs_works_count`, `category`, `is_university` ve merkezilikleri.
 - `data/processed/collaboration.graphml`: Düğüm öznitelikleriyle zenginleştirilmiş GraphML.
-- `tests/test_network.py`: Birim testler (Pytest ile 3/3 PASSED).
+- `tests/test_network.py`: 6 birim test (Pytest ile 6/6 PASSED).
 - `docs/data_dictionary.md`: Ayrıntılı veri sözlüğü.
 - `README.md`: Proje amacı, CV özeti, çalıştırma adımları ve AI kullanım beyanı.

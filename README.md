@@ -22,7 +22,7 @@ Bu araştırma, Türkiye yükseköğretim ekosistemindeki bilgisayar bilimi ara�
 - **Alan Doğrulaması (`primary_topic.field.id`):**
   OpenAlex resmi `/fields` endpoint'i taranarak "Computer Science" disiplininin tam kimliği `https://openalex.org/fields/17` (`fields/17`) olarak teyit edilmiştir. Yayınların ana ekseninin bilgisayar bilimi olduğunu garanti etmek amacıyla `primary_topic.field.id:fields/17` filtresi kullanılmıştır.
 - **Kurum Türü ve Ülke Sınırlaması:**
-  Yalnızca `country_code: TR` ve `type: education` olan kurumlar ağın düğümleri olarak tanımlanmıştır. OpenAlex'te Türkiye kayıtlı toplam 222 eğitim kurumu yer almakta olup, bu liste YÖK bünyesindeki tüm devlet ve vakıf üniversitelerini tam kapsamaktadır.
+  OpenAlex API seviyesinde `country_code: TR` ve `type: education` filtresi kullanılmıştır. Ancak OpenAlex `education` türü üniversitelerin yanı sıra askeri/polis akademilerini, bağımsız meslek yüksekokullarını (MYO), hastane eğitim birimlerini ve kapatılmış tarihsel kurumları da içeren geniş bir sınıftır. Bu projede ham kurumlar doğrulanmış resmi mevzuat ve YÖK statülerine göre kategorize edilmiş; analizler hem geniş eğitim kurumu (Kapsam A) hem de salt üniversiteler (Kapsam B/B1) düzeyinde modellenmiştir.
 - **Sayfalama Yöntemi:**
   Cursor paging kullanılmamış; `per_page=100` ile standart `page` sayfalaması yapılmıştır. OpenAlex'in 10.000 kayıt sınırı nedeniyle veriler yıl bazlı sorgulanmıştır.
 
@@ -31,7 +31,7 @@ Bu araştırma, Türkiye yükseköğretim ekosistemindeki bilgisayar bilimi ara�
 ## 3. Önemli Kapsam Değerlendirmesi: "500 Düğüm Kuralı"
 Genel ders yönergesi en az 500 düğümlü bir ağ istemektedir. Ancak bu kişisel ödev kartında düğüm **"Türkiye'deki Üniversiteler"** olarak tanımlanmıştır:
 1. Türkiye'de YÖK sistemine kayıtlı toplam üniversite sayısı yaklaşık 208'dir (OpenAlex veritabanında `education` tipi kurum sayısı 222'dir).
-2. Bilgisayar bilimi (2020–2025) alanında yayın yapan Türkiye üniversiteleri sayısı bu evrenin alt kümesidir.
+2. Bilgisayar bilimi (2020–2025) alanında yayın yapan Türkiye üniversiteleri sayısı bu evrenin alt kümesidir (Kapsam B: 195 üniversite, aktif olanlar Kapsam B1: 188 üniversite).
 3. **Bilimsel Dürüstlük İlkesi:** 500 sayısına ulaşmak amacıyla yapay/sahte düğüm eklenmemiş ya da kurum tanımı bozulmamıştır. İlgili kısıt öğretim elemanının değerlendirmesine sunulmak üzere ara kontrol raporunda ve dokümantasyonda açıkça belgelenmiştir.
 
 ---
@@ -52,12 +52,12 @@ Genel ders yönergesi en az 500 düğümlü bir ağ istemektedir. Ancak bu kişi
 
 | Metrik | Kapsam A (Tüm Education Kurumları) | Kapsam B (Yalnızca Üniversiteler - Tarihsel Dahil) | Kapsam B1 (Yalnızca Halen Aktif Üniversiteler) |
 | :--- | :---: | :---: | :---: |
-| **Düğüm Sayısı ($|V|$)** | **205** | **195** | **189** |
-| **Kenar Sayısı ($|E|$)** | **3.970** | **3.896** | **3.864** |
-| **Ağ Yoğunluğu (Density)** | 0.189861 | 0.205974 | 0.217494 |
-| **Bağlı Bileşen Sayısı** | 4 | 2 | 1 |
+| **Düğüm Sayısı ($|V|$)** | **205** | **195** | **188** |
+| **Kenar Sayısı ($|E|$)** | **3.970** | **3.896** | **3.861** |
+| **Ağ Yoğunluğu (Density)** | 0.189861 | 0.205974 | **0.219650** |
+| **Bağlı Bileşen Sayısı** | 4 | 2 | **1** |
 | **İzole Düğüm Sayısı** | 3 | 1 (Canik Başarı Üni) | **0** |
-| **Dev Bileşen Büyüklüğü** | 202 (%98.5) | 194 (%99.5) | **189 (%100.0)** |
+| **Dev Bileşen Büyüklüğü** | 202 (%98.5) | 194 (%99.5) | **188 (%100.0)** |
 
 ---
 
