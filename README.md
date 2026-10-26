@@ -44,14 +44,20 @@ Genel ders yönergesi en az 500 düğümlü bir ağ istemektedir. Ancak bu kişi
 - **Self-Loop ve Enflasyon Engelleme:** Aynı yayında aynı üniversiteden birden çok yazar bulunması durumunda kendi kendine kenar (self-loop) açılmaz; her iki farklı üniversite çifti için yayından gelen katkı +1 sayılır.
 - **İzole Düğümlerin Korunması:** Dönem içinde yayın yapmış fakat başka bir Türk üniversitesiyle ortaklık kurmamış kurumlar ağdan silinmemiş, izole düğüm ($degree=0$) olarak korunmuştur.
 
-### 4.1. Doğrulanmış Ağ İstatistikleri (Ara Kontrol Verisi)
-- **İncelenen Toplam Yayın:** 35.114 (2020–2025)
-- **Ortak Yayın Sayısı (İki veya daha çok Türk kurumu):** 7.470
-- **Düğüm Sayısı ($|V|$):** 205 üniversite / yükseköğretim kurumu
-- **Kenar Sayısı ($|E|$):** 3.970 ağırlıklı iş birliği kenarı
-- **Ağ Yoğunluğu (Density):** 0.189861
-- **Bağlı Bileşen Sayısı:** 4 (1 Dev Bileşen [202 düğüm, %98.5] + 3 İzole Düğüm)
-- **Ege Bölgesi Üniversite Sayısı:** 18 (Tamamı dev bileşende, en yüksek merkezilik Ege Üni [75] ve MCBÜ [66])
+### 4.1. Doğrulanmış Ağ İstatistikleri ve Kapsam Karşılaştırması (Ara Kontrol Verisi)
+
+- **İndirilen Toplam Çalışma (2020–2025):** 35.114 yayın
+- **Türkiye Eğitim Kurumu İçeren Çalışma:** 34.473 yayın (*641 yayın farkı, yazarlarının tamamı özel sektör/kamu Ar-Ge [ASELSAN, TÜBİTAK vb.] olan ve hiç üniversite içermeyen çalışmalardır*).
+- **En Az İki Türk Kurumu Arasında Ortak Yayın:** 7.470 yayın
+
+| Metrik | Kapsam A (Tüm Education Kurumları) | Kapsam B (Yalnızca Üniversiteler - Tarihsel Dahil) | Kapsam B1 (Yalnızca Halen Aktif Üniversiteler) |
+| :--- | :---: | :---: | :---: |
+| **Düğüm Sayısı ($|V|$)** | **205** | **195** | **189** |
+| **Kenar Sayısı ($|E|$)** | **3.970** | **3.896** | **3.864** |
+| **Ağ Yoğunluğu (Density)** | 0.189861 | 0.205974 | 0.217494 |
+| **Bağlı Bileşen Sayısı** | 4 | 2 | 1 |
+| **İzole Düğüm Sayısı** | 3 | 1 (Canik Başarı Üni) | **0** |
+| **Dev Bileşen Büyüklüğü** | 202 (%98.5) | 194 (%99.5) | **189 (%100.0)** |
 
 ---
 

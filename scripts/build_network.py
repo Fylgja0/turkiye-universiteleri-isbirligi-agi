@@ -116,6 +116,46 @@ def load_tr_institutions(metadata_file: str = "data/raw/institutions_tr.json") -
     return institutions_dict
 
 
+def classify_institution(iid: str, display_name: str, raw_status: Optional[str] = None) -> Tuple[str, bool]:
+    """
+    Kurumu ROR/OpenAlex ve resmi kayıtlar doğrultusunda sınıflandırır:
+    - active_university (Halen aktif üniversiteler ve yüksek teknoloji enstitüleri)
+    - closed_2016_khk (2016 KHK ile kapatılmış tarihsel vakıf üniversiteleri)
+    - vocational_college (Vakıf Meslek Yüksekokulları - Bağımsız MYO)
+    - academy_or_institute (Harp Okulları, Polis Akademisi, yabancı enstitüler)
+    - hospital_or_other (EAH, İl MEM, araştırma merkezleri vb.)
+    Dönüş: (kategori_adi, is_university_flag)
+    """
+    name_l = display_name.lower().strip()
+    
+    # KHK ile 2016'da kapatılan üniversiteler
+    closed_2016_map = {
+        "https://openalex.org/I6573832": "Turgut Özal University",
+        "https://openalex.org/I32462889": "Fatih University",
+        "https://openalex.org/I149028718": "Gediz University",
+        "https://openalex.org/I334480368": "Şifa University",
+        "https://openalex.org/I3003364": "Bursa Orhangazi University",
+        "https://openalex.org/I264664839": "Canik Başarı University"
+    }
+    if iid in closed_2016_map:
+        return "closed_2016_khk", True
+        
+    # Bağımsız Meslek Yüksekokulları (MYO)
+    if "meslek yüksekokulu" in name_l or "vocational school" in name_l:
+        return "vocational_college", False
+        
+    # Askeri / Polis Akademileri ve Yabancı Enstitüler
+    if any(k in name_l for k in ["naval academy", "air force academy", "military academy", "police academy", "british institute"]):
+        return "academy_or_institute", False
+        
+    # Sağlık / İdari / Araştırma Merkezleri
+    if any(k in name_l for k in ["hospital", "hastanesi", "directorate of national education", "research center for built environment"]):
+        return "hospital_or_other", False
+        
+    # Üniversiteler (Devlet, Vakıf, İYTE ve Gebze Teknik dahil)
+    return "active_university", True
+
+
 def process_works_and_build_network(
     works_files_pattern: str = "data/raw/works_*.jsonl",
     institutions_metadata: Optional[Dict[str, Dict[str, Any]]] = None
@@ -135,6 +175,7 @@ def process_works_and_build_network(
     # Ağ yapıları
     edge_weights: Dict[Tuple[str, str], int] = defaultdict(int)
     observed_in_works: Set[str] = set()
+    period_cs_works: Dict[str, int] = defaultdict(int)
     total_works_processed = 0
     works_with_tr_inst = 0
     works_with_collaboration = 0
@@ -192,6 +233,8 @@ def process_works_and_build_network(
                 if paper_institutions:
                     works_with_tr_inst += 1
                     observed_in_works.update(paper_institutions)
+                    for inst_id in paper_institutions:
+                        period_cs_works[inst_id] += 1
 
                 # Farklı kurumlar arasında kenar oluştur
                 if len(paper_institutions) >= 2:
@@ -214,12 +257,6 @@ def process_works_and_build_network(
     G = nx.Graph()
 
     # Düğümleri ekle
-    # Kural: Veri içinde yer alan kurumlar ağa eklenir; izole düğümler silinmez.
-    # Referans metadata'daki tüm kurumlar ve çalışmalarda görülenler
-    all_known_nodes = set(institutions_metadata.keys()).union(set(dynamic_institutions.keys()))
-    
-    # Kapsam kararı: Yayınlarda doğrudan yer alan kurumlar düğüm kümesini oluşturur.
-    # Böylece 2020-2025 CS alanında aktif olan Türkiye üniversitelerinin ağı temsil edilir.
     for node_id in observed_in_works:
         meta = institutions_metadata.get(node_id) or dynamic_institutions.get(node_id, {})
         disp_name = meta.get("display_name", node_id)
@@ -227,16 +264,22 @@ def process_works_and_build_network(
         is_ege = meta.get("is_egean", False)
         lat = meta.get("latitude")
         lon = meta.get("longitude")
-        w_count = meta.get("works_count", 0)
+        all_time_w = meta.get("works_count", 0)
+        period_w = period_cs_works.get(node_id, 0)
+        cat, is_uni = classify_institution(node_id, disp_name)
 
         node_attrs = {
             "name": disp_name,
             "display_name": disp_name,
             "country_code": "TR",
             "type": "education",
+            "category": cat,
+            "is_university": bool(is_uni),
             "city": city or "",
             "is_egean": bool(is_ege),
-            "works_count": int(w_count) if w_count is not None else 0
+            "works_count": int(all_time_w) if all_time_w is not None else 0,
+            "all_time_works_count": int(all_time_w) if all_time_w is not None else 0,
+            "period_cs_works_count": int(period_w)
         }
         if lat is not None:
             node_attrs["latitude"] = float(lat)
@@ -271,9 +314,13 @@ def process_works_and_build_network(
             "display_name": attrs.get("display_name", ""),
             "country_code": attrs.get("country_code", "TR"),
             "type": attrs.get("type", "education"),
+            "category": attrs.get("category", "active_university"),
+            "is_university": attrs.get("is_university", True),
             "latitude": attrs.get("latitude", None),
             "longitude": attrs.get("longitude", None),
             "city": attrs.get("city", ""),
+            "all_time_works_count": attrs.get("all_time_works_count", 0),
+            "period_cs_works_count": attrs.get("period_cs_works_count", 0),
             "works_count": attrs.get("works_count", 0),
             "is_egean": attrs.get("is_egean", False),
             "degree": degree,
@@ -321,9 +368,9 @@ def print_network_summary(G: nx.Graph, inst_df: pd.DataFrame, edges_df: pd.DataF
     isolated_nodes = list(nx.isolates(G))
     egean_count = inst_df[inst_df["is_egean"] == True].shape[0] if not inst_df.empty else 0
 
-    print("\n" + "="*60)
-    print("AĞ ANALİZİ VE YAPI METRİKLERİ ÖZETİ")
-    print("="*60)
+    print("\n" + "="*70)
+    print("AĞ ANALİZİ VE YAPI METRİKLERİ: KAPSAM A (TÜM EDUCATION KURUMLARI)")
+    print("="*70)
     print(f"Toplam Düğüm Sayısı (Kurum) : {num_nodes}")
     print(f"Toplam Kenar Sayısı         : {num_edges}")
     print(f"Ağ Yoğunluğu (Density)      : {density:.6f}")
@@ -335,17 +382,51 @@ def print_network_summary(G: nx.Graph, inst_df: pd.DataFrame, edges_df: pd.DataF
         largest_cc = max(nx.connected_components(G), key=len)
         print(f"Dev Bileşen (Giant Comp.)   : {len(largest_cc)} düğüm ({len(largest_cc)/num_nodes*100:.1f}%)")
 
-    if not edges_df.empty:
-        max_edge = edges_df.iloc[0]
-        print(f"En Yüksek Ortak Yayın Ağırlığı: {max_edge['weight']} ({max_edge['source']} <-> {max_edge['target']})")
+    # Kapsam B (Yalnızca Üniversiteler)
+    uni_nodes = [n for n, d in G.nodes(data=True) if d.get("is_university", True)]
+    G_B = G.subgraph(uni_nodes).copy()
+    num_nodes_b = G_B.number_of_nodes()
+    num_edges_b = G_B.number_of_edges()
+    density_b = nx.density(G_B) if num_nodes_b > 1 else 0
+    num_comp_b = nx.number_connected_components(G_B)
+    isolates_b = list(nx.isolates(G_B))
+    largest_cc_b = max(nx.connected_components(G_B), key=len) if num_nodes_b > 0 else []
+
+    print("\n" + "-"*70)
+    print("AĞ ANALİZİ VE YAPI METRİKLERİ: KAPSAM B (YALNIZCA ÜNİVERSİTELER - TARİHSEL DAHİL)")
+    print("-"*70)
+    print(f"Toplam Düğüm Sayısı         : {num_nodes_b}")
+    print(f"Toplam Kenar Sayısı         : {num_edges_b}")
+    print(f"Ağ Yoğunluğu (Density)      : {density_b:.6f}")
+    print(f"Bağlı Bileşen Sayısı        : {num_comp_b}")
+    print(f"İzole Düğüm Sayısı          : {len(isolates_b)}")
+    print(f"Dev Bileşen (Giant Comp.)   : {len(largest_cc_b)} düğüm ({len(largest_cc_b)/num_nodes_b*100:.1f}%)")
+
+    # Kapsam B1 (Yalnızca Halen Aktif Üniversiteler)
+    active_uni_nodes = [n for n, d in G.nodes(data=True) if d.get("category") == "active_university"]
+    G_B1 = G.subgraph(active_uni_nodes).copy()
+    num_nodes_b1 = G_B1.number_of_nodes()
+    num_edges_b1 = G_B1.number_of_edges()
+    density_b1 = nx.density(G_B1) if num_nodes_b1 > 1 else 0
+    num_comp_b1 = nx.number_connected_components(G_B1)
+    isolates_b1 = list(nx.isolates(G_B1))
+
+    print("\n" + "-"*70)
+    print("AĞ ANALİZİ VE YAPI METRİKLERİ: KAPSAM B1 (YALNIZCA HALEN AKTİF ÜNİVERSİTELER)")
+    print("-"*70)
+    print(f"Toplam Düğüm Sayısı         : {num_nodes_b1}")
+    print(f"Toplam Kenar Sayısı         : {num_edges_b1}")
+    print(f"Ağ Yoğunluğu (Density)      : {density_b1:.6f}")
+    print(f"Bağlı Bileşen Sayısı        : {num_comp_b1}")
+    print(f"İzole Düğüm Sayısı          : {len(isolates_b1)}")
 
     if not inst_df.empty:
         top_inst = inst_df.head(5)
-        print("\nEn Yüksek Dereceye (İş Birliği Bağlantısına) Sahip İlk 5 Üniversite:")
+        print("\nEn Yüksek Dereceye Sahip İlk 5 Üniversite (Kapsam A):")
         for _, row in top_inst.iterrows():
-            print(f" - {row['display_name']} ({row['city']}): Derece={row['degree']}, Ağırlıklı Derece={row['weighted_degree']}")
+            print(f" - {row['display_name']} ({row['city']}): Derece={row['degree']}, Ağırlıklı={row['weighted_degree']}, 2020-25 CS={row['period_cs_works_count']}, Tüm Zamanlar={row['all_time_works_count']}")
 
-    print("="*60 + "\n")
+    print("="*70 + "\n")
 
 
 def main():
