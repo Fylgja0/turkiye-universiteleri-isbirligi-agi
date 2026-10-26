@@ -144,7 +144,17 @@ def classify_institution(iid: str, display_name: str, raw_status: Optional[str] 
     if iid in closed_2016_map:
         return "closed_2016_khk", True
 
-    # 2. OpenAlex raw_status kontrolü (aktif olmayan kayıtlar doğrudan aktif üniversite olamaz)
+    # 2. Doğrulanmamış veya hukuki statüsü kısıtlı kurumlar (ID bazında doğrulama)
+    # - Lefke Avrupa Üniversitesi: Coğrafi olarak KKTC'de yer alır, Türkiye sınırları içinde değildir.
+    # - İstanbul Şehir Üniversitesi: 30 Haziran 2020'de 2814 sayılı CBK ile kapatılmıştır; OpenAlex status active görünse de hukuken aktif değildir.
+    unverified_special_map = {
+        "https://openalex.org/I116528569": "European University of Lefke",
+        "https://openalex.org/I13419840": "Istanbul Şehir University"
+    }
+    if iid in unverified_special_map:
+        return "unverified", False
+
+    # 3. OpenAlex raw_status kontrolü (aktif olmayan kayıtlar doğrudan aktif üniversite olamaz)
     if raw_status and str(raw_status).strip().lower() in ["inactive", "closed", "defunct"]:
         return "unverified", False
         

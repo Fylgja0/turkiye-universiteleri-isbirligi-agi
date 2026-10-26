@@ -40,10 +40,10 @@ OpenAlex API'den indirilen toplam 35.114 yayın ile ağ kurma scriptinin (`build
   - `country_code değişikliği / affiliation eşleşmesi`: **1 çalışma**
 - Bu 641 çalışma, üniversiteler arası iş birliği ağının düğüm tanımına uymadığı için ağ dışı kalmıştır.
 
-### 1.4. Düğüm Evreni Kapsamları (Kapsam A vs. Kapsam B)
+### 1.4. Düğüm Evreni Kapsamları (Kapsam A vs. Kapsam B vs. Kapsam B1)
 - **Kapsam A (Geniş Eğitim Kurumu Kapsamı):** OpenAlex'te `country_code: TR` ve `type: education` olan tüm kurumlar (205 düğüm, 3.970 kenar).
-- **Kapsam B (Yalnızca Üniversiteler - Tarihsel Dahil):** Yükseköğretim kurumları içinden bağımsız meslek yüksekokulları (İzmir Kavram MYO, Şişli MYO), askeri/polis okulları (Deniz, Hava, Kara Harp Okulları, Polis Akademisi) ve idari birimler (İl MEM, Araştırma Hastaneleri) çıkarılarak elde edilen **195 üniversite** (3.896 kenar).
-- **Kapsam B1 (Yalnızca Halen Aktif Üniversiteler):** 2016'da KHK ile kapatılmış tarihsel üniversiteler (Turgut Özal, Fatih, Gediz, Şifa, Bursa Orhangazi, Canik Başarı) de çıkarıldığında geriye kalan **189 aktif üniversite** (3.864 kenar).
+- **Kapsam B (Yalnızca Üniversiteler - Tarihsel Dahil):** Yükseköğretim kurumları içinden bağımsız meslek yüksekokulları (2), askeri/polis okulları (5), idari/sağlık birimleri (3) ve kısıtlı/doğrulanmamış kurumlar (2: Lefke Avrupa ve İstanbul Şehir) çıkarılarak elde edilen **193 üniversite** (3.883 kenar).
+- **Kapsam B1 (Yalnızca Halen Aktif Üniversiteler):** 2016'da 667 KHK ile kapatılmış 7 tarihsel üniversite (Turgut Özal, Fatih, Gediz, Şifa, Bursa Orhangazi, Canik Başarı, İzmir Üniversitesi) de çıkarıldığında geriye kalan **186 aktif üniversite** (3.848 kenar).
 
 ---
 
@@ -69,7 +69,7 @@ Ağdaki düğümleri (kurumları) ve hem tüm zamanlar hem de dönem bazlı üre
 | `display_name` | string | Kurumun uluslararası veya resmi adı (Örn: `Ege University`) |
 | `country_code` | string | Ülke ISO kodu (`TR`) |
 | `type` | string | OpenAlex kurum türü (`education`) |
-| `category` | string | Kurum kategorisi (`active_university`, `closed_2016_khk`, `vocational_college`, `academy_or_institute`, `hospital_or_other`) |
+| `category` | string | Kurum kategorisi (`active_university`, `closed_2016_khk`, `vocational_college`, `academy_or_institute`, `hospital_or_other`, `unverified`) |
 | `is_university` | boolean | Kurumun üniversite niteliği taşıyıp taşımadığı (`True` / `False`) |
 | `latitude` | float / null | Kurumun coğrafi enlemi (OpenAlex `geo.latitude` verisi; eksikse null) |
 | `longitude` | float / null | Kurumun coğrafi boylamı (OpenAlex `geo.longitude` verisi; eksikse null) |
@@ -88,7 +88,7 @@ Ağdaki düğümleri (kurumları) ve hem tüm zamanlar hem de dönem bazlı üre
 
 > [!WARNING] **Coğrafi Koordinat Tekrarı ve $\ln(0)$ Problemi:**
 > OpenAlex veri tabanında yer alan coğrafi koordinatlar (`latitude`, `longitude`), kampüsün kesin konumundan ziyade genellikle ilgili şehrin merkez koordinatını temsil etmektedir:
-> - İncelenen 205 kurum için yalnızca **112 tekil koordinat** bulunmaktadır.
+> - İncelenen 205 kurum için ham float hassasiyetinde **122 tekil koordinat**, 4 ondalık basamağa yuvarlandığında (şehir merkezi seviyesinde) ise **112 tekil koordinat** bulunmaktadır.
 > - **İstanbul:** 49 farklı kuruma tek bir merkez koordinatı verilmiştir `(41.0138, 28.9497)`.
 > - **Ankara:** 20 farklı kuruma tek bir merkez koordinatı verilmiştir `(39.9199, 32.8543)`.
 > - **İzmir:** 9 farklı kuruma tek bir merkez koordinatı verilmiştir `(38.4127, 27.1384)`.

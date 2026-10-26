@@ -30,9 +30,10 @@ Bu araştırma, Türkiye yükseköğretim ekosistemindeki bilgisayar bilimi ara�
 
 ## 3. Önemli Kapsam Değerlendirmesi: "500 Düğüm Kuralı"
 Genel ders yönergesi en az 500 düğümlü bir ağ istemektedir. Ancak bu kişisel ödev kartında düğüm **"Türkiye'deki Üniversiteler"** olarak tanımlanmıştır:
-1. Türkiye'de YÖK sistemine kayıtlı toplam üniversite sayısı yaklaşık 208'dir (OpenAlex veritabanında `education` tipi kurum sayısı 222'dir).
-2. Bilgisayar bilimi (2020–2025) alanında yayın yapan Türkiye üniversiteleri sayısı bu evrenin alt kümesidir (Kapsam B: 195 üniversite, aktif olanlar Kapsam B1: 188 üniversite).
-3. **Bilimsel Dürüstlük İlkesi:** 500 sayısına ulaşmak amacıyla yapay/sahte düğüm eklenmemiş ya da kurum tanımı bozulmamıştır. İlgili kısıt öğretim elemanının değerlendirmesine sunulmak üzere ara kontrol raporunda ve dokümantasyonda açıkça belgelenmiştir.
+1. [YÖK Resmî İstatistikleri](https://www.yok.gov.tr/universiteler/universitelerimiz) verilerine göre Türkiye'de güncel olarak **208 üniversite** bulunmaktadır (129 Devlet Üniversitesi, 75 Vakıf Üniversitesi; 4 bağımsız Vakıf Meslek Yüksekokulu hariç. MYO'lar dahil edildiğinde 212 yükseköğretim kurumudur).
+2. OpenAlex veritabanında `country_code: TR` ve `type: education` sorgusunda ise toplam **222 kurum** yer almaktadır (Bu sayı üniversitelerin yanı sıra askeri okulları, kapatılan kurumları, bağımsız MYO'ları ve KKTC'deki Lefke Avrupa Üniversitesi gibi kurumları da kapsar).
+3. Bilgisayar bilimi (2020–2025) alanında yayın yapan Türkiye üniversiteleri sayısı bu evrenin alt kümesidir: Kapsam B'de **193 üniversite** (kapatılan tarihsel kurumlar dahil), halen aktif olan Kapsam B1'de ise **186 üniversite**dir.
+4. **Bilimsel Dürüstlük İlkesi:** 500 sayısına ulaşmak amacıyla yapay/sahte düğüm eklenmemiş ya da kurum tanımı bozulmamıştır. İlgili kısıt öğretim elemanının değerlendirmesine sunulmak üzere ara kontrol raporunda ve dokümantasyonda açıkça belgelenmiştir.
 
 ---
 
@@ -52,12 +53,12 @@ Genel ders yönergesi en az 500 düğümlü bir ağ istemektedir. Ancak bu kişi
 
 | Metrik | Kapsam A (Tüm Education Kurumları) | Kapsam B (Yalnızca Üniversiteler - Tarihsel Dahil) | Kapsam B1 (Yalnızca Halen Aktif Üniversiteler) |
 | :--- | :---: | :---: | :---: |
-| **Düğüm Sayısı ($|V|$)** | **205** | **195** | **188** |
-| **Kenar Sayısı ($|E|$)** | **3.970** | **3.896** | **3.861** |
-| **Ağ Yoğunluğu (Density)** | 0.189861 | 0.205974 | **0.219650** |
+| **Düğüm Sayısı ($|V|$)** | **205** | **193** | **186** |
+| **Kenar Sayısı ($|E|$)** | **3.970** | **3.883** | **3.848** |
+| **Ağ Yoğunluğu (Density)** | 0.189861 | 0.209575 | **0.223656** |
 | **Bağlı Bileşen Sayısı** | 4 | 2 | **1** |
 | **İzole Düğüm Sayısı** | 3 | 1 (Canik Başarı Üni) | **0** |
-| **Dev Bileşen Büyüklüğü** | 202 (%98.5) | 194 (%99.5) | **188 (%100.0)** |
+| **Dev Bileşen Büyüklüğü** | 202 (%98.5) | 192 (%99.5) | **186 (%100.0)** |
 
 ---
 
