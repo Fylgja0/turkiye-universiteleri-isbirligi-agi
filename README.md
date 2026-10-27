@@ -37,7 +37,7 @@ Genel ders yönergesi en az 500 düğümlü bir ağ istemektedir. Ancak bu kişi
    - Ayrıca **4 Bağımsız Vakıf Meslek Yüksekokulu** (Ataşehir Adıgüzel MYO, İstanbul Şişli MYO, İzmir Kavram MYO, Avrupa MYO)
    bulunmaktadır. Dolayısıyla Türkiye'deki toplam yükseköğretim kurumu sayısı **208** (204 üniversite + 4 vakıf MYO)'dir.
 2. OpenAlex veritabanında `country_code: TR` ve `type: education` sorgusunda ise toplam **222 kurum** yer almaktadır (Bu sayı üniversitelerin yanı sıra askeri okulları, kapatılan kurumları, bağımsız MYO'ları ve KKTC'deki Lefke Avrupa Üniversitesi gibi kurumları da kapsar).
-3. Bilgisayar bilimi (2020–2025) alanında yayın yapan Türkiye üniversiteleri sayısı bu evrenin alt kümesidir: Kapsam B'de **193 üniversite** (186 kural tabanlı aktif üniversite + 2016 KHK ile kapatılan 7 tarihsel vakıf üniversitesi; 2020 CBK ile kapatılan İstanbul Şehir Üniversitesi bu kapsama dahil edilmemiştir), kural tabanlı aktif olan Kapsam B1'de ise **186 üniversite**dir.
+3. Bilgisayar bilimi (2020–2025) alanında yayın yapan Türkiye üniversiteleri sayısı bu evrenin alt kümesidir: Kapsam B'de **194 üniversite** (186 kural tabanlı aktif üniversite + 2016 KHK ile kapatılan 7 tarihsel vakıf üniversitesi + 2020'de 2708 sayılı CBK ile kapatılan İstanbul Şehir Üniversitesi; KKTC merkezli Lefke Avrupa Üniversitesi Türkiye kurumsal kapsamı dışındadır), kural tabanlı aktif olan Kapsam B1'de ise **186 üniversite**dir.
 4. **Bilimsel Dürüstlük İlkesi:** 500 sayısına ulaşmak amacıyla yapay/sahte düğüm eklenmemiş ya da kurum tanımı bozulmamıştır. İlgili kısıt öğretim elemanının değerlendirmesine sunulmak üzere ara kontrol raporunda ve dokümantasyonda açıkça belgelenmiştir.
 
 ---
@@ -53,17 +53,17 @@ Genel ders yönergesi en az 500 düğümlü bir ağ istemektedir. Ancak bu kişi
 ### 4.1. Doğrulanmış Ağ İstatistikleri ve Kapsam Karşılaştırması (Ara Kontrol Verisi)
 
 - **İndirilen Toplam Çalışma (2020–2025):** 35.114 yayın (Yerel ham boyutu: 128.229.572 bayt / 122,29 MiB; SHA-256 hash'leri `docs/data_manifest.md` dosyasındadır).
-- **Türkiye Eğitim Kurumu İçeren Çalışma:** 34.473 yayın (*641 yayın farkı, yazarlarının tamamı özel sektör/kamu Ar-Ge [ASELSAN, TÜBİTAK vb.] olan ve hiç üniversite içermeyen çalışmalardır*).
+- **Türkiye Eğitim Kurumu İçeren Çalışma:** 34.473 yayın (*641 yayın farkı: 640 yayın Türkiye bağlantılı fakat education türünde olmayan kurumlar [ASELSAN, TÜBİTAK vb.]; 1 yayın ise yazar üstverisinde Türkiye kurumu bulunmayan kayıttır*).
 - **En Az İki Türk Kurumu Arasında Ortak Yayın:** 7.470 yayın
 
-| Metrik | Kapsam A (Tüm 205 Education Kurumu) | Kapsam B (186 Kural Tabanlı Aktif + 7 KHK Kurumu, 193 Düğüm) | Kapsam B1 (186 Kural Tabanlı Aktif Üniversite) |
+| Metrik | Kapsam A (Tüm 205 Education Kurumu) | Kapsam B (186 Aktif + 7 KHK + 1 CBK Kapatılan, 194 Düğüm) | Kapsam B1 (186 Kural Tabanlı Aktif Üniversite) |
 | :--- | :---: | :---: | :---: |
-| **Düğüm Sayısı (N)** | **205** | **193** | **186** |
-| **Kenar Sayısı (M)** | **3.970** | **3.883** | **3.848** |
-| **Ağ Yoğunluğu (Density)** | 0.189861 | 0.209575 | **0.223656** |
-| **Bağlı Bileşen Sayısı** | 4 | 2 | **1** |
-| **İzole Düğüm Sayısı** | 3 | 1 (Canik Başarı Üni) | **0** |
-| **Dev Bileşen Büyüklüğü** | 202 (%98.5) | 192 (%99.5) | **186 (%100.0)** |
+| **Düğüm Sayısı (N)** | **205** | **194** | **186** |
+| **Kenar Sayısı (M)** | **3.970** | **3.887** | **3.848** |
+| **Ağ Yoğunluğu (Density)** | 0.189861 | **0.207628** | **0.223656** |
+| **Bağlı Bileşen Sayısı** | 4 | **2** | **1** |
+| **İzole Düğüm Sayısı** | 3 | **1** (Canik Başarı Üni) | **0** |
+| **Dev Bileşen Büyüklüğü** | 202 (%98.5) | **193 (%99.5)** | **186 (%100.0)** |
 
 ---
 

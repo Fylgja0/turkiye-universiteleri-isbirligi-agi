@@ -31,18 +31,19 @@ API sorgusu sonucunda inen 35.114 kayıt ile ağ algoritmasının işlediği 34.
 | **TOPLAM** | **35.114** | **34.473** | **641** | **7.470** |
 
 **641 Farkın Nedeni ve Sektörel Dökümü:**
-API düzeyinde `institutions.country_code:TR` filtresi uygulandığı için Türkiye'de yerleşik şirketler, bakanlıklar ve kamu araştırma merkezleri de yanıta dahil olmuştur. Bu 641 çalışmada yazarlar arasında **hiçbir üniversite veya eğitim kurumu yer almamakta**, yalnızca sanayi/kamu/sağlık kuruluşları bulunmaktadır:
-- `company` (Özel sektör: ASELSAN, HAVELSAN, Turkcell vb.): **315 çalışma** (Örn: `W3040579653`)
-- `government` (Kamu Ar-Ge: TÜBİTAK BİLGEM, TÜBİTAK MAM vb.): **290 çalışma** (Örn: `W3045322569`, `W3080667067`)
-- `healthcare` (Eğitim Araştırma ve Şehir Hastaneleri): **22 çalışma** (Örn: `W3029272675`, `W3090128481`)
-- `facility`: **4 çalışma**
-- `company + government` karma: **3 çalışma**
-- `nonprofit`: **3 çalışma**
-- `other`: **2 çalışma**
-- `facility + government`: **1 çalışma**
-- `no_TR_country_institutions` (OpenAlex veri entegrasyonu kaynaklı): **1 çalışma**
+API düzeyinde `institutions.country_code:TR` filtresi uygulandığı için Türkiye'de yerleşik şirketler, bakanlıklar ve kamu araştırma merkezleri de yanıta dahil olmuştur:
+- **640 çalışma**, yazarları arasında Türkiye bağlantılı kurumlar bulunmasına karşın bu kurumların hiçbiri `education` türünde (üniversite/yükseköğretim) olmadığı için dışlanmıştır:
+  - `company` (Özel sektör Ar-Ge: ASELSAN, HAVELSAN, Turkcell vb.): **315 çalışma** (Örn: `W3040579653`)
+  - `government` (Kamu Ar-Ge: TÜBİTAK BİLGEM, TÜBİTAK MAM vb.): **290 çalışma** (Örn: `W3045322569`, `W3080667067`)
+  - `healthcare` (Eğitim Araştırma ve Şehir Hastaneleri): **22 çalışma** (Örn: `W3029272675`, `W3090128481`)
+  - `facility`: **4 çalışma**
+  - `company + government` karma: **3 çalışma**
+  - `nonprofit`: **3 çalışma**
+  - `other`: **2 çalışma**
+  - `facility + government`: **1 çalışma**
+- **1 çalışma** (`W4416850727`), yazar-kurum üstverisinde Türkiye bağlantılı hiçbir kurum yer almadığı (OpenAlex API TR entegrasyonu kaynaklı olup yazarlar Michigan State University gibi yabancı kurumlara bağlıdır) için ayrılmıştır.
 
-Eğitim kurumu niteliği taşımayan bu 641 yayın kapsam kararı gereği ağ dışı bırakılmıştır.
+Bu 641 çalışma, Türkiye üniversiteleri arası iş birliği ağının düğüm tanımına uymadığı için ağ dışı bırakılmıştır.
 
 ---
 
@@ -51,8 +52,8 @@ Eğitim kurumu niteliği taşımayan bu 641 yayın kapsam kararı gereği ağ d�
 OpenAlex veri tabanındaki `country_code: TR` ve `type: education` filtrelemesine uyan 205 kurum; OpenAlex ID'leri, `raw_status` verileri, mevzuat kayıtları ve kural tabanlı ad analizi üzerinden sınıflandırılmıştır:
 
 1. **Kural Tabanlı Aktif Üniversiteler (`active_university`):** **186 kurum**  
-   *(Devlet ve Vakıf üniversiteleri, İYTE ve Gebze Teknik. Bu kategori, kurum adında 'university', 'universite' veya 'institute of technology' ifadesi geçen ve OpenAlex `raw_status` değeri açıkça kapalı/inaktif olmayan kurumları kural tabanlı bir filtreleme ile kapsar; 186 kurumun tamamı tek tek YÖK sicilinden elle doğrulanmamıştır).*
-2. **2016 KHK ile Kapatılan Tarihsel Üniversiteler (`closed_2016_khk`):** **7 kurum** (OpenAlex ID'leri üzerinden kesin olarak eşleştirilmiştir)
+   *(Devlet ve Vakıf üniversiteleri, İYTE ve Gebze Teknik. Bu kategori, kurum adında 'university', 'universite' veya 'institute of technology' ifadesi geçen ve OpenAlex `raw_status` değeri açıkça kapalı/inaktif olmayan kurumları kural tabanlı bir filtreleme ile kapsar; 186 kurumun tamamı tek tek YÖK sicilinden elle doğrulanmamıştır; `scope_b_eligible=True`).*
+2. **2016 KHK ile Kapatılan Tarihsel Üniversiteler (`closed_2016_khk`):** **7 kurum** (OpenAlex ID'leri üzerinden kesin olarak eşleştirilmiştir; `is_university=True`, `scope_b_eligible=True`):
    - `Turgut Özal University` (Ankara, `https://openalex.org/I6573832`)
    - `Fatih University` (İstanbul, `https://openalex.org/I32462889`)
    - `Gediz University` (İzmir, `https://openalex.org/I149028718`)
@@ -61,32 +62,34 @@ OpenAlex veri tabanındaki `country_code: TR` ve `type: education` filtrelemesin
    - `Canik Başarı University` (Samsun, `https://openalex.org/I264664839` - İzole)
    - `Izmir University` (İzmir, `https://openalex.org/I132257509` - 667 sayılı KHK ile kapatılmıştır; önceki yanlış aktif ataması ID üzerinden düzeltilmiştir).  
    *(Adaş Kurum Ayrımı: 2018'de 7141 sayılı kanunla kurulan aktif devlet üniversitesi 'Malatya Turgut Özal Üniversitesi' [`I4210110665`] ile 'Fatih Sultan Mehmet Vakıf Üniversitesi' [`I4210146544`] kapatılan adaşlarından ID bazında ayrıştırılarak korunmuştur).*
-3. **Bağımsız Meslek Yüksekokulları (`vocational_college`):** **2 kurum** (`İzmir Kavram Meslek Yüksekokulu`, `İstanbul Şişli Meslek Yüksekokulu`).
-4. **Harp/Polis Okulları ve Yabancı Enstitüler (`academy_or_institute`):** **5 kurum** (`Naval Academy`, `Turkish Air Force Academy`, `Turkish Military Academy`, `Police Academy`, `British Institute at Ankara`).
-5. **Sağlık/İdari Merkezler (`hospital_or_other`):** **3 kurum** (`Istanbul Provincial Directorate of National Education`, `SBÜ Beyhekim Training and Research Hospital`, `Research Center for Built Environment and Design`).
-6. **Doğrulanmamış / Özel Kısıtlı Kurumlar (`unverified`):** **2 kurum**
-   - `European University of Lefke` (`https://openalex.org/I116528569`): OpenAlex kaydında `country_code: TR` olarak yer almasına karşın coğrafi ve idari olarak Kuzey Kıbrıs Türk Cumhuriyeti'nde (KKTC) yer almaktadır; YÖK Türkiye sınırları içindeki üniversiteler listesinde bulunmamaktadır.
-   - `Istanbul Şehir University` (`https://openalex.org/I13419840`): OpenAlex `raw_status` verisinde `active` görünmesine karşın, 30 Haziran 2020 tarihli ve 2814 sayılı Cumhurbaşkanı Kararı ile faaliyet izni kaldırılarak kapatılmış ve Marmara Üniversitesi'ne devredilmiştir. Bu durum OpenAlex `status` alanının Türkiye'deki güncel hukuki statüyü doğrudan kanıtlamadığını göstermektedir.
+3. **2020 CBK ile Kapatılan Tarihsel Üniversite (`closed_2020_cbk`):** **1 kurum**
+   - `Istanbul Şehir University` (`https://openalex.org/I13419840`): 29 Haziran 2020 tarihli ve 2708 sayılı Cumhurbaşkanı Kararı (30 Haziran 2020 tarihli ve 31171 sayılı Resmî Gazete) ile faaliyet izni kaldırılarak garantör üniversite olan Marmara Üniversitesi'ne devredilmiştir ([Marmara Üni Duyurusu](https://www.marmara.edu.tr/notice/kamuoyu-aciklamasi), [Lexpera Mevzuat Metni](https://www.lexpera.com.tr/mevzuat/cumhurbaskani-kararlari/kurucu-vakfina-kayyim-atanan-ve-garantor-universitesi-tarafindan-yapilan-denetimler-sonucunda-mevcut-2)). Kurumun üniversite niteliği belirsiz olmayıp tarihsel bir kurumdur; Türkiye sınırları içindeki üniversite iş birliği evrenine dahildir (`is_university=True`, `scope_b_eligible=True`).
+4. **Türkiye Kurumsal Sınırları Dışındaki Üniversite (`outside_turkey_scope`):** **1 kurum**
+   - `European University of Lefke` (`https://openalex.org/I116528569`): OpenAlex kaydında `country_code: TR` olarak yer almasına karşın coğrafi ve idari olarak Kuzey Kıbrıs Türk Cumhuriyeti'nde (KKTC) yer almaktadır; YÖK Türkiye sınırları içindeki üniversiteler listesinde bulunmamaktadır. Üniversite niteliği taşımakla birlikte (`is_university=True`), Türkiye üniversiteleri kapsamı dışındadır (`scope_b_eligible=False`).
+5. **Bağımsız Meslek Yüksekokulları (`vocational_college`):** **2 kurum** (`İzmir Kavram Meslek Yüksekokulu`, `İstanbul Şişli Meslek Yüksekokulu`; `is_university=False`, `scope_b_eligible=False`).
+6. **Harp/Polis Okulları ve Yabancı Enstitüler (`academy_or_institute`):** **5 kurum** (`Naval Academy`, `Turkish Air Force Academy`, `Turkish Military Academy`, `Police Academy`, `British Institute at Ankara`; `is_university=False`, `scope_b_eligible=False`).
+7. **Sağlık/İdari Merkezler (`hospital_or_other`):** **3 kurum** (`Istanbul Provincial Directorate of National Education`, `SBÜ Beyhekim Training and Research Hospital`, `Research Center for Built Environment and Design`; `is_university=False`, `scope_b_eligible=False`).
+8. **Doğrulanmamış Kurumlar (`unverified`):** **0 kurum** (Mevcut ağdaki tüm kurumlar doğrulanmış veya kural tabanlı olarak kategorize edilmiştir; bilinmeyen kurumlar için geriye dönük güvenli varsayılan olarak korunmaktadır).
 
 > [!NOTE] **Sınıflandırma Metodolojisi ve Sınırları:**  
-> Kapatılan 7 üniversite ve özel kısıtlı 2 kurum OpenAlex ID bazında kesin olarak doğrulanmıştır. `active_university` kategorisindeki 186 kurum ise OpenAlex `raw_status` kontrolü (`inactive/closed/defunct` olmama) ve ad eşleşmesine dayalı algoritmik bir kural sınıflandırmasıdır. Bu nedenle 186 kurumun tamamı "resmî sicille hukuken doğrulanmış üniversiteler" olarak değil, "kural tabanlı algoritmik atama ile belirlenen aktif üniversiteler" olarak yorumlanmalıdır.
+> Kapatılan 8 üniversite (7 KHK + 1 CBK) ve KKTC merkezli Lefke Avrupa Üniversitesi OpenAlex ID bazında kesin mevzuat kayıtlarıyla doğrulanmıştır. `active_university` kategorisindeki 186 kurum ise OpenAlex `raw_status` kontrolü (`inactive/closed/defunct` olmama) ve ad eşleşmesine dayalı algoritmik bir kural sınıflandırmasıdır. Bu nedenle 186 kurumun tamamı "resmî sicille hukuken doğrulanmış üniversiteler" olarak değil, "kural tabanlı algoritmik atama ile belirlenen aktif üniversiteler" olarak yorumlanmalıdır.
 
-**Toplam Düğüm Sayısı:** 186 + 7 + 2 + 5 + 3 + 2 = **205 kurum** (tam tutarlı).
+**Toplam Düğüm Sayısı:** 186 + 7 + 1 + 1 + 2 + 5 + 3 = **205 kurum** (tam tutarlı).
 
 ### 2.1. Karşılaştırmalı Ağ Topolojisi Tablosu
 
-| Metrik | Kapsam A (Tüm 205 Education Kurumu) | Kapsam B (186 Kural Tabanlı Aktif + 7 KHK Kurumu, 193 Düğüm) | Kapsam B1 (186 Kural Tabanlı Aktif Üniversite) |
+| Metrik | Kapsam A (Tüm 205 Education Kurumu) | Kapsam B (186 Aktif + 7 KHK + 1 CBK Kapatılan, 194 Düğüm) | Kapsam B1 (186 Kural Tabanlı Aktif Üniversite) |
 | :--- | :---: | :---: | :---: |
-| **Düğüm Sayısı (N)** | **205** | **193** | **186** |
-| **Kenar Sayısı (M)** | **3.970** | **3.883** | **3.848** |
-| **Ağ Yoğunluğu (Density)** | 0.189861 | 0.209575 | **0.223656** |
-| **Bağlı Bileşen Sayısı** | 4 | 2 | **1** |
-| **İzole Düğüm Sayısı** | 3 | 1 (Canik Başarı Üni) | **0** |
-| **Dev Bileşen Büyüklüğü** | 202 (%98.5) | 192 (%99.5) | **186 (%100.0)** |
+| **Düğüm Sayısı (N)** | **205** | **194** | **186** |
+| **Kenar Sayısı (M)** | **3.970** | **3.887** | **3.848** |
+| **Ağ Yoğunluğu (Density)** | 0.189861 | **0.207628** | **0.223656** |
+| **Bağlı Bileşen Sayısı** | 4 | **2** | **1** |
+| **İzole Düğüm Sayısı** | 3 | **1** (Canik Başarı Üni) | **0** |
+| **Dev Bileşen Büyüklüğü** | 202 (%98.5) | **193 (%99.5)** | **186 (%100.0)** |
 
 > **Metodolojik Çıkarım ve Kapsam Sınırları:**
-> - **Kapsam B (193 düğüm):** 186 kural tabanlı aktif üniversite ile 2016'da 667 sayılı KHK ile kapatılan 7 tarihsel üniversiteyi kapsar. 2020'de 2814 sayılı CBK ile kapatılan İstanbul Şehir Üniversitesi ve KKTC'de yer alan Lefke Avrupa Üniversitesi bu kapsama dahil edilmemiş, `unverified` kategorisinde bırakılmıştır.
-> - **Kapsam B1 (186 düğüm):** Yalnızca kural tabanlı aktif üniversitelere odaklanıldığında Türkiye'deki üniversiteler **tek bir dev bileşen** içinde toplanmakta, hiçbir üniversite izole kalmamaktadır ($density = 0.223656$).
+> - **Kapsam B (194 düğüm, 3.887 kenar):** Türkiye sınırları içindeki 186 kural tabanlı aktif üniversite, 2016'da 667 sayılı KHK ile kapatılan 7 tarihsel üniversite ve 2020'de 2708 sayılı CBK ile kapatılan İstanbul Şehir Üniversitesi'ni kapsar (`scope_b_eligible=True`). İstanbul Şehir Üniversitesi mevcut ağda 4 kenarla Kapsam B bileşenine bağlanmaktadır. KKTC'de yer alan Lefke Avrupa Üniversitesi ise bu kapsamın dışında tutulmuştur (`outside_turkey_scope`, `scope_b_eligible=False`).
+> - **Kapsam B1 (186 düğüm, 3.848 kenar):** Yalnızca kural tabanlı aktif üniversitelere odaklanıldığında Türkiye'deki üniversiteler **tek bir dev bileşen** içinde toplanmakta, hiçbir üniversite izole kalmamaktadır ($density = 0.223656$).
 
 ---
 
@@ -181,8 +184,8 @@ Ege Bölgesi'nde yer alan toplam 18 kurum bulunmaktadır. Bu kurumlar nitelikler
 >    - Toplam **204 Üniversite**  
 >    - Ayrıca **4 Bağımsız Vakıf Meslek Yüksekokulu** (Ataşehir Adıgüzel MYO, İstanbul Şişli MYO, İzmir Kavram MYO, Avrupa MYO)  
 >    bulunmaktadır. Dolayısıyla Türkiye'deki toplam yükseköğretim kurumu sayısı **208** (204 üniversite + 4 vakıf MYO)'dir.  
-> 2. OpenAlex veritabanında ise `country_code: TR` ve `type: education` filtresinde toplam **222 kurum** yer almaktadır. Bu sayı üniversitelerin yanı sıra askeri/polis akademilerini (5), 2016 KHK ile kapatılan tarihsel kurumları (7), 2020 CBK ile kapatılan İstanbul Şehir Üniversitesi'ni, bağımsız MYO'ları (2), hastane/idari eğitim merkezlerini (3) ve KKTC'de yer alan Lefke Avrupa Üniversitesi'ni de kapsayan geniş eğitim havuzudur.  
-> 3. Bilgisayar bilimi alanında 2020–2025'te yayın yapan tekil eğitim kurumu sayısı **205** (Kapsam A), 186 kural tabanlı aktif üniversite ile 7 KHK kapatılan kurumu kapsayan Kapsam B'de **193 kurum**, kural tabanlı aktif üniversite sayısı ise **186** (Kapsam B1)'dir.  
+> 2. OpenAlex veritabanında ise `country_code: TR` ve `type: education` filtresinde toplam **222 kurum** yer almaktadır. Bu sayı üniversitelerin yanı sıra askeri/polis akademilerini (5), 2016 KHK ile kapatılan tarihsel kurumları (7), 2020'de 2708 sayılı CBK ile kapatılan İstanbul Şehir Üniversitesi'ni (1), bağımsız MYO'ları (2), hastane/idari eğitim merkezlerini (3) ve KKTC'de yer alan Lefke Avrupa Üniversitesi'ni (1) de kapsayan geniş eğitim havuzudur.  
+> 3. Bilgisayar bilimi alanında 2020–2025'te yayın yapan tekil eğitim kurumu sayısı **205** (Kapsam A); 186 kural tabanlı aktif üniversite, 7 KHK ile kapatılan kurum ve 1 CBK ile kapatılan İstanbul Şehir Üniversitesi'ni kapsayan Türkiye üniversiteleri Kapsam B'sinde **194 kurum** (3.887 kenar), kural tabanlı aktif üniversite sayısı ise **186** (Kapsam B1, 3.848 kenar)'dır.  
 > 
 > Ağın 500 düğüme ulaşması evrenin fiziksel sınırlılığı nedeniyle imkansızdır. Sahte veri üretilmemiş, bilimsel dürüstlük ilkesi gereği gerçek sayılar raporlanmıştır.
 

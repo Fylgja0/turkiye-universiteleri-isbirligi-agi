@@ -28,7 +28,7 @@
 OpenAlex API'den indirilen toplam 35.114 yayın ile ağ kurma scriptinin (`build_network.py`) işlediği 34.473 yayın arasında **641 kayıtlık bir fark** bulunmaktadır. Ham verilerin incelenmesi sonucunda bu farkın nedeni şöyledir:
 - API seviyesinde uygulanan `institutions.country_code:TR` filtresi, yazarları arasında Türkiye adresli *herhangi bir kurum* (şirket, kamu kurumu, hastane, eğitim kurumu) bulunan yayınları getirmektedir.
 - Ağ modellemesinde ise yalnızca yükseköğretim ve üniversite niteliği taşıyan eğitim kurumları (`type:education`) kapsama alınmıştır.
-- 641 çalışmada yazarların tamamı özel sektör veya kamu kurumlarına bağlıdır ve **hiçbir Türk üniversitesi yazarı yer almamaktadır**:
+- **640 çalışmada** yazarların tamamı özel sektör veya kamu kurumlarına bağlıdır ve hiçbir Türk üniversitesi/eğitim kurumu yazarı yer almamaktadır:
   - `company` (Özel sektör AR-GE: ASELSAN, HAVELSAN, Turkcell vb.): **315 çalışma**
   - `government` (Kamu araştırma: TÜBİTAK BİLGEM, TÜBİTAK MAM vb.): **290 çalışma**
   - `healthcare` (Eğitim ve Araştırma Hastaneleri, Şehir Hastaneleri): **22 çalışma**
@@ -37,15 +37,15 @@ OpenAlex API'den indirilen toplam 35.114 yayın ile ağ kurma scriptinin (`build
   - `nonprofit`: **3 çalışma**
   - `other`: **2 çalışma**
   - `facility + government`: **1 çalışma**
-  - `country_code değişikliği / affiliation eşleşmesi`: **1 çalışma**
+- **1 çalışma** (`W4416850727`), yazar-kurum üstverisinde Türkiye bağlantılı hiçbir kurum bulunmadığı (OpenAlex API TR entegrasyonu kaynaklı olup yazarlar Michigan State University gibi yabancı kurumlara bağlıdır) için ayrılmıştır (`no_tr_institution_in_authorships`).
 - Bu 641 çalışma, üniversiteler arası iş birliği ağının düğüm tanımına uymadığı için ağ dışı kalmıştır.
 
 ### 1.4. YÖK Kurumsal Evreni ve Düğüm Kapsamları (Kapsam A vs. Kapsam B vs. Kapsam B1)
 - **Resmî YÖK Evreni:** [YÖK Resmî İstatistikleri](https://www.yok.gov.tr/universiteler/universitelerimiz) (2025–2026 / 2026 Güz) verilerine göre Türkiye'de **129 Devlet Üniversitesi** ve **75 Vakıf Üniversitesi** olmak üzere toplam **204 üniversite** ve ayrıca **4 Bağımsız Vakıf Meslek Yüksekokulu** (toplam **208 yükseköğretim kurumu**) yer almaktadır.
 - **OpenAlex `type:education` Evreni:** API'de TR koduyla 222 kurum yer almakta olup, askeri/polis akademileri, kapatılan kurumlar, bağımsız MYO'lar ve KKTC'deki Lefke Avrupa Üniversitesi'ni de içerir.
 - **Kapsam A (Geniş Eğitim Kurumu Kapsamı):** 2020–2025 döneminde bilgisayar bilimi yayını bulunan tüm kurumlar (205 düğüm, 3.970 kenar).
-- **Kapsam B (186 Kural Tabanlı Aktif + 7 KHK Kurumu, 193 Düğüm):** Yükseköğretim kurumları içinden bağımsız MYO'lar (2), askeri/polis okulları (5), idari/sağlık birimleri (3) ve kısıtlı/doğrulanmamış kurumlar (2: KKTC merkezli Lefke Avrupa Üniversitesi ve 2020 CBK ile kapatılmış olan İstanbul Şehir Üniversitesi bu kapsama dahil edilmemiştir) çıkarılarak elde edilen; 186 kural tabanlı aktif üniversite ile 2016'da 667 KHK ile kapatılan 7 tarihsel üniversitenin toplamından oluşan **193 üniversite** (3.883 kenar).
-- **Kapsam B1 (Kural Tabanlı Aktif Üniversiteler):** 2016'da 667 KHK ile kapatılmış 7 tarihsel üniversite (Turgut Özal, Fatih, Gediz, Şifa, Bursa Orhangazi, Canik Başarı, İzmir Üniversitesi) çıkarıldığında geriye kalan ve algoritmik kural tabanlı ad/durum filtresiyle belirlenen **186 aktif üniversite** (3.848 kenar).
+- **Kapsam B (186 Aktif + 7 KHK + 1 CBK Kapatılan Üniversite, 194 Düğüm):** Yükseköğretim kurumları içinden bağımsız MYO'lar (2), askeri/polis okulları (5), idari/sağlık birimleri (3) ve Türkiye sınırları dışındaki kurum (1: KKTC merkezli Lefke Avrupa Üniversitesi `outside_turkey_scope`) çıkarılarak elde edilen; 186 kural tabanlı aktif üniversite, 2016'da 667 sayılı KHK ile kapatılan 7 tarihsel üniversite ve 29 Haziran 2020 tarihli ve 2708 sayılı Cumhurbaşkanı Kararı (30 Haziran 2020 tarih ve 31171 sayılı Resmî Gazete) ile kapatılan İstanbul Şehir Üniversitesi'nin toplamından oluşan **194 üniversite** (3.887 kenar, `scope_b_eligible=True`). ([Marmara Üni Duyurusu](https://www.marmara.edu.tr/notice/kamuoyu-aciklamasi), [Lexpera Mevzuat Metni](https://www.lexpera.com.tr/mevzuat/cumhurbaskani-kararlari/kurucu-vakfina-kayyim-atanan-ve-garantor-universitesi-tarafindan-yapilan-denetimler-sonucunda-mevcut-2)).
+- **Kapsam B1 (Kural Tabanlı Aktif Üniversiteler):** Kapatılmış 8 tarihsel üniversite çıkarıldığında geriye kalan ve algoritmik kural tabanlı ad/durum filtresiyle belirlenen **186 aktif üniversite** (3.848 kenar).
 
 ---
 
@@ -71,8 +71,10 @@ Ağdaki düğümleri (kurumları) ve hem tüm zamanlar hem de dönem bazlı üre
 | `display_name` | string | Kurumun uluslararası veya resmi adı (Örn: `Ege University`) |
 | `country_code` | string | Ülke ISO kodu (`TR`) |
 | `type` | string | OpenAlex kurum türü (`education`) |
-| `category` | string | Kurum kategorisi (`active_university`, `closed_2016_khk`, `vocational_college`, `academy_or_institute`, `hospital_or_other`, `unverified`) |
+| `category` | string | Kurum kategorisi (`active_university`, `closed_2016_khk`, `closed_2020_cbk`, `outside_turkey_scope`, `vocational_college`, `academy_or_institute`, `hospital_or_other`, `unverified`) |
 | `is_university` | boolean | Kurumun üniversite niteliği taşıyıp taşımadığı (`True` / `False`) |
+| `scope_b_eligible` | boolean | Kurumun Türkiye üniversiteleri araştırması Kapsam B analizine dahil edilmeye uygunluğu (`True` / `False`) |
+| `raw_status` | string | Kurumun OpenAlex veritabanındaki ham faaliyet durumu (`active`, `inactive` vb.) |
 | `latitude` | float / null | Kurumun coğrafi enlemi (OpenAlex `geo.latitude` verisi; eksikse null) |
 | `longitude` | float / null | Kurumun coğrafi boylamı (OpenAlex `geo.longitude` verisi; eksikse null) |
 | `city` | string | Kurumun bulunduğu şehir |

@@ -45,71 +45,85 @@ def test_is_egean_institution():
 
 def test_classify_institution_khk_and_active():
     """
-    2016 KHK ile kapatılan kurumların, aktif üniversitelerin, MYO, akademilerin
-    ve unverified (Lefke, Şehir Üniversitesi vb.) kurumların doğru sınıflandırıldığını doğrular.
+    Kapatılan kurumların (667 KHK ve 2708 CBK), Lefke Avrupa Üniversitesi'nin,
+    aktif üniversitelerin ve bağımsız MYO/akademilerin ID ve isim bazında
+    doğru kategori, is_university ve scope_b_eligible değerlerini aldığını doğrular.
     """
     # 1. Kapatılan İzmir Üniversitesi (667 KHK)
-    cat, is_uni = classify_institution("https://openalex.org/I132257509", "Izmir University", raw_status="active")
+    cat, is_uni, scope_b = classify_institution("https://openalex.org/I132257509", "Izmir University", raw_status="active")
     assert cat == "closed_2016_khk"
     assert is_uni is True
+    assert scope_b is True
 
-    # 2. Kapatılan Turgut Özal Üniversitesi (Ankara)
-    cat, is_uni = classify_institution("https://openalex.org/I6573832", "Turgut Özal University", raw_status="active")
+    # 2. Kapatılan Turgut Özal Üniversitesi (Ankara, 667 KHK)
+    cat, is_uni, scope_b = classify_institution("https://openalex.org/I6573832", "Turgut Özal University", raw_status="active")
     assert cat == "closed_2016_khk"
     assert is_uni is True
+    assert scope_b is True
 
     # 3. Halen Aktif Olan Malatya Turgut Özal Üniversitesi (2018'de kurulan devlet üniversitesi)
-    cat, is_uni = classify_institution("https://openalex.org/I4210110665", "Malatya Turgut Özal Üniversitesi", raw_status="active")
+    cat, is_uni, scope_b = classify_institution("https://openalex.org/I4210110665", "Malatya Turgut Özal Üniversitesi", raw_status="active")
     assert cat == "active_university"
     assert is_uni is True
+    assert scope_b is True
 
     # 4. Kapatılan Fatih Üniversitesi vs Aktif Fatih Sultan Mehmet Vakıf Üniversitesi
-    cat_closed, is_uni_closed = classify_institution("https://openalex.org/I32462889", "Fatih University", raw_status="active")
+    cat_closed, is_uni_closed, scope_b_closed = classify_institution("https://openalex.org/I32462889", "Fatih University", raw_status="active")
     assert cat_closed == "closed_2016_khk"
     assert is_uni_closed is True
+    assert scope_b_closed is True
 
-    cat_active, is_uni_active = classify_institution("https://openalex.org/I4210146544", "Fatih Sultan Mehmet Waqf University", raw_status="active")
+    cat_active, is_uni_active, scope_b_active = classify_institution("https://openalex.org/I4210146544", "Fatih Sultan Mehmet Waqf University", raw_status="active")
     assert cat_active == "active_university"
     assert is_uni_active is True
+    assert scope_b_active is True
 
-    # 5. Doğrulanmamış/kapsam dışı veya hukuki kapatılmış kurumlar (unverified)
-    cat_lefke, is_uni_lefke = classify_institution("https://openalex.org/I116528569", "European University of Lefke", raw_status="active")
-    assert cat_lefke == "unverified"
-    assert is_uni_lefke is False
+    # 5. KKTC merkezli Lefke Avrupa Üniversitesi (outside_turkey_scope: is_uni=True, scope_b=False)
+    cat_lefke, is_uni_lefke, scope_b_lefke = classify_institution("https://openalex.org/I116528569", "European University of Lefke", raw_status="active")
+    assert cat_lefke == "outside_turkey_scope"
+    assert is_uni_lefke is True
+    assert scope_b_lefke is False
 
-    cat_sehir, is_uni_sehir = classify_institution("https://openalex.org/I13419840", "Istanbul Şehir University", raw_status="active")
-    assert cat_sehir == "unverified"
-    assert is_uni_sehir is False
+    # 6. 29 Haziran 2020 tarihli ve 2708 sayılı CBK ile kapatılan İstanbul Şehir Üniversitesi (closed_2020_cbk: is_uni=True, scope_b=True)
+    cat_sehir, is_uni_sehir, scope_b_sehir = classify_institution("https://openalex.org/I13419840", "Istanbul Şehir University", raw_status="active")
+    assert cat_sehir == "closed_2020_cbk"
+    assert is_uni_sehir is True
+    assert scope_b_sehir is True
 
-    # 6. Kapatılan Gediz, Şifa, Bursa Orhangazi, Canik Başarı
+    # 7. Kapatılan Gediz, Şifa, Bursa Orhangazi, Canik Başarı (667 KHK)
     for iid, name in [
         ("https://openalex.org/I149028718", "Gediz University"),
         ("https://openalex.org/I334480368", "Şifa University"),
         ("https://openalex.org/I3003364", "Bursa Orhangazi University"),
         ("https://openalex.org/I264664839", "Canik Başarı University")
     ]:
-        c, u = classify_institution(iid, name)
+        c, u, s = classify_institution(iid, name)
         assert c == "closed_2016_khk", f"{name} should be closed_2016_khk"
         assert u is True
+        assert s is True
 
-    # 7. Bağımsız MYO kontrolü
-    cat_myo, is_uni_myo = classify_institution("https://openalex.org/I4210151063", "İzmir Kavram Meslek Yüksekokulu", raw_status="active")
+    # 8. Bağımsız MYO kontrolü (is_uni=False, scope_b=False)
+    cat_myo, is_uni_myo, scope_b_myo = classify_institution("https://openalex.org/I4210151063", "İzmir Kavram Meslek Yüksekokulu", raw_status="active")
     assert cat_myo == "vocational_college"
     assert is_uni_myo is False
+    assert scope_b_myo is False
 
-    # 8. Askeri Akademi kontrolü
-    cat_mil, is_uni_mil = classify_institution("https://openalex.org/I157637111", "Naval Academy", raw_status="active")
+    # 9. Askeri Akademi kontrolü (is_uni=False, scope_b=False)
+    cat_mil, is_uni_mil, scope_b_mil = classify_institution("https://openalex.org/I157637111", "Naval Academy", raw_status="active")
     assert cat_mil == "academy_or_institute"
     assert is_uni_mil is False
+    assert scope_b_mil is False
 
-    # 9. Tanınmayan kurum ve inactive status kontrolü -> unverified
-    cat_unv, is_uni_unv = classify_institution("https://openalex.org/I999999", "Random Unknown Research Lab", raw_status="active")
+    # 10. Tanınmayan kurum ve inactive status kontrolü -> unverified (is_uni=False, scope_b=False)
+    cat_unv, is_uni_unv, scope_b_unv = classify_institution("https://openalex.org/I999999", "Random Unknown Research Lab", raw_status="active")
     assert cat_unv == "unverified"
     assert is_uni_unv is False
+    assert scope_b_unv is False
 
-    cat_inact, is_uni_inact = classify_institution("https://openalex.org/I888888", "Some Fake Entity", raw_status="inactive")
+    cat_inact, is_uni_inact, scope_b_inact = classify_institution("https://openalex.org/I888888", "Some Fake Entity", raw_status="inactive")
     assert cat_inact == "unverified"
     assert is_uni_inact is False
+    assert scope_b_inact is False
 
 
 def test_network_construction_rules():
@@ -273,23 +287,31 @@ def test_processed_files_deep_consistency():
         assert r["degree"] == expected_deg, f"{r['display_name']} derece uyumsuz: CSV={r['degree']}, hesaplanan={expected_deg}"
         assert r["weighted_degree"] == expected_wdeg, f"{r['display_name']} ağırlıklı derece uyumsuz: CSV={r['weighted_degree']}, hesaplanan={expected_wdeg}"
 
-    # 4. Kategori toplamlarının 205 düğümü doğru biçimde kapsaması ve is_university tutarlılığı
+    # 4. Kategori toplamlarının 205 düğümü doğru biçimde kapsaması ve is_university / scope_b_eligible tutarlılığı
     cat_counts = inst_df["category"].value_counts().to_dict()
     assert cat_counts["active_university"] == 186
     assert cat_counts["closed_2016_khk"] == 7
+    assert cat_counts["closed_2020_cbk"] == 1
+    assert cat_counts["outside_turkey_scope"] == 1
     assert cat_counts["academy_or_institute"] == 5
     assert cat_counts["hospital_or_other"] == 3
     assert cat_counts["vocational_college"] == 2
-    assert cat_counts["unverified"] == 2
+    assert cat_counts.get("unverified", 0) == 0
     assert sum(cat_counts.values()) == 205
 
     for _, r in inst_df.iterrows():
         cat = r["category"]
         is_u = bool(r["is_university"])
-        if cat in ["active_university", "closed_2016_khk"]:
+        scope_b = bool(r["scope_b_eligible"])
+        if cat in ["active_university", "closed_2016_khk", "closed_2020_cbk", "outside_turkey_scope"]:
             assert is_u is True, f"{r['display_name']} ({cat}) is_university True olmalı!"
         else:
             assert is_u is False, f"{r['display_name']} ({cat}) is_university False olmalı!"
+
+        if cat in ["active_university", "closed_2016_khk", "closed_2020_cbk"]:
+            assert scope_b is True, f"{r['display_name']} ({cat}) scope_b_eligible True olmalı!"
+        else:
+            assert scope_b is False, f"{r['display_name']} ({cat}) scope_b_eligible False olmalı!"
 
 
 def parse_markdown_table_rows(markdown_text: str, header_keyword: str) -> List[Dict[str, str]]:
@@ -326,7 +348,7 @@ def parse_markdown_table_rows(markdown_text: str, header_keyword: str) -> List[D
 
 def test_scopes_metrics_exact_values():
     """
-    Kapsam A, Kapsam B (193 düğüm) ve Kapsam B1 (186 düğüm) için
+    Kapsam A (205 düğüm), Kapsam B (194 düğüm) ve Kapsam B1 (186 düğüm) için
     yoğunluk, bağlı bileşen, izole düğüm ve en büyük bileşen boyutlarını doğrular.
     """
     G = nx.read_graphml("data/processed/collaboration.graphml")
@@ -339,15 +361,15 @@ def test_scopes_metrics_exact_values():
     assert len(list(nx.isolates(G))) == 3
     assert len(max(nx.connected_components(G), key=len)) == 202
 
-    # Kapsam B (is_university == True -> 186 aktif + 7 KHK = 193 Düğüm)
-    uni_nodes = [n for n, d in G.nodes(data=True) if d.get("is_university", True)]
-    G_B = G.subgraph(uni_nodes)
-    assert G_B.number_of_nodes() == 193
-    assert G_B.number_of_edges() == 3883
-    assert abs(nx.density(G_B) - 0.209575) < 1e-5
+    # Kapsam B (scope_b_eligible == True -> 186 aktif + 7 KHK + 1 CBK = 194 Düğüm)
+    scope_b_nodes = [n for n, d in G.nodes(data=True) if d.get("scope_b_eligible", False)]
+    G_B = G.subgraph(scope_b_nodes)
+    assert G_B.number_of_nodes() == 194
+    assert G_B.number_of_edges() == 3887
+    assert abs(nx.density(G_B) - 0.207628) < 1e-5
     assert nx.number_connected_components(G_B) == 2
     assert len(list(nx.isolates(G_B))) == 1  # Canik Başarı University
-    assert len(max(nx.connected_components(G_B), key=len)) == 192
+    assert len(max(nx.connected_components(G_B), key=len)) == 193
 
     # Kapsam B1 (category == 'active_university' -> 186 Düğüm)
     active_uni_nodes = [n for n, d in G.nodes(data=True) if d.get("category") == "active_university"]
@@ -372,7 +394,7 @@ def test_scopes_metrics_exact_values():
         scope_map[m_name] = r
 
     col_a = "Kapsam A (Tüm 205 Education Kurumu)"
-    col_b = "Kapsam B (186 Kural Tabanlı Aktif + 7 KHK Kurumu, 193 Düğüm)"
+    col_b = "Kapsam B (186 Aktif + 7 KHK + 1 CBK Kapatılan, 194 Düğüm)"
     col_b1 = "Kapsam B1 (186 Kural Tabanlı Aktif Üniversite)"
 
     # Düğüm Sayısı
@@ -415,7 +437,7 @@ def test_scopes_metrics_exact_values():
 def test_graphml_and_csv_node_attributes_deep_match():
     """
     GraphML ve CSV'deki tüm düğüm özniteliklerinin (display_name, category, is_university,
-    period_cs_works_count, all_time_works_count, city, is_egean) ve grafikten
+    scope_b_eligible, period_cs_works_count, all_time_works_count, city, is_egean) ve grafikten
     hesaplanan derece / ağırlıklı derece değerlerinin tam eşleştiğini doğrular.
     """
     G = nx.read_graphml("data/processed/collaboration.graphml")
@@ -430,6 +452,7 @@ def test_graphml_and_csv_node_attributes_deep_match():
         assert g_data.get("display_name") == r["display_name"], f"{nid} display_name uyumsuz!"
         assert g_data.get("category") == r["category"], f"{nid} category uyumsuz!"
         assert bool(g_data.get("is_university")) == bool(r["is_university"]), f"{nid} is_university uyumsuz!"
+        assert bool(g_data.get("scope_b_eligible")) == bool(r["scope_b_eligible"]), f"{nid} scope_b_eligible uyumsuz!"
         assert int(g_data.get("period_cs_works_count", 0)) == int(r["period_cs_works_count"]), f"{nid} period_cs_works_count uyumsuz!"
         assert int(g_data.get("all_time_works_count", 0)) == int(r["all_time_works_count"]), f"{nid} all_time_works_count uyumsuz!"
         assert bool(g_data.get("is_egean")) == bool(r["is_egean"]), f"{nid} is_egean uyumsuz!"
@@ -524,11 +547,11 @@ def test_documentation_cross_consistency():
     with open("reports/ara_kontrol.md", "r", encoding="utf-8") as f:
         report_text = f.read()
 
-    # Kapsam B (193) ve B1 (186) sayıları tüm belgelerde tutarlı olmalı
+    # Kapsam B (194) ve B1 (186) sayıları tüm belgelerde tutarlı olmalı
     for doc_name, doc_text in [("README.md", readme_text), ("docs/data_dictionary.md", dict_text), ("reports/ara_kontrol.md", report_text)]:
-        assert "193" in doc_text, f"{doc_name} içinde Kapsam B düğüm sayısı (193) bulunamadı!"
+        assert "194" in doc_text, f"{doc_name} içinde Kapsam B düğüm sayısı (194) bulunamadı!"
         assert "186" in doc_text, f"{doc_name} içinde Kapsam B1 düğüm sayısı (186) bulunamadı!"
-        assert "3.883" in doc_text or "3883" in doc_text, f"{doc_name} içinde Kapsam B kenar sayısı (3.883) bulunamadı!"
+        assert "3.887" in doc_text or "3887" in doc_text, f"{doc_name} içinde Kapsam B kenar sayısı (3.887) bulunamadı!"
         assert "3.848" in doc_text or "3848" in doc_text, f"{doc_name} içinde Kapsam B1 kenar sayısı (3.848) bulunamadı!"
 
     # 204 üniversite, 4 MYO ve 208 yükseköğretim kurumu dağılımı
@@ -550,6 +573,74 @@ def test_documentation_cross_consistency():
     for doc_name, doc_text in [("docs/data_dictionary.md", dict_text), ("reports/ara_kontrol.md", report_text)]:
         assert "122" in doc_text, f"{doc_name} içinde 122 ham tekil koordinat sayısı bulunamadı!"
         assert "112" in doc_text, f"{doc_name} içinde 112 yuvarlanmış tekil koordinat sayısı bulunamadı!"
+
+
+def test_institution_categories_and_scope_b_eligibility():
+    """
+    institutions.csv ve collaboration.graphml dosyalarında:
+    - Kategori dağılımlarının eksiksiz 205 düğüm oluşturduğunu,
+    - is_university (195) ile scope_b_eligible (194) alanlarının ayrışımını,
+    - İstanbul Şehir Üniversitesi'nin closed_2020_cbk ve scope_b_eligible=True olduğunu,
+    - Lefke Avrupa Üniversitesi'nin outside_turkey_scope ve scope_b_eligible=False olduğunu,
+    - Yedi 2016 KHK kurumunun closed_2016_khk ve scope_b_eligible=True olduğunu doğrular.
+    """
+    inst_df = pd.read_csv("data/processed/institutions.csv")
+    G = nx.read_graphml("data/processed/collaboration.graphml")
+
+    assert len(inst_df) == 205
+    assert G.number_of_nodes() == 205
+
+    # 1. Kategori frekansları tam eşleşmeli (toplam 205)
+    cat_counts = inst_df["category"].value_counts().to_dict()
+    expected_categories = {
+        "active_university": 186,
+        "closed_2016_khk": 7,
+        "closed_2020_cbk": 1,
+        "outside_turkey_scope": 1,
+        "academy_or_institute": 5,
+        "hospital_or_other": 3,
+        "vocational_college": 2
+    }
+    assert cat_counts == expected_categories, f"Kategori sayıları beklenenden farklı: {cat_counts}"
+
+    # 2. is_university ve scope_b_eligible ayrışımı
+    # is_university: 186 + 7 + 1 + 1 = 195 True
+    assert (inst_df["is_university"] == True).sum() == 195
+    assert (inst_df["is_university"] == False).sum() == 10
+
+    # scope_b_eligible: 186 + 7 + 1 = 194 True (Lefke hariç)
+    assert (inst_df["scope_b_eligible"] == True).sum() == 194
+    assert (inst_df["scope_b_eligible"] == False).sum() == 11
+
+    # 3. İstanbul Şehir Üniversitesi kontrolü (2708 CBK)
+    sehir_row = inst_df[inst_df["id"] == "https://openalex.org/I13419840"].iloc[0]
+    assert sehir_row["category"] == "closed_2020_cbk"
+    assert bool(sehir_row["is_university"]) is True
+    assert bool(sehir_row["scope_b_eligible"]) is True
+    assert G.nodes["https://openalex.org/I13419840"]["category"] == "closed_2020_cbk"
+    assert bool(G.nodes["https://openalex.org/I13419840"]["scope_b_eligible"]) is True
+
+    # 4. Lefke Avrupa Üniversitesi kontrolü (outside_turkey_scope)
+    lefke_row = inst_df[inst_df["id"] == "https://openalex.org/I116528569"].iloc[0]
+    assert lefke_row["category"] == "outside_turkey_scope"
+    assert bool(lefke_row["is_university"]) is True
+    assert bool(lefke_row["scope_b_eligible"]) is False
+    assert G.nodes["https://openalex.org/I116528569"]["category"] == "outside_turkey_scope"
+    assert bool(G.nodes["https://openalex.org/I116528569"]["scope_b_eligible"]) is False
+
+    # 5. Yedi 2016 KHK kurumu kontrolü
+    khk_ids = [
+        "https://openalex.org/I6573832", "https://openalex.org/I32462889", "https://openalex.org/I149028718",
+        "https://openalex.org/I334480368", "https://openalex.org/I3003364", "https://openalex.org/I264664839",
+        "https://openalex.org/I132257509"
+    ]
+    for kid in khk_ids:
+        k_row = inst_df[inst_df["id"] == kid].iloc[0]
+        assert k_row["category"] == "closed_2016_khk"
+        assert bool(k_row["is_university"]) is True
+        assert bool(k_row["scope_b_eligible"]) is True
+        assert G.nodes[kid]["category"] == "closed_2016_khk"
+        assert bool(G.nodes[kid]["scope_b_eligible"]) is True
 
 
 def test_excluded_works_integrity_and_provenance():

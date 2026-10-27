@@ -118,23 +118,34 @@ def load_tr_institutions(metadata_file: str = "data/raw/institutions_tr.json") -
     return institutions_dict
 
 
-def classify_institution(iid: str, display_name: str, raw_status: Optional[str] = None) -> Tuple[str, bool]:
+def classify_institution(iid: str, display_name: str, raw_status: Optional[str] = None) -> Tuple[str, bool, bool]:
     """
     Kurumu ROR/OpenAlex verileri ve mevzuat kayıtları doğrultusunda sınıflandırır:
-    - active_university: Kural tabanlı aktif üniversiteler (Adında university/universite/institute of technology
-      geçen ve raw_status değeri kapalı/inaktif olmayan kurumlar. Bu bir kural tabanlı algoritmik atamadır;
-      tüm kurumlar tek tek resmi YÖK sicilinden elle doğrulanmamıştır).
-    - closed_2016_khk: 2016 yılında 667 sayılı KHK ile kapatılmış tarihsel vakıf üniversiteleri (ID bazında kesin doğrulama).
-    - vocational_college: Bağımsız Vakıf Meslek Yüksekokulları (MYO).
-    - academy_or_institute: Askeri ve Polis Akademileri, Harp Okulları, yabancı enstitüler.
-    - hospital_or_other: Eğitim ve Araştırma Hastaneleri, İl Millî Eğitim Müdürlükleri, araştırma merkezleri.
-    - unverified: Resmi üniversite statüsü doğrulanamayan veya KKTC/kapatma gibi özel kısıtı bulunan kurumlar.
+    - active_university: Kural tabanlı aktif üniversiteler (186 kurum).
+      (Adında university/universite/institute of technology geçen ve raw_status değeri kapalı/inaktif olmayan kurumlar.
+       Bu bir kural tabanlı algoritmik atamadır; tüm kurumlar tek tek resmi YÖK sicilinden elle doğrulanmamıştır).
+      (is_university=True, scope_b_eligible=True)
+    - closed_2016_khk: 2016 yılında 667 sayılı KHK ile kapatılmış tarihsel vakıf üniversiteleri (7 kurum, ID bazında kesin doğrulama).
+      (is_university=True, scope_b_eligible=True)
+    - closed_2020_cbk: 29 Haziran 2020 tarihli ve 2708 sayılı Cumhurbaşkanı Kararı (30 Haziran 2020 tarih ve 31171 sayılı Resmî Gazete)
+      ile faaliyet izni kaldırılarak Marmara Üniversitesi'ne devredilen İstanbul Şehir Üniversitesi (1 kurum).
+      (is_university=True, scope_b_eligible=True)
+    - outside_turkey_scope: Coğrafi ve idari olarak KKTC'de yer alan ve Türkiye kurumsal sınırları dışındaki European University of Lefke (1 kurum).
+      (is_university=True, scope_b_eligible=False)
+    - vocational_college: Bağımsız Vakıf Meslek Yüksekokulları (MYO, 2 kurum).
+      (is_university=False, scope_b_eligible=False)
+    - academy_or_institute: Askeri ve Polis Akademileri, Harp Okulları, yabancı enstitüler (5 kurum).
+      (is_university=False, scope_b_eligible=False)
+    - hospital_or_other: Eğitim ve Araştırma Hastaneleri, İl Millî Eğitim Müdürlükleri, araştırma merkezleri (3 kurum).
+      (is_university=False, scope_b_eligible=False)
+    - unverified: Gerçekten resmi üniversite statüsü doğrulanamayan diğer kurumlar için güvenli varsayılan.
+      (is_university=False, scope_b_eligible=False)
 
-    Not: OpenAlex/ROR 'status' alanı Türkiye Cumhuriyeti'ndeki güncel hukuki statüyü tek başına kanıtlamaz
-    (Örn. 2016'da kapatılan İzmir Üni veya 2020'de kapatılan İstanbul Şehir Üni OpenAlex'te 'active' kalabilmektedir).
-    Mevcut veri kümesinde 222 kurumun tamamında status alanı doludur (220 active, 2 inactive).
+    Kaynaklar:
+    - Marmara Üniversitesi Duyurusu: https://www.marmara.edu.tr/notice/kamuoyu-aciklamasi
+    - 2708 sayılı CBK: https://www.lexpera.com.tr/mevzuat/cumhurbaskani-kararlari/kurucu-vakfina-kayyim-atanan-ve-garantor-universitesi-tarafindan-yapilan-denetimler-sonucunda-mevcut-2
 
-    Dönüş: (kategori_adi, is_university_flag)
+    Dönüş: (kategori_adi, is_university_flag, scope_b_eligible_flag)
     """
     name_l = display_name.lower().strip()
     
@@ -149,42 +160,40 @@ def classify_institution(iid: str, display_name: str, raw_status: Optional[str] 
         "https://openalex.org/I132257509": "Izmir University"
     }
     if iid in closed_2016_map:
-        return "closed_2016_khk", True
+        return "closed_2016_khk", True, True
 
-    # 2. Doğrulanmamış veya hukuki statüsü kısıtlı kurumlar (ID bazında doğrulama)
-    # - Lefke Avrupa Üniversitesi: Coğrafi olarak KKTC'de yer alır, Türkiye sınırları içinde değildir.
-    # - İstanbul Şehir Üniversitesi: 30 Haziran 2020'de 2814 sayılı CBK ile kapatılmıştır; OpenAlex status active görünse de hukuken aktif değildir.
-    unverified_special_map = {
-        "https://openalex.org/I116528569": "European University of Lefke",
-        "https://openalex.org/I13419840": "Istanbul Şehir University"
-    }
-    if iid in unverified_special_map:
-        return "unverified", False
+    # 2. 29 Haziran 2020 tarihli ve 2708 sayılı CBK ile kapatılan İstanbul Şehir Üniversitesi (ID bazında doğrulama)
+    if iid == "https://openalex.org/I13419840":
+        return "closed_2020_cbk", True, True
 
-    # 3. OpenAlex raw_status kontrolü (aktif olmayan kayıtlar doğrudan aktif üniversite olamaz)
+    # 3. KKTC merkezli olup Türkiye kurumsal sınırları dışındaki kurum (Lefke Avrupa Üniversitesi)
+    if iid == "https://openalex.org/I116528569":
+        return "outside_turkey_scope", True, False
+
+    # 4. OpenAlex raw_status kontrolü (aktif olmayan kayıtlar doğrudan aktif üniversite olamaz)
     if raw_status and str(raw_status).strip().lower() in ["inactive", "closed", "defunct"]:
-        return "unverified", False
+        return "unverified", False, False
         
-    # 3. Bağımsız Meslek Yüksekokulları (MYO)
+    # 5. Bağımsız Meslek Yüksekokulları (MYO)
     if "meslek yüksekokulu" in name_l or "vocational school" in name_l:
-        return "vocational_college", False
+        return "vocational_college", False, False
         
-    # 4. Askeri / Polis Akademileri ve Yabancı Enstitüler
+    # 6. Askeri / Polis Akademileri ve Yabancı Enstitüler
     if any(k in name_l for k in ["naval academy", "air force academy", "military academy", "police academy", "british institute"]):
-        return "academy_or_institute", False
+        return "academy_or_institute", False, False
         
-    # 5. Sağlık / İdari / Araştırma Merkezleri
+    # 7. Sağlık / İdari / Araştırma Merkezleri
     if any(k in name_l for k in ["hospital", "hastanesi", "directorate of national education", "research center for built environment"]):
-        return "hospital_or_other", False
+        return "hospital_or_other", False, False
         
-    # 6. Doğrulanmış Aktif Üniversiteler
+    # 8. Kural Tabanlı Aktif Üniversiteler
     norm_name = unicodedata.normalize("NFKD", display_name).encode("ASCII", "ignore").decode("utf-8").lower()
     is_uni_named = any(k in norm_name for k in ["university", "universite", "institute of technology", "universitat"])
     if is_uni_named and (raw_status is None or str(raw_status).strip().lower() == "active"):
-        return "active_university", True
+        return "active_university", True, True
 
-    # 7. Kanıtlanmamış / resmi üniversite statüsü belirsiz olan kurumlar
-    return "unverified", False
+    # 9. Kanıtlanmamış / resmi üniversite statüsü belirsiz olan kurumlar
+    return "unverified", False, False
 
 
 def process_works_and_build_network(
@@ -298,7 +307,7 @@ def process_works_and_build_network(
         all_time_w = meta.get("works_count", 0)
         period_w = period_cs_works.get(node_id, 0)
         raw_stat = meta.get("status")
-        cat, is_uni = classify_institution(node_id, disp_name, raw_status=raw_stat)
+        cat, is_uni, scope_b = classify_institution(node_id, disp_name, raw_status=raw_stat)
 
         node_attrs = {
             "name": disp_name,
@@ -307,6 +316,7 @@ def process_works_and_build_network(
             "type": "education",
             "category": cat,
             "is_university": bool(is_uni),
+            "scope_b_eligible": bool(scope_b),
             "raw_status": str(raw_stat) if raw_stat else "active",
             "city": city or "",
             "is_egean": bool(is_ege),
@@ -349,6 +359,7 @@ def process_works_and_build_network(
             "type": attrs.get("type", "education"),
             "category": attrs.get("category", "active_university"),
             "is_university": attrs.get("is_university", True),
+            "scope_b_eligible": attrs.get("scope_b_eligible", False),
             "raw_status": attrs.get("raw_status", "active"),
             "latitude": attrs.get("latitude", None),
             "longitude": attrs.get("longitude", None),
@@ -416,9 +427,9 @@ def print_network_summary(G: nx.Graph, inst_df: pd.DataFrame, edges_df: pd.DataF
         largest_cc = max(nx.connected_components(G), key=len)
         print(f"Dev Bileşen (Giant Comp.)   : {len(largest_cc)} düğüm ({len(largest_cc)/num_nodes*100:.1f}%)")
 
-    # Kapsam B (Yalnızca Üniversiteler)
-    uni_nodes = [n for n, d in G.nodes(data=True) if d.get("is_university", True)]
-    G_B = G.subgraph(uni_nodes).copy()
+    # Kapsam B (Türkiye İçindeki Aktif ve Tarihsel Üniversiteler - 194 Düğüm)
+    scope_b_nodes = [n for n, d in G.nodes(data=True) if d.get("scope_b_eligible", False)]
+    G_B = G.subgraph(scope_b_nodes).copy()
     num_nodes_b = G_B.number_of_nodes()
     num_edges_b = G_B.number_of_edges()
     density_b = nx.density(G_B) if num_nodes_b > 1 else 0
@@ -427,7 +438,7 @@ def print_network_summary(G: nx.Graph, inst_df: pd.DataFrame, edges_df: pd.DataF
     largest_cc_b = max(nx.connected_components(G_B), key=len) if num_nodes_b > 0 else []
 
     print("\n" + "-"*70)
-    print("AĞ ANALİZİ VE YAPI METRİKLERİ: KAPSAM B (YALNIZCA ÜNİVERSİTELER - TARİHSEL DAHİL)")
+    print("AĞ ANALİZİ VE YAPI METRİKLERİ: KAPSAM B (TÜRKİYE AKTİF + TARİHSEL ÜNİVERSİTELERİ - 194 DÜĞÜM)")
     print("-"*70)
     print(f"Toplam Düğüm Sayısı         : {num_nodes_b}")
     print(f"Toplam Kenar Sayısı         : {num_edges_b}")

@@ -42,24 +42,27 @@
 
 ## 3. İşlenmiş Nihai Ağ Verileri (`data/processed/`)
 
-İşlenmiş dosyalar depoda yer almakta olup sağlama özetleri şunlardır:
+İşlenmiş dosyalar depoda yer almakta olup güncel sağlama özetleri şunlardır:
 
 | Dosya Yolu | Kesin Boyut (Bayt) | Boyut (MiB) | Eleman Sayısı | SHA-256 Sağlama Özeti (Checksum) |
 | :--- | :---: | :---: | :---: | :--- |
-| `data/processed/institutions.csv` | 35.239 | 0,03 MiB | 205 düğüm | `1a6023cb5552c7102d155e52c521a95c68fbd8a82cc5a42581a536473996806b` |
+| `data/processed/institutions.csv` | 36.305 | 0,03 MiB | 205 düğüm | `2ec986d9cc74a0d44df563efb9c535fb7deaf6e54f36ed8431946595e857b3cf` |
 | `data/processed/edges.csv` | 260.545 | 0,25 MiB | 3.970 kenar | `13e474bb5849ae8940bc0a2dc1b864af87c5c1fac0800c9053d35dae08030ab9` |
-| `data/processed/collaboration.graphml` | 664.583 | 0,63 MiB | 205 düğüm, 3.970 kenar | `395333edf69f7ded8ba1f2d2f441c2f516c8c521fe08699e756dda50f028705c` |
+| `data/processed/collaboration.graphml` | 671.656 | 0,64 MiB | 205 düğüm, 3.970 kenar | `e0f5352d9feab9bca045a9e4c685371b37a4e7f73d78cc5f57c03dd7721849cb` |
 | `data/processed/excluded_works_summary.csv` | 140.481 | 0,13 MiB | 641 satır | `0d6bfbb1e175b7711f0ffb2e8858edb499ed5c07bd8e585facc2d39eae555859` |
 
 ---
 
 ## 4. Dışlanan 641 Çalışmanın Denetim ve Doğrulama Durumu
 
-OpenAlex API seviyesinde `institutions.country_code:TR` filtresi uygulandığı için, yazarları arasında üniversite bulunmayan sanayi, kamu ve sağlık kuruluşları da yanıta dahil olmuştur.
+OpenAlex API seviyesinde `institutions.country_code:TR` filtresi uygulandığı için:
+- **640 çalışma**, yazarları arasında Türkiye bağlantılı kurumlar bulunmasına karşın bu kurumların hiçbiri `education` türünde (üniversite/yükseköğretim) olmadığı için dışlanmıştır (sanayi Ar-Ge: 315, kamu: 290, sağlık: 22, tesis/vakıf: 13).
+- **1 çalışma** (`W4416850727`), yazar-kurum üstverisinde Türkiye bağlantılı hiçbir kurum bulunmadığı (Michigan State University gibi yabancı kurumlara bağlı yazarlar) için ayrılmıştır (`no_tr_institution_in_authorships`).
 
 Bu 641 çalışmanın denetimi:
-- `scripts/audit_excluded_works.py` betiği ile yerel ham veriden doğrudan yeniden üretilip `excluded_works_summary.csv` ile bütün alanlar (`work_id`, `publication_year`, `title`, `exclusion_reason`, `affiliation_sample`) bazında karşılaştırılmıştır.
-- **Karşılaştırma Sonucu:** 0 eksik, 0 fazla, 0 uyuşmazlık ile %100 tam eşleşme doğrulanmıştır.
+- `scripts/audit_excluded_works.py` betiği ile yerel ham veriden doğrudan yeniden üretilip `excluded_works_summary.csv` ile bütün alanlar (`work_id`, `publication_year`, `title`, `exclusion_reason`, `affiliation_sample`) bazında karşılaştırılır.
+- **Yerel Doğrulama Durumu:** Yerel diskte ham veriler (`data/raw/works_*.jsonl`) mevcutken çalıştırıldığında 0 eksik, 0 fazla, 0 uyuşmazlık ile %100 tam eşleşme doğrulanmakta ve çıkış kodu `0` dönmektedir.
+- **Uzak Depo / Eksik Veri Sınırı:** Ham veriler `.gitignore` nedeniyle GitHub'da bulunmadığından, yerel ham verilerin olmadığı bir ortamda betik salt satır kontrolüyle başarı bildirmemekte; sonucu açıkça `[DOĞRULANAMADI]` olarak raporlayarak çıkış kodu `2` vermektedir.
 - Yıllara göre dağılım:
   - 2020: 69
   - 2021: 76
