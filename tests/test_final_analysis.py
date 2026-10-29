@@ -17,6 +17,7 @@ import pytest
 import networkx as nx
 import pandas as pd
 import numpy as np
+from sklearn.metrics import adjusted_rand_score
 
 import leidenalg
 
@@ -191,17 +192,28 @@ def test_leiden_weights_differentiate_partition():
         seed=42
     )
 
-    # Ağırlıkların bölümlemeyi kesinlikle değiştirdiğinin kanıtı:
-    assert part_w.membership != part_unw.membership
+    # Bölümlemeleri kanonik topluluk kümeleri (frozenset kümeleri) olarak çıkar (etiket permutasyonundan bağımsız)
+    def get_canonical_communities(membership):
+        c_dict = {}
+        for idx, comm_id in enumerate(membership):
+            c_dict.setdefault(comm_id, set()).add(idx_to_n[idx])
+        return {frozenset(s) for s in c_dict.values()}
 
-    # Ağırlıklı Leiden iki güçlü kliği ayırmalıdır (0,1,2 ve 3,4,5)
-    comm_0 = {idx_to_n[i] for i, c in enumerate(part_w.membership) if c == part_w.membership[0]}
-    comm_1 = {idx_to_n[i] for i, c in enumerate(part_w.membership) if c != part_w.membership[0]}
-    assert comm_0 == {0, 1, 2}
-    assert comm_1 == {3, 4, 5}
+    canonical_w = get_canonical_communities(part_w.membership)
+    canonical_unw = get_canonical_communities(part_unw.membership)
+
+    # 1. Kanonik küme karşılaştırması: Ağırlıklı ve ağırlıksız bölüntüler kesinlikle farklıdır
+    assert canonical_w != canonical_unw
+
+    # 2. Adjusted Rand Index (ARI): Etiket numaralarından bağımsız olarak iki bölümleme tam uyuşmaz (ARI < 1.0)
+    ari = adjusted_rand_score(part_w.membership, part_unw.membership)
+    assert ari < 1.0
+
+    # Ağırlıklı Leiden iki güçlü 3'lü kliği eksiksiz ayırmalıdır ({0, 1, 2} ve {3, 4, 5})
+    assert canonical_w == {frozenset({0, 1, 2}), frozenset({3, 4, 5})}
 
     # partition.quality() hedef fonksiyonunun Newman ağırlıklı modülerliğe makine hassasiyetinde eşitliği:
-    nx_mod = nx.community.modularity(G, [comm_0, comm_1], weight="weight")
+    nx_mod = nx.community.modularity(G, [set(c) for c in canonical_w], weight="weight")
     assert np.isclose(part_w.quality(), nx_mod, atol=1e-6)
 
 

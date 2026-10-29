@@ -4,7 +4,7 @@
 
 **Ders / Program:** Manisa Celal Bayar Üniversitesi — Büyük Veri Analistliği  
 **Dönem:** 2026–2027 Güz / Sosyal Ağ Analizi  
-**Öncelikli Aşama:** 26 Ekim 2026 — 23:59 Ara Kontrol Teslimi  
+**Öncelikli Aşama:** 30 Ekim 2026 — 23:59 Final Teslimi (26 Ekim Ara Kontrolü Tamamlandı)  
 
 ---
 
@@ -85,9 +85,9 @@ Final tesliminde uygulanan tüm ileri yöntemler `scripts/run_final_analysis.py`
 - **Bilimsel Sınırlılık Notu:** $N=186$ gibi dar derece aralığına sahip sonlu makro ağlarda saf bir "ölçeksiz (scale-free) güç yasası" iddiasında bulunmak istatistiksel olarak yanıltıcıdır; veriler ağır kuyruklu log-normal davranış sergilemektedir (`degree_distribution_powerlaw.png`).
 
 ### 5.2. Louvain ve Leiden Topluluk Tespiti (10 Sabit Tohum Kararlılığı)
-- **Ortak Modülerlik Ölçümü:** Leiden ve Louvain sonuçları aynı ağırlıklı NetworkX grafiği ve `nx.community.modularity(..., weight='weight')` formülüyle ortak bir ölçekte karşılaştırılmıştır.
+- **Ortak Modülerlik Ölçümü ve Optimizasyon Hedefi:** Leiden ve Louvain sonuçları aynı ağırlıklı NetworkX grafiği ve `nx.community.modularity(..., weight='weight')` formülüyle ortak bir ölçekte karşılaştırılmıştır. Leiden algoritmasında optimize edilen ağırlıklı modülerlik hedef fonksiyonu olan `partition.quality()` değeri NetworkX sonucuyla makine hassasiyetinde birebir uyuşmaktadır ($Q = 0.3420$). `leidenalg` kütüphanesinin `igraph.VertexClustering` mirasından gelen `partition.modularity` değeri ise varsayılan olarak ağırlıkları hesaba katmayan farklı bir ölçeklendirme kullandığından daha düşük çıkmaktadır (~$0.1416$).
 - **Louvain:** Ortalama $6.5$ topluluk, Modülerlik $Q = 0.3394 \pm 0.0015$, NMI kararlılığı $= 0.8171$, ARI kararlılığı $= 0.8032$.
-- **Leiden:** Ortalama $6.6$ topluluk, Ortak Modülerlik $Q = 0.3420 \pm 0.0009$, NMI kararlılığı $= 0.8378$, ARI kararlılığı $= 0.8374$ (Leiden'ın kendi ham partition modülerliği $0.1416 \pm 0.0025$ olarak saklanmıştır).
+- **Leiden:** Ortalama $6.6$ topluluk, Ortak Modülerlik / partition.quality $Q = 0.3420 \pm 0.0009$, NMI kararlılığı $= 0.8378$, ARI kararlılığı $= 0.8374$ (Leiden'ın ham `partition.modularity` değeri $0.1416 \pm 0.0025$ olarak saklanmıştır).
 - **Çapraz Mutabakat:** İki bağımsız algoritma arasında $NMI = 0.7845$, $ARI = 0.7589$ düzeyinde yüksek mutabakat tespit edilmiştir.
 
 ### 5.3. Null Model (Derece Korumalı 100 Rastgele Ağ)
@@ -95,7 +95,7 @@ Final tesliminde uygulanan tüm ileri yöntemler `scripts/run_final_analysis.py`
 - **Kümelenme ($C$):** Gözlenen $= 0.4433$, Null Ortalama $= 0.3898$, $Z = 12.00$, $p = 0.0099$ (sağ kuyruklu test).
 - **En Kısa Yol ($L$):** Gözlenen $= 1.8290$, Null Ortalama $= 1.8079$, $Z = 6.05$, $p = 0.0198$ (iki kuyruklu test).
 - **Modülerlik ($Q$):** Gözlenen $= 0.1684$, Null Ortalama $= 0.0962$, $Z = 23.05$, $p = 0.0099$ (sağ kuyruklu test).
-- **Küçük Dünya (Small-Worldness):** $\gamma = 1.1373$, $\lambda = 1.0117 \implies \sigma = 1.1242 > 1.0$ (Küçük Dünya özelliği doğrulanmıştır).
+- **Küçük Dünya (Small-Worldness):** $\gamma = 1.1373$, $\lambda = 1.0117 \implies \sigma = 1.1242 > 1.0$. Bu değer kesin bir küçük-dünya kanıtı olarak değil, seçilen derece korumalı null model altında sınırlı/hafif bir küçük-dünya sinyali olarak yorumlanmalıdır; ampirik ağın kümelenme katsayısı derece eşdeğeri rastgele ağlardan belirgin şekilde yüksektir ancak ortalama yol uzunluğu rastgele ağ seviyesine çok yakındır.
 
 ### 5.4. Zorunlu İleri Yöntem: Çekim (Gravity) Modeli Regresyonu
 - **Veri Yapısı:** $\binom{186}{2} = 17.205$ ikili üniversite çifti ($w=0$ sıfır iş birliği çiftleri eksiksiz dahil, %77.63 kurumsal seyreklik).
@@ -153,7 +153,7 @@ turkiye-universiteleri-isbirligi-agi/
 │   └── run_final_analysis.py       # Tüm final analiz hattını çalıştıran orkestratör
 ├── tests/
 │   ├── test_network.py             # Veri ve ara kontrol doğrulama testleri (14 test)
-│   └── test_final_analysis.py      # Final analiz hattı birim testleri (12 test)
+│   └── test_final_analysis.py      # Final analiz hattı birim testleri (13 test)
 └── data/
     ├── raw/                        # Yerel ham json/jsonl dosyaları (.gitignore ile korunur)
     │   ├── institutions_tr.json
@@ -184,7 +184,7 @@ pip install -r requirements.txt
 
 ### 7.2. Testlerin Çalıştırılması (Birim ve Entegrasyon Doğrulama)
 ```bash
-# Tüm birim ve entegrasyon testlerini (26 test) çalıştırın:
+# Tüm birim ve entegrasyon testlerini (27 test) çalıştırın:
 PYTHONPATH=. pytest -v
 ```
 
@@ -213,6 +213,7 @@ python scripts/fetch_openalex.py --dry-run
 3. **Örneklem Boyutu ve Güç Yasası:** $N=186$ gibi dar bir derece spektrumunda saf bir güç yasası (scale-free) iddia edilemez; veriler ağır kuyruklu log-normal modele uymaktadır.
 4. **Sıfır Enflasyonu ve Aşırı Yayılım:** 17.205 ikili çiftin %77.63'ünde ortak yayın bulunmamaktadır ($w=0$). Bu aşırı yayılım Poisson varsayımlarını geçersiz kıldığından ayrık Negatif Binom (NB2) modeli esas alınmıştır.
 5. **İlişkisellik vs Nedensellik:** Çekim modeli regresyon katsayıları kurumsal ve bölgesel çekim ilişkilerini göstermektedir; doğrudan tek yönlü bir nedensel etki olarak yorumlanmamalıdır.
+6. **İkili Çiftlerde Ağ Bağımlılığı (Network Dyadic Dependence):** Çekim modelindeki 17.205 ikili gözlem bağımsız değildir; aynı üniversiteleri ortaklaşa paylaşmaktadır (örneğin her bir kurum 185 farklı ikili çiftte yer alır). Bu durum standart GLM regresyonlarındaki gözlemlerin bağımsız ve özdeş dağıldığı (i.i.d.) varsayımını sınırlar; elde edilen standart hatalar ve anlamlılık düzeyleri ağ bağımlılığı göz önüne alınarak temkinli değerlendirilmelidir.
 
 ---
 
