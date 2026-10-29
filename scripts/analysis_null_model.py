@@ -67,27 +67,32 @@ def run_null_model_experiments(
     base_seed: int = 1000
 ) -> Dict[str, Any]:
     """
-    En az n_trials (varsayılan 100) başarılı rastgele ağ üreterek
-    ampirik ağ ile kümelenme, ortalama yol ve modülerlik metriklerini karşılaştırır.
+    Gözlenen ağın kenar ağırlıklarını taşımayan basit, ağırlıksız topolojik grafiğini oluşturur
+    ve tam derece dizisini koruyan n_trials (varsayılan 100) rastgele ağ üreterek
+    ampirik topoloji ile kümelenme (C), en kısa yol (L) ve modülerlik (Q) metriklerini karşılaştırır.
     """
     if G.number_of_nodes() == 0:
         raise ValueError("Boş grafik üzerinde null model çalıştırılamaz.")
 
-    # 1. Gözlenen Değerler (Observed)
-    is_connected = nx.is_connected(G)
-    c_obs = float(nx.average_clustering(G))
+    # 1. Gözlenen grafiği ağırlıksız topolojik basit grafiğe dönüştür
+    G_unweighted = nx.Graph()
+    G_unweighted.add_nodes_from(G.nodes(data=True))
+    G_unweighted.add_edges_from(G.edges())
+
+    # Gözlenen Değerler (Observed - Tamamı ağırlıksız topolojik)
+    is_connected = nx.is_connected(G_unweighted)
+    c_obs = float(nx.average_clustering(G_unweighted))
     
     if is_connected:
-        l_obs = float(nx.average_shortest_path_length(G))
+        l_obs = float(nx.average_shortest_path_length(G_unweighted))
     else:
         # Bağlantısızsa LCC üzerinden
-        lcc = max(nx.connected_components(G), key=len)
-        l_obs = float(nx.average_shortest_path_length(G.subgraph(lcc)))
+        lcc = max(nx.connected_components(G_unweighted), key=len)
+        l_obs = float(nx.average_shortest_path_length(G_unweighted.subgraph(lcc)))
 
-    # Gözlenen Louvain modülerliği (ağırlıksız topoloji için veya ağırlıklı)
-    # Null modellerde kenar varlığı rastgeleleştiği için ağırlıksız topolojik modülerlik karşılaştırılır
-    comms_obs = nx.community.louvain_communities(G, seed=42)
-    q_obs = float(nx.community.modularity(G, comms_obs))
+    # Gözlenen Louvain modülerliği (ağırlıksız topoloji: weight=None)
+    comms_obs = nx.community.louvain_communities(G_unweighted, weight=None, seed=42)
+    q_obs = float(nx.community.modularity(G_unweighted, comms_obs, weight=None))
 
     null_c_list = []
     null_l_list = []
@@ -96,7 +101,7 @@ def run_null_model_experiments(
     successful_trials = 0
     failed_trials = 0
 
-    logger.info(f"{n_trials} adet derece korumalı null model ağı üretiliyor...")
+    logger.info(f"{n_trials} adet ağırlıksız ve derece korumalı null model ağı üretiliyor...")
 
     trial_idx = 0
     while successful_trials < n_trials and trial_idx < n_trials * 3:
@@ -104,7 +109,7 @@ def run_null_model_experiments(
         trial_idx += 1
 
         G_null, deg_preserved = generate_degree_preserving_null_network(
-            G,
+            G_unweighted,
             n_swaps_factor=5,
             seed=seed,
             ensure_connected=is_connected
@@ -122,37 +127,50 @@ def run_null_model_experiments(
             lcc_null = max(nx.connected_components(G_null), key=len)
             l_null = float(nx.average_shortest_path_length(G_null.subgraph(lcc_null)))
 
-        comms_null = nx.community.louvain_communities(G_null, seed=42)
-        q_null = float(nx.community.modularity(G_null, comms_null))
+        # Null modülerlik: weight=None ile
+        comms_null = nx.community.louvain_communities(G_null, weight=None, seed=seed)
+        q_null = float(nx.community.modularity(G_null, comms_null, weight=None))
 
         null_c_list.append(c_null)
         null_l_list.append(l_null)
         null_q_list.append(q_null)
         successful_trials += 1
 
-    # İstatistiksel metriklerin hesaplanması
-    def calc_stats(obs_val: float, null_vals: List[float]) -> Dict[str, float]:
+    # İstatistiksel metriklerin ve ampirik p-değerlerinin hesaplanması
+    def calc_stats(obs_val: float, null_vals: List[float], alternative: str = "right") -> Dict[str, Any]:
         arr = np.array(null_vals)
         mean_val = float(np.mean(arr))
         std_val = float(np.std(arr, ddof=1)) if len(arr) > 1 else 0.0
         z_score = float((obs_val - mean_val) / std_val) if std_val > 0 else 0.0
         
-        # Ampirik iki yönlü p-değeri
-        abs_diff = np.abs(arr - mean_val)
-        obs_diff = np.abs(obs_val - mean_val)
-        p_val = float((np.sum(abs_diff >= obs_diff) + 1) / (len(arr) + 1))
+        # Monte Carlo ampirik p-değeri formülü: p = (r + 1) / (B + 1)
+        if alternative == "right":
+            # Yüksek değer alternatifi (H1: obs > null)
+            p_val = float((np.sum(arr >= obs_val) + 1) / (len(arr) + 1))
+            test_desc = "right-tailed (H1: obs > null, p = [count(null >= obs) + 1] / [B + 1])"
+        elif alternative == "left":
+            # Düşük değer alternatifi (H1: obs < null)
+            p_val = float((np.sum(arr <= obs_val) + 1) / (len(arr) + 1))
+            test_desc = "left-tailed (H1: obs < null, p = [count(null <= obs) + 1] / [B + 1])"
+        else:
+            # İki yönlü alternatif (H1: obs != null)
+            p_left = (np.sum(arr <= obs_val) + 1) / (len(arr) + 1)
+            p_right = (np.sum(arr >= obs_val) + 1) / (len(arr) + 1)
+            p_val = float(min(1.0, 2.0 * min(p_left, p_right)))
+            test_desc = "two-tailed (H1: obs != null, p = min(1.0, 2 * min(p_left, p_right)))"
 
         return {
             "observed": obs_val,
             "null_mean": mean_val,
             "null_std": std_val,
             "z_score": z_score,
-            "empirical_p_value": p_val
+            "empirical_p_value": p_val,
+            "test_direction": test_desc
         }
 
-    clustering_stats = calc_stats(c_obs, null_c_list)
-    path_stats = calc_stats(l_obs, null_l_list)
-    modularity_stats = calc_stats(q_obs, null_q_list)
+    clustering_stats = calc_stats(c_obs, null_c_list, alternative="right")
+    path_stats = calc_stats(l_obs, null_l_list, alternative="two-sided")
+    modularity_stats = calc_stats(q_obs, null_q_list, alternative="right")
 
     # Küçük Dünya (Small-Worldness) Katsayısı: sigma = (C / C_null) / (L / L_null)
     gamma = c_obs / clustering_stats["null_mean"] if clustering_stats["null_mean"] > 0 else 0.0
@@ -167,6 +185,7 @@ def run_null_model_experiments(
     df_comparison = pd.DataFrame(comparison_table)
 
     summary = {
+        "model_type": "Unweighted topological degree-preserving random graphs (connected double edge swap)",
         "successful_null_models": successful_trials,
         "failed_trials": failed_trials,
         "clustering": clustering_stats,

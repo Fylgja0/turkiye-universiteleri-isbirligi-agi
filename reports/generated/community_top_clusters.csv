@@ -1,6 +1,6 @@
 community_id,size,ratio,internal_edge_weight,egean_institutions_count,top_hub_institutions,member_sample
-0,51,0.27419354838709675,2326,0,"Yıldız Technical University, Istanbul University, Istanbul Technical University","Bezmiâlem Vakıf Üniversitesi, Piri Reis University, Ibn Haldun University, MEF University, Mimar Sinan Güzel Sanatlar Üniversitesi"
-1,43,0.23118279569892472,1248,0,"Karadeniz Technical University, Fırat University, Mersin Üniversitesi","Bitlis Eren University, Recep Tayyip Erdoğan University, Hasan Kalyoncu University, Gümüşhane University, Inonu University"
-2,30,0.16129032258064516,716,3,"Sakarya University, Anadolu University, Kocaeli Üniversitesi","Doğuş University, Çanakkale Onsekiz Mart Üniversitesi, Sakarya University, Yozgat Bozok Üniversitesi, Bursa Technical University"
-3,29,0.15591397849462366,570,1,"Erciyes University, Selçuk University, Akdeniz University","İzmir Tınaztepe Üniversitesi, Aksaray University, Antalya Bilim Üniversitesi, Antalya Bilim University, Necmettin Erbakan University"
-4,20,0.10752688172043011,911,0,"Gazi University, Hacettepe University, Ankara University","Bilkent University, Hacettepe University, Başkent University, Atilim University, Gazi University"
+0,51,0.27419354838709675,2326,0,"Yıldız Technical University, Istanbul University, Istanbul Technical University","Okan University, Istanbul 29 Mayis University, Özyeğin University, İstanbul Nişantaşı Üniversitesi, Istanbul Arel University"
+1,43,0.23118279569892472,1248,0,"Karadeniz Technical University, Fırat University, Mersin Üniversitesi","Dicle University, Mustafa Kemal University, Mersin Üniversitesi, Kahramanmaraş İstiklal Üniversitesi, Avrasya University"
+2,30,0.16129032258064516,716,3,"Sakarya University, Anadolu University, Kocaeli Üniversitesi","Kocaeli Üniversitesi, Yüksek İhtisas Üniversitesi, Tekirdağ Namık Kemal University, Trakya University, Eskişehir Osmangazi University"
+3,29,0.15591397849462366,570,1,"Selçuk University, Erciyes University, Akdeniz University","KTO Karatay University, Selçuk University, Sivas Bilim ve Teknoloji Üniversitesi, Amasya Üniversitesi, Erzincan Binali Yıldırım University"
+4,20,0.10752688172043011,911,0,"Gazi University, Hacettepe University, Ankara University","TOBB University of Economics and Technology, Hacettepe University, Ankara University, TED University, Atilim University"

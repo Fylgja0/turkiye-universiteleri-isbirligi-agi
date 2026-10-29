@@ -200,6 +200,8 @@ def main():
     # Katsayılar Karşılaştırma Tablosu (Poisson vs Negative Binomial)
     records_coef = []
     terms = ["Intercept", "log_size_i", "log_size_j", "log_distance", "both_egean"]
+    if gravity_results["negative_binomial_model"] and "alpha" in gravity_results["negative_binomial_model"]["parameters"]:
+        terms.append("alpha")
     for t in terms:
         p_info = gravity_results["poisson_model"]["parameters"].get(t, {})
         nb_info = gravity_results["negative_binomial_model"]["parameters"].get(t, {}) if gravity_results["negative_binomial_model"] else {}

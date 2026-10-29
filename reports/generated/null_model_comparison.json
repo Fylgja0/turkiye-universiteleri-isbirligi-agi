@@ -1,4 +1,5 @@
 {
+  "model_type": "Unweighted topological degree-preserving random graphs (connected double edge swap)",
   "successful_null_models": 100,
   "failed_trials": 0,
   "clustering": {
@@ -6,21 +7,24 @@
     "null_mean": 0.3897683598527623,
     "null_std": 0.00446033833037842,
     "z_score": 11.997657559741013,
-    "empirical_p_value": 0.009900990099009901
+    "empirical_p_value": 0.009900990099009901,
+    "test_direction": "right-tailed (H1: obs > null, p = [count(null >= obs) + 1] / [B + 1])"
   },
   "shortest_path": {
     "observed": 1.8290031967451321,
     "null_mean": 1.8079000290613194,
     "null_std": 0.0034901427957229466,
     "z_score": 6.046505521113329,
-    "empirical_p_value": 0.009900990099009901
+    "empirical_p_value": 0.019801980198019802,
+    "test_direction": "two-tailed (H1: obs != null, p = min(1.0, 2 * min(p_left, p_right)))"
   },
   "modularity": {
-    "observed": 0.34137246691162487,
-    "null_mean": 0.1634254884729091,
-    "null_std": 0.021650325039174762,
-    "z_score": 8.219136577244592,
-    "empirical_p_value": 0.009900990099009901
+    "observed": 0.16839683843646938,
+    "null_mean": 0.09619360781149373,
+    "null_std": 0.003132549026760627,
+    "z_score": 23.049353739769273,
+    "empirical_p_value": 0.009900990099009901,
+    "test_direction": "right-tailed (H1: obs > null, p = [count(null >= obs) + 1] / [B + 1])"
   },
   "small_worldness": {
     "gamma (C/C_null)": 1.13729593625476,

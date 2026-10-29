@@ -2,13 +2,13 @@
 tests/test_final_analysis.py
 
 Final analiz hattı (30 Ekim 2026 Final Teslimi) modüllerinin birim ve entegrasyon testleri:
-1. Topoloji ve bağlantısız ağ LCC ayrımı (test_network_topology)
+1. Topoloji ve bağlantısız ağ LCC ayrımı (test_network_topology_connected, test_network_topology_disconnected)
 2. 5 merkeziyet ölçüsü ve Spearman korelasyonu (test_centralities)
-3. Güç yasası fiti ve log-likelihood testleri (test_powerlaw_fit)
-4. Louvain & Leiden 10-tohum kararlılık analizi (test_community_detection)
-5. Null model derece dizisi korunumu ve Z-skorları (test_null_model)
-6. Çekim modeli ikili veri seti ve GLM regresyonları (test_gravity_models)
-7. Coğrafi iş birliği haritası üretimi (test_collaboration_map)
+3. Güç yasası fiti ve sabit tohumlu dağılım testleri (test_powerlaw_fit)
+4. Louvain ve Leiden 10-tohum kararlılık ve Leiden ortak modülerlik doğrulaması (test_community_detection_stability, test_leiden_common_modularity_matches_exported_memberships)
+5. Ağırlıksız null model derece korunumu, bağlantılılık ve ampirik p-değeri hesabı (test_null_model_degree_and_connectivity_preservation, test_null_model_unweighted_and_p_value_consistency)
+6. Çekim modeli ikili veri seti, MLE alfa tahmini, esas model sentezi katsayı eşleşmesi (test_gravity_dyadic_dataset, test_gravity_mle_alpha_and_synthesis_consistency)
+7. Coğrafi iş birliği haritası üretimi (test_collaboration_map_generation)
 """
 
 import os
@@ -26,15 +26,23 @@ from scripts.analysis_community import (
     analyze_communities,
     SEEDS_10
 )
-from scripts.analysis_null_model import generate_degree_preserving_null_network, run_null_model_experiments
-from scripts.analysis_gravity import haversine_distance, build_dyadic_dataset, fit_gravity_models
+from scripts.analysis_null_model import (
+    generate_degree_preserving_null_network,
+    run_null_model_experiments
+)
+from scripts.analysis_gravity import (
+    haversine_distance,
+    build_dyadic_dataset,
+    fit_gravity_models
+)
 from scripts.visualize_map import generate_collaboration_map
 
 
 @pytest.fixture
 def sample_graph():
-    """Testler için 10 düğümlü, ağırlıklı sentetik bağlı graf oluşturur."""
-    G = nx.erdos_renyi_graph(n=10, p=0.4, seed=42)
+    """Testler için 10 düğümlü, deterministik tohumlu ağırlıklı sentetik bağlı graf oluşturur."""
+    np.random.seed(42)
+    G = nx.erdos_renyi_graph(n=10, p=0.45, seed=42)
     # Grafiğin tek bileşen olmasını garantile
     if not nx.is_connected(G):
         components = list(nx.connected_components(G))
@@ -43,8 +51,10 @@ def sample_graph():
             v = list(components[i + 1])[0]
             G.add_edge(u, v)
 
-    for u, v in G.edges():
-        G[u][v]["weight"] = np.random.randint(1, 10)
+    # Kenarlara deterministik ağırlıklar ata
+    weights = [3, 1, 5, 2, 7, 4, 2, 6, 8, 3, 1, 4, 5, 2, 6, 9, 3, 1, 4, 2]
+    for idx, (u, v) in enumerate(G.edges()):
+        G[u][v]["weight"] = weights[idx % len(weights)]
     return G
 
 
@@ -114,60 +124,104 @@ def test_centralities(sample_graph, sample_metadata):
 
 
 def test_powerlaw_fit():
-    """Güç yasası fiti ve karşılaştırma testlerini doğrular."""
-    # Sentetik zipf/güç yasası derece dizisi
-    degrees = np.random.zipf(a=2.5, size=50).tolist()
+    """Sabit tohumlu sentetik dizide güç yasası fiti ve karşılaştırma testlerini doğrular."""
+    np.random.seed(42)
+    degrees = np.random.zipf(a=2.5, size=60).tolist()
     results = fit_powerlaw_distribution(degrees)
     assert "alpha" in results
     assert "xmin" in results
     assert "comparison" in results
     assert "vs_exponential" in results["comparison"]
     assert "vs_lognormal" in results["comparison"]
+    assert results["alpha"] > 1.0
 
 
 def test_community_detection_stability(sample_graph, sample_metadata):
-    """Louvain ve Leiden 10 tohum kararlılık testlerini doğrular."""
-    results = analyze_communities(sample_graph, inst_metadata_df=sample_metadata, seeds=[1, 2, 3])
+    """Louvain ve Leiden çoklu tohum kararlılık testlerini doğrular."""
+    results = analyze_communities(sample_graph, inst_metadata_df=sample_metadata, seeds=[42, 101, 7])
     summary = results["summary"]
     
     assert "louvain" in summary
     assert "leiden" in summary
     assert 0.0 <= summary["louvain"]["stability"]["nmi_mean"] <= 1.0
     assert 0.0 <= summary["leiden"]["stability"]["ari_mean"] <= 1.0
+    assert "raw_partition_modularity_mean" in summary["leiden"]
     assert "membership_df" in results
     assert len(results["membership_df"]) == 10
 
 
-def test_null_model_degree_preservation(sample_graph):
-    """Derece korumalı kenar takasında derece dizisinin tam korunduğunu doğrular."""
+def test_leiden_common_modularity_matches_exported_memberships(sample_graph, sample_metadata):
+    """
+    Leiden için raporlanan ortak modülerlik değerinin, dışarı aktarılan
+    üyeliklerle nx.community.modularity(G, comms, weight='weight') ile
+    hesaplanan değerle birebir eşleştiğini doğrular.
+    """
+    results = analyze_communities(sample_graph, inst_metadata_df=sample_metadata, seeds=[42])
+    rep_modularity = results["summary"]["leiden"]["trials_summary"][0]["modularity"]
+
+    # Dışarı aktarılan üyeliklerden toplulukları yeniden oluştur
+    df_mem = results["membership_df"]
+    cluster_groups = df_mem.groupby("leiden_community")["id"].apply(list).tolist()
+
+    # NetworkX ile bağımsız olarak hesaplanan ağırlıklı modülerlik
+    expected_modularity = float(nx.community.modularity(sample_graph, cluster_groups, weight="weight"))
+    assert np.isclose(rep_modularity, expected_modularity, atol=1e-6)
+
+
+def test_null_model_degree_and_connectivity_preservation(sample_graph):
+    """
+    Derece korumalı kenar takasında derece dizisinin ve
+    bağlantılılık durumunun kesinlikle korunduğunu doğrular.
+    """
     G_null, is_exact = generate_degree_preserving_null_network(
-        sample_graph, n_swaps_factor=2, seed=123, ensure_connected=True
+        sample_graph, n_swaps_factor=3, seed=123, ensure_connected=True
     )
     assert is_exact is True
+    assert nx.is_connected(G_null) is True
     assert sorted([d for _, d in sample_graph.degree()]) == sorted([d for _, d in G_null.degree()])
 
 
-def test_null_model_experiments(sample_graph):
-    """Null model 5 denemelik sentetik çalıştırmasını doğrular."""
-    results = run_null_model_experiments(sample_graph, n_trials=5, base_seed=42)
-    assert results["summary"]["successful_null_models"] == 5
-    assert results["summary"]["degree_sequence_preserved"] is True
-    assert "clustering" in results["summary"]
-    assert "shortest_path" in results["summary"]
-    assert "small_worldness" in results["summary"]
+def test_null_model_unweighted_and_p_value_consistency(sample_graph):
+    """
+    Null modelin tamamen ağırlıksız topoloji (weight=None) kullandığını,
+    ortalama kümelenme, en kısa yol ve modülerliğin ağırlıksız tanımla
+    ve ampirik p-değerlerinin doğru kuyruk formülüyle hesaplandığını doğrular.
+    """
+    results = run_null_model_experiments(sample_graph, n_trials=10, base_seed=42)
+    summary = results["summary"]
+    
+    assert summary["degree_sequence_preserved"] is True
+    assert summary["successful_null_models"] == 10
+    
+    # Ağırlıksız gözlenen değerlerin tutarlılığı
+    G_unweighted = nx.Graph()
+    G_unweighted.add_nodes_from(sample_graph.nodes())
+    G_unweighted.add_edges_from(sample_graph.edges())
+
+    expected_c_obs = float(nx.average_clustering(G_unweighted))
+    assert np.isclose(summary["clustering"]["observed"], expected_c_obs, atol=1e-6)
+
+    # p-değeri sınırları
+    assert 0.0 < summary["clustering"]["empirical_p_value"] <= 1.0
+    assert 0.0 < summary["shortest_path"]["empirical_p_value"] <= 1.0
+    assert 0.0 < summary["modularity"]["empirical_p_value"] <= 1.0
+
+    # Small-worldness katsayılarının doğruluğu
+    gamma = summary["small_worldness"]["gamma (C/C_null)"]
+    lambda_val = summary["small_worldness"]["lambda (L/L_null)"]
+    sigma = summary["small_worldness"]["sigma"]
+    assert np.isclose(sigma, gamma / lambda_val, atol=1e-6)
 
 
 def test_haversine_distance():
     """Haversine formülünün bilinen şehirler arasındaki mesafesini doğrular."""
-    # Istanbul (41.0082, 28.9784) - Ankara (39.9334, 32.8597) ~ 350 km
     dist = haversine_distance(41.0082, 28.9784, 39.9334, 32.8597)
     assert 340.0 < dist < 360.0
-    # Sıfır mesafe aynı nokta
     assert haversine_distance(41.0, 29.0, 41.0, 29.0) == 0.0
 
 
-def test_gravity_dyadic_dataset_and_glm(sample_graph, sample_metadata):
-    """İkili veri seti kurulumu, sıfır mesafesi ve GLM modellerini doğrular."""
+def test_gravity_dyadic_dataset(sample_graph, sample_metadata):
+    """İkili veri seti kurulumu, sıfır mesafesi ve çift sayısını doğrular."""
     df_dyads, audit = build_dyadic_dataset(sample_graph, sample_metadata, intra_city_offset_km=1.0)
     expected_pairs = 10 * 9 // 2  # 45 çift
     assert len(df_dyads) == expected_pairs
@@ -176,13 +230,41 @@ def test_gravity_dyadic_dataset_and_glm(sample_graph, sample_metadata):
     assert "log_distance" in df_dyads.columns
     assert "both_egean" in df_dyads.columns
 
-    # GLM Modelleri
+
+def test_gravity_mle_alpha_and_synthesis_consistency(sample_graph, sample_metadata):
+    """
+    Çekim modelinde Negatif Binom modelinin alfa parametresini tahmin ettiğini,
+    aşırı yayılım durumunda esas model olarak Negatif Binom'un seçildiğini ve
+    sentezdeki katsayıların seçilen esas modelle birebir eşleştiğini doğrular.
+    """
+    df_dyads, _ = build_dyadic_dataset(sample_graph, sample_metadata, intra_city_offset_km=1.0)
     models = fit_gravity_models(df_dyads)
+    
     assert "poisson_model" in models
     assert "negative_binomial_model" in models
     assert "synthesis" in models
-    assert "parameters" in models["poisson_model"]
-    assert "log_distance" in models["poisson_model"]["parameters"]
+    
+    # Alfa parametresinin varlığı
+    nb_model = models["negative_binomial_model"]
+    assert "alpha_parameter" in nb_model
+    assert nb_model["alpha_parameter"]["estimated_alpha"] > 0
+
+    # Sentez katsayılarının seçilen esas model ile eşleşmesi
+    primary_name = models["primary_model_name"]
+    synth = models["synthesis"]
+    
+    if primary_name.startswith("Negative"):
+        target_params = nb_model["parameters"]
+    else:
+        target_params = models["poisson_model"]["parameters"]
+
+    synth_dist_coef = synth["scientific_conclusion"]["distance_elasticity"]["coef"]
+    target_dist_coef = target_params["log_distance"]["coef"]
+    assert np.isclose(synth_dist_coef, target_dist_coef, atol=1e-6)
+
+    synth_ege_coef = synth["scientific_conclusion"]["regional_egean_effect"]["coef"]
+    target_ege_coef = target_params["both_egean"]["coef"]
+    assert np.isclose(synth_ege_coef, target_ege_coef, atol=1e-6)
 
 
 def test_collaboration_map_generation(sample_graph, sample_metadata):

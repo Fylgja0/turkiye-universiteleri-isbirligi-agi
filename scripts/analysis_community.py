@@ -88,7 +88,7 @@ def run_leiden_trials(G: nx.Graph, seeds: List[int] = SEEDS_10) -> List[Dict[str
             n_iterations=-1
         )
 
-        modularity = float(partition.modularity)
+        raw_partition_modularity = float(partition.modularity)
         
         # Toplulukları ayrıştır
         cluster_dict = {}
@@ -105,11 +105,15 @@ def run_leiden_trials(G: nx.Graph, seeds: List[int] = SEEDS_10) -> List[Dict[str
 
         membership_vector = [node_comm_map[n] for n in nodes]
 
+        # Ortak ölçüm: Aynı NetworkX grafiği ve ağırlıklı Newman modülerliği
+        common_modularity = float(nx.community.modularity(G, sorted_comms, weight="weight"))
+
         trials.append({
             "seed": s,
             "algorithm": "leiden",
             "num_communities": len(sorted_comms),
-            "modularity": modularity,
+            "modularity": common_modularity,
+            "raw_partition_modularity": raw_partition_modularity,
             "communities": sorted_comms,
             "membership_dict": node_comm_map,
             "membership_vector": membership_vector
@@ -227,8 +231,23 @@ def analyze_communities(
             "num_communities_mean": float(np.mean([t["num_communities"] for t in leiden_trials])),
             "modularity_mean": float(np.mean([t["modularity"] for t in leiden_trials])),
             "modularity_std": float(np.std([t["modularity"] for t in leiden_trials])),
+            "raw_partition_modularity_mean": float(np.mean([t["raw_partition_modularity"] for t in leiden_trials])),
+            "raw_partition_modularity_std": float(np.std([t["raw_partition_modularity"] for t in leiden_trials])),
+            "modularity_measurement_note": (
+                "Raporlanan 'modularity_mean' değeri, Louvain ile birebir karşılaştırılabilir olması için "
+                "aynı ağırlıklı NetworkX grafiği üzerinden nx.community.modularity(..., weight='weight') ile hesaplanmıştır. "
+                "leidenalg kütüphanesinin kendi ModularityVertexPartition ham değeri 'raw_partition_modularity_mean' altında ayrıca verilmiştir."
+            ),
             "stability": leiden_stability,
-            "trials_summary": [{"seed": t["seed"], "k": t["num_communities"], "modularity": t["modularity"]} for t in leiden_trials]
+            "trials_summary": [
+                {
+                    "seed": t["seed"],
+                    "k": t["num_communities"],
+                    "modularity": t["modularity"],
+                    "raw_partition_modularity": t["raw_partition_modularity"]
+                }
+                for t in leiden_trials
+            ]
         },
         "cross_algorithm_agreement": {
             "nmi": cross_nmi,

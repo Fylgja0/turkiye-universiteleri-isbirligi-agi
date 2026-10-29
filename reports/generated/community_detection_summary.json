@@ -64,8 +64,11 @@
   },
   "leiden": {
     "num_communities_mean": 6.6,
-    "modularity_mean": 0.14157044145837022,
-    "modularity_std": 0.0025149306456957402,
+    "modularity_mean": 0.3419579891284111,
+    "modularity_std": 0.0009326556433328783,
+    "raw_partition_modularity_mean": 0.14157044145837022,
+    "raw_partition_modularity_std": 0.0025149306456957402,
+    "modularity_measurement_note": "Raporlanan 'modularity_mean' değeri, Louvain ile birebir karşılaştırılabilir olması için aynı ağırlıklı NetworkX grafiği üzerinden nx.community.modularity(..., weight='weight') ile hesaplanmıştır. leidenalg kütüphanesinin kendi ModularityVertexPartition ham değeri 'raw_partition_modularity_mean' altında ayrıca verilmiştir.",
     "stability": {
       "nmi_mean": 0.8377757785498264,
       "nmi_std": 0.052143758805892344,
@@ -76,52 +79,62 @@
       {
         "seed": 42,
         "k": 6,
-        "modularity": 0.13995778647870644
+        "modularity": 0.3401602761882972,
+        "raw_partition_modularity": 0.13995778647870644
       },
       {
         "seed": 101,
         "k": 6,
-        "modularity": 0.14544167448273476
+        "modularity": 0.3427798635665176,
+        "raw_partition_modularity": 0.14544167448273476
       },
       {
         "seed": 2024,
         "k": 7,
-        "modularity": 0.13877045099433347
+        "modularity": 0.3412640895278272,
+        "raw_partition_modularity": 0.13877045099433347
       },
       {
         "seed": 7,
         "k": 6,
-        "modularity": 0.1444597471592014
+        "modularity": 0.34298782914891257,
+        "raw_partition_modularity": 0.1444597471592014
       },
       {
         "seed": 1923,
         "k": 7,
-        "modularity": 0.13863247668146314
+        "modularity": 0.34107605990425083,
+        "raw_partition_modularity": 0.13863247668146314
       },
       {
         "seed": 999,
         "k": 6,
-        "modularity": 0.14297512194146805
+        "modularity": 0.3426673962447041,
+        "raw_partition_modularity": 0.14297512194146805
       },
       {
         "seed": 12345,
         "k": 8,
-        "modularity": 0.13964499742826147
+        "modularity": 0.341704731564465,
+        "raw_partition_modularity": 0.13964499742826147
       },
       {
         "seed": 54321,
         "k": 7,
-        "modularity": 0.14321190017980556
+        "modularity": 0.34296972111760043,
+        "raw_partition_modularity": 0.14321190017980556
       },
       {
         "seed": 888,
         "k": 7,
-        "modularity": 0.1388225543630949
+        "modularity": 0.3413220535471252,
+        "raw_partition_modularity": 0.1388225543630949
       },
       {
         "seed": 2026,
         "k": 6,
-        "modularity": 0.1437877048746331
+        "modularity": 0.34264787047441086,
+        "raw_partition_modularity": 0.1437877048746331
       }
     ]
   },
