@@ -77,15 +77,41 @@ turkiye-universiteleri-isbirligi-agi/
 ├── docs/
 │   ├── data_dictionary.md          # Veri sözlüğü ve alan açıklamaları
 │   └── data_manifest.md            # Veri manifestosu, ham veri hash ve boyutları
+├── notebooks/
+│   └── final_analysis.ipynb        # Final teslimi interaktif analiz ve görselleştirme notebook'u
 ├── reports/
-│   └── ara_kontrol.md              # Ara kontrol istatistikleri ve metrik raporu
+│   ├── ara_kontrol.md              # Ara kontrol istatistikleri ve metrik raporu
+│   └── generated/                  # Final analizi çıktıları (JSON, CSV, PNG, HTML)
+│       ├── network_topology_summary.json
+│       ├── centrality_metrics.csv
+│       ├── centrality_top10_comparison.csv
+│       ├── centrality_spearman_correlation.csv
+│       ├── powerlaw_fit_results.json
+│       ├── degree_distribution_powerlaw.png
+│       ├── community_detection_summary.json
+│       ├── community_assignments.csv
+│       ├── community_top_clusters.csv
+│       ├── null_model_comparison.json
+│       ├── null_model_comparison.csv
+│       ├── gravity_model_results.json
+│       ├── gravity_model_summary.csv
+│       ├── gravity_model_dyadic_sample.csv
+│       └── turkey_collaboration_map.html
 ├── scripts/
 │   ├── __init__.py
 │   ├── fetch_openalex.py           # Tekrar çalıştırılabilir veri toplama scripti
 │   ├── build_network.py            # Ham veriden ağ kurma scripti
-│   └── audit_excluded_works.py     # 641 dışlanan yayını denetleme ve doğrulama scripti
+│   ├── audit_excluded_works.py     # 641 dışlanan yayını denetleme ve doğrulama scripti
+│   ├── analysis_metrics.py         # Temel ağ ölçüleri ve merkeziyet modülü
+│   ├── analysis_powerlaw.py        # Derece dağılımı ve güç yasası modülü
+│   ├── analysis_community.py       # Louvain/Leiden (10 seed) topluluk modülü
+│   ├── analysis_null_model.py      # 100 rastgele ağ null model modülü
+│   ├── analysis_gravity.py         # Çekim modeli Poisson & NegBinomial GLM modülü
+│   ├── visualize_map.py            # Folium coğrafi iş birliği haritası modülü
+│   └── run_final_analysis.py       # Tüm final analiz hattını çalıştıran orkestratör
 ├── tests/
-│   └── test_network.py             # Birim testler ve otomatik denetim paketi
+│   ├── test_network.py             # Veri ve ara kontrol doğrulama testleri (14 test)
+│   └── test_final_analysis.py      # Final analiz hattı birim testleri (10 test)
 └── data/
     ├── raw/                        # Yerel ham json/jsonl dosyaları (.gitignore ile korunur)
     │   ├── institutions_tr.json
@@ -116,7 +142,8 @@ pip install -r requirements.txt
 
 ### 6.2. Testlerin Çalıştırılması (Birim Doğrulama)
 ```bash
-PYTHONPATH=. pytest tests/test_network.py -v
+# Tüm birim ve entegrasyon testlerini (24 test) çalıştırın:
+PYTHONPATH=. pytest -v
 ```
 
 ### 6.3. Veri Toplama (Canlı OpenAlex API)
@@ -133,6 +160,13 @@ python scripts/fetch_openalex.py --dry-run
 python scripts/build_network.py
 ```
 Bu komut sonucunda `data/processed/` altında `edges.csv`, `institutions.csv` ve `collaboration.graphml` dosyaları üretilir.
+
+### 6.5. Final Analiz Hattının Çalıştırılması (30 Ekim 2026 Teslimi)
+```bash
+# Temel metrikler, güç yasası, topluluk tespiti, null model, çekim modeli ve coğrafi haritayı üretir:
+python scripts/run_final_analysis.py
+```
+Tüm nihai analiz tabloları, JSON özetleri, grafikler ve etkileşimli HTML haritası `reports/generated/` dizinine kaydedilir. Ayrıca `notebooks/final_analysis.ipynb` üzerinden tüm adımlar interaktif olarak incelenebilir.
 
 ---
 

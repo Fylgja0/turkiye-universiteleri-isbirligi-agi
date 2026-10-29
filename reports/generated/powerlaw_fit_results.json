@@ -1,0 +1,21 @@
+{
+  "alpha": 2.898946015248958,
+  "xmin": 29.0,
+  "sigma": 0.16528203556047574,
+  "comparison": {
+    "supports_pure_power_law": false,
+    "vs_exponential": {
+      "R": -5.1402625340256085,
+      "p_value": 2.743548591603746e-07,
+      "favors": "exponential"
+    },
+    "vs_lognormal": {
+      "R": -3.536604595034936,
+      "p_value": 0.0004053059747086692,
+      "favors": "lognormal"
+    },
+    "sample_size": 186,
+    "nodes_above_xmin": 132,
+    "notes": "Türkiye üniversiteler ağı (N=186 aktif üniversite), makro ölçekli küresel ağlara kıyasla küçük bir örneklem boyutu sergilemektedir. Derece aralığı sınırlıdır (k_min ve k_max dar bir banttadır). Bu nedenle log-normal ve üstel modellerle yapılan log-likelihood testlerinde p-değeri anlamlılık eşiğini aşamadığında saf bir güç yasası (scale-free) olduğunu iddia etmek bilimsel olarak yanıltıcıdır."
+  }
+}

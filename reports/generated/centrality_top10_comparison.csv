@@ -1,0 +1,51 @@
+metric,rank,id,display_name,city,metric_value,period_cs_works_count
+degree,1,https://openalex.org/I95634034,Gazi University,Ankara,119.0,1170
+degree,2,https://openalex.org/I66514158,Hacettepe University,Ankara,115.0,1019
+degree,3,https://openalex.org/I4101805,Yıldız Technical University,Istanbul,113.0,1043
+degree,4,https://openalex.org/I67581229,Istanbul University,Istanbul,111.0,712
+degree,5,https://openalex.org/I48912391,Istanbul Technical University,Istanbul,105.0,1670
+degree,6,https://openalex.org/I149218525,Ankara University,Ankara,105.0,700
+degree,7,https://openalex.org/I4210112471,Istanbul University-Cerrahpaşa,Istanbul,94.0,480
+degree,8,https://openalex.org/I162720556,Karadeniz Technical University,Trabzon,93.0,573
+degree,9,https://openalex.org/I143396566,Fırat University,Elâzığ,90.0,1173
+degree,10,https://openalex.org/I74897591,Marmara University,Istanbul,90.0,636
+weighted_degree,1,https://openalex.org/I67581229,Istanbul University,Istanbul,744.0,712
+weighted_degree,2,https://openalex.org/I4210112471,Istanbul University-Cerrahpaşa,Istanbul,602.0,480
+weighted_degree,3,https://openalex.org/I66514158,Hacettepe University,Ankara,587.0,1019
+weighted_degree,4,https://openalex.org/I95634034,Gazi University,Ankara,580.0,1170
+weighted_degree,5,https://openalex.org/I48912391,Istanbul Technical University,Istanbul,564.0,1670
+weighted_degree,6,https://openalex.org/I4101805,Yıldız Technical University,Istanbul,542.0,1043
+weighted_degree,7,https://openalex.org/I143396566,Fırat University,Elâzığ,506.0,1173
+weighted_degree,8,https://openalex.org/I149218525,Ankara University,Ankara,439.0,700
+weighted_degree,9,https://openalex.org/I201799495,Middle East Technical University,Ankara,406.0,1320
+weighted_degree,10,https://openalex.org/I74897591,Marmara University,Istanbul,344.0,636
+betweenness_centrality,1,https://openalex.org/I95634034,Gazi University,Ankara,0.04312153596940454,1170
+betweenness_centrality,2,https://openalex.org/I149218525,Ankara University,Ankara,0.03143009110651355,700
+betweenness_centrality,3,https://openalex.org/I66514158,Hacettepe University,Ankara,0.030659883005564676,1019
+betweenness_centrality,4,https://openalex.org/I67581229,Istanbul University,Istanbul,0.02718304416744351,712
+betweenness_centrality,5,https://openalex.org/I4101805,Yıldız Technical University,Istanbul,0.02682622350788307,1043
+betweenness_centrality,6,https://openalex.org/I48912391,Istanbul Technical University,Istanbul,0.025627811315142794,1670
+betweenness_centrality,7,https://openalex.org/I74897591,Marmara University,Istanbul,0.021221950988194644,636
+betweenness_centrality,8,https://openalex.org/I87673952,Erciyes University,Kayseri,0.019305327556092516,536
+betweenness_centrality,9,https://openalex.org/I143396566,Fırat University,Elâzığ,0.018014186358855808,1173
+betweenness_centrality,10,https://openalex.org/I4210112471,Istanbul University-Cerrahpaşa,Istanbul,0.01766161379483558,480
+closeness_centrality,1,https://openalex.org/I95634034,Gazi University,Ankara,0.7341269841269841,1170
+closeness_centrality,2,https://openalex.org/I66514158,Hacettepe University,Ankara,0.7170542635658915,1019
+closeness_centrality,3,https://openalex.org/I4101805,Yıldız Technical University,Istanbul,0.7115384615384616,1043
+closeness_centrality,4,https://openalex.org/I67581229,Istanbul University,Istanbul,0.7061068702290076,712
+closeness_centrality,5,https://openalex.org/I48912391,Istanbul Technical University,Istanbul,0.6954887218045113,1670
+closeness_centrality,6,https://openalex.org/I149218525,Ankara University,Ankara,0.6954887218045113,700
+closeness_centrality,7,https://openalex.org/I4210112471,Istanbul University-Cerrahpaşa,Istanbul,0.6630824372759857,480
+closeness_centrality,8,https://openalex.org/I162720556,Karadeniz Technical University,Trabzon,0.6607142857142857,573
+closeness_centrality,9,https://openalex.org/I143396566,Fırat University,Elâzığ,0.6537102473498233,1173
+closeness_centrality,10,https://openalex.org/I74897591,Marmara University,Istanbul,0.6537102473498233,636
+pagerank,1,https://openalex.org/I67581229,Istanbul University,Istanbul,0.02697705202390001,712
+pagerank,2,https://openalex.org/I95634034,Gazi University,Ankara,0.023007328253949497,1170
+pagerank,3,https://openalex.org/I66514158,Hacettepe University,Ankara,0.02262350612422073,1019
+pagerank,4,https://openalex.org/I4210112471,Istanbul University-Cerrahpaşa,Istanbul,0.02178005742073873,480
+pagerank,5,https://openalex.org/I48912391,Istanbul Technical University,Istanbul,0.02164021641348558,1670
+pagerank,6,https://openalex.org/I4101805,Yıldız Technical University,Istanbul,0.021098109819195833,1043
+pagerank,7,https://openalex.org/I143396566,Fırat University,Elâzığ,0.020419029688901823,1173
+pagerank,8,https://openalex.org/I149218525,Ankara University,Ankara,0.017341236062573522,700
+pagerank,9,https://openalex.org/I201799495,Middle East Technical University,Ankara,0.015601968765422995,1320
+pagerank,10,https://openalex.org/I74897591,Marmara University,Istanbul,0.014130866611378573,636

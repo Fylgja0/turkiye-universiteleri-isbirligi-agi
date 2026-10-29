@@ -1,0 +1,132 @@
+{
+  "poisson_model": {
+    "aic": 38293.78321151166,
+    "bic_deviance": -139339.06211404616,
+    "deviance": 28411.769359537044,
+    "df_resid": 17200,
+    "parameters": {
+      "Intercept": {
+        "coef": -7.1920000119565035,
+        "std_err": 0.08981701627824998,
+        "z_value": -80.07391371893205,
+        "p_value": 0.0,
+        "ci_95_lower": -7.3680381290607215,
+        "ci_95_upper": -7.0159618948522855,
+        "exp_coef": 0.0007525824404275833
+      },
+      "log_size_i": {
+        "coef": 0.7483139429872939,
+        "std_err": 0.010887831389642607,
+        "z_value": 68.72938386051341,
+        "p_value": 0.0,
+        "ci_95_lower": 0.7269741855938497,
+        "ci_95_upper": 0.7696537003807381,
+        "exp_coef": 2.1134336412896984
+      },
+      "log_size_j": {
+        "coef": 0.7566717839263886,
+        "std_err": 0.010169533553801968,
+        "z_value": 74.40575124937764,
+        "p_value": 0.0,
+        "ci_95_lower": 0.7367398644213651,
+        "ci_95_upper": 0.776603703431412,
+        "exp_coef": 2.131171404948942
+      },
+      "log_distance": {
+        "coef": -0.26719559853822494,
+        "std_err": 0.0034286245986028673,
+        "z_value": -77.93084102794592,
+        "p_value": 0.0,
+        "ci_95_lower": -0.27391557926799465,
+        "ci_95_upper": -0.26047561780845524,
+        "exp_coef": 0.765523321577744
+      },
+      "both_egean": {
+        "coef": 0.8457966163835062,
+        "std_err": 0.06106942246148223,
+        "z_value": 13.849756265780439,
+        "p_value": 1.2764446890357122e-43,
+        "ci_95_lower": 0.7261027478023396,
+        "ci_95_upper": 0.9654904849646728,
+        "exp_coef": 2.329833058698583
+      }
+    },
+    "pearson_dispersion_ratio": 4.674444777522561,
+    "overdispersion_detected": true
+  },
+  "negative_binomial_model": {
+    "aic": 28661.842456539373,
+    "bic_deviance": -153631.31627660737,
+    "deviance": 14119.515196975844,
+    "df_resid": 17200,
+    "parameters": {
+      "Intercept": {
+        "coef": -7.183778413928781,
+        "std_err": 0.13403365995620464,
+        "z_value": -53.59682348654863,
+        "p_value": 0.0,
+        "ci_95_lower": -7.44647956015903,
+        "ci_95_upper": -6.921077267698532,
+        "exp_coef": 0.0007587953758676418
+      },
+      "log_size_i": {
+        "coef": 0.7433079616281778,
+        "std_err": 0.016684038275155175,
+        "z_value": 44.55204126060209,
+        "p_value": 0.0,
+        "ci_95_lower": 0.7106078474921859,
+        "ci_95_upper": 0.7760080757641697,
+        "exp_coef": 2.102880268909197
+      },
+      "log_size_j": {
+        "coef": 0.7786234185708172,
+        "std_err": 0.015797919479589178,
+        "z_value": 49.28645316725371,
+        "p_value": 0.0,
+        "ci_95_lower": 0.7476600653601586,
+        "ci_95_upper": 0.8095867717814758,
+        "exp_coef": 2.1784713572604018
+      },
+      "log_distance": {
+        "coef": -0.2874283433672548,
+        "std_err": 0.006482598871138632,
+        "z_value": -44.33844343615382,
+        "p_value": 0.0,
+        "ci_95_lower": -0.30013400368090654,
+        "ci_95_upper": -0.2747226830536031,
+        "exp_coef": 0.7501903209573547
+      },
+      "both_egean": {
+        "coef": 0.8263757812738053,
+        "std_err": 0.13700094011430075,
+        "z_value": 6.031898617515725,
+        "p_value": 1.6204443342424358e-09,
+        "ci_95_lower": 0.557858872801647,
+        "ci_95_upper": 1.0948926897459637,
+        "exp_coef": 2.2850222946884147
+      }
+    }
+  },
+  "synthesis": {
+    "primary_model_recommendation": "Negative Binomial GLM",
+    "overdispersion_note": "Pearson dispersiyon oranı 4.67 olup 1.0'ın üzerindedir. Bu durum ağ verilerindeki sıfır yoğunluğu ve aşırı yayılımı (overdispersion) göstermekte olup standart hataların güvenilirliği için Negative Binomial GLM esas alınmalıdır.",
+    "scientific_conclusion": {
+      "distance_effect": "Mesafe katsayısı negatif ve istatistiksel olarak anlamlıdır (β=-0.2672, p < 0.001). Coğrafi mesafe arttıkça iki üniversite arasındaki iş birliği olasılığı ve hacmi azalmaktadır.",
+      "size_effect": "Kurum büyüklüğü katsayıları pozitif ve güçlü biçimde anlamlıdır (β_i=0.7483, β_j=0.7567, p < 0.001). Üniversitelerin CS üretim kapasitesi iş birliği kurma potansiyelini katlayarak artırmaktadır.",
+      "egean_effect": "Her iki kurumun da Ege Bölgesi'nde olması iş birliğini pozitif etkilemektedir (β=0.8458, p=1.2764e-43). Bölgesel yakınlık Türkiye genelindeki mesafe etkisinin ötesinde ek bir çekim faktörüdür.",
+      "causality_warning": "Bulgular istatistiksel bir ilişkiyi ve çekim modeline uyumu göstermektedir; doğrudan tek yönlü bir nedensellik olarak yorumlanmamalıdır."
+    }
+  },
+  "dyadic_audit": {
+    "total_nodes": 186,
+    "total_theoretical_pairs": 17205,
+    "valid_pairs": 17205,
+    "excluded_missing_coords": 0,
+    "zero_distance_pairs": 593,
+    "zero_distance_ratio": 0.03446672478930544,
+    "collaborating_pairs": 3848,
+    "non_collaborating_pairs": 13357,
+    "sparsity_ratio": 0.7763440860215054,
+    "intra_city_offset_km": 1.0
+  }
+}

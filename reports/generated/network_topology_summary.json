@@ -1,0 +1,46 @@
+{
+  "primary_scope_b1": {
+    "scope_name": "Scope B1 (Aktif Üniversiteler)",
+    "number_of_nodes": 186,
+    "number_of_edges": 3848,
+    "density": 0.22365591397849463,
+    "average_degree": 41.376344086021504,
+    "average_clustering_coefficient": 0.4432819717412296,
+    "degree_assortativity": -0.09918408644511,
+    "number_connected_components": 1,
+    "number_isolated_nodes": 0,
+    "isolated_node_ids": [],
+    "is_connected": true,
+    "full_network_average_path_length": 1.8290031967451321,
+    "full_network_diameter": 4,
+    "largest_connected_component": {
+      "size": 186,
+      "ratio": 1.0,
+      "average_shortest_path_length": 1.8290031967451321,
+      "diameter": 4
+    }
+  },
+  "sensitivity_scope_b": {
+    "scope_name": "Scope B (Tüm Üniversiteler)",
+    "number_of_nodes": 194,
+    "number_of_edges": 3887,
+    "density": 0.2076277976603814,
+    "average_degree": 40.07216494845361,
+    "average_clustering_coefficient": 0.44767387488578736,
+    "degree_assortativity": -0.09827535649141157,
+    "number_connected_components": 2,
+    "number_isolated_nodes": 1,
+    "isolated_node_ids": [
+      "https://openalex.org/I264664839"
+    ],
+    "is_connected": false,
+    "full_network_average_path_length": null,
+    "full_network_diameter": null,
+    "largest_connected_component": {
+      "size": 193,
+      "ratio": 0.9948453608247423,
+      "average_shortest_path_length": 1.8731109671848014,
+      "diameter": 4
+    }
+  }
+}

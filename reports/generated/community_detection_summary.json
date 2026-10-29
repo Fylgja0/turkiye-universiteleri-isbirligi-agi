@@ -1,0 +1,133 @@
+{
+  "louvain": {
+    "num_communities_mean": 6.5,
+    "modularity_mean": 0.33943925954201054,
+    "modularity_std": 0.0014907144547415849,
+    "stability": {
+      "nmi_mean": 0.8171459789072648,
+      "nmi_std": 0.04623974430915022,
+      "ari_mean": 0.8032192010996586,
+      "ari_std": 0.061839420965126776
+    },
+    "trials_summary": [
+      {
+        "seed": 42,
+        "k": 6,
+        "modularity": 0.34137246691162487
+      },
+      {
+        "seed": 101,
+        "k": 7,
+        "modularity": 0.33790789117101055
+      },
+      {
+        "seed": 2024,
+        "k": 7,
+        "modularity": 0.34017029992148673
+      },
+      {
+        "seed": 7,
+        "k": 6,
+        "modularity": 0.33965383274383665
+      },
+      {
+        "seed": 1923,
+        "k": 7,
+        "modularity": 0.3409910035302099
+      },
+      {
+        "seed": 999,
+        "k": 6,
+        "modularity": 0.3398640603367409
+      },
+      {
+        "seed": 12345,
+        "k": 6,
+        "modularity": 0.33820076577817043
+      },
+      {
+        "seed": 54321,
+        "k": 6,
+        "modularity": 0.3411550470810805
+      },
+      {
+        "seed": 888,
+        "k": 7,
+        "modularity": 0.3383349770742447
+      },
+      {
+        "seed": 2026,
+        "k": 7,
+        "modularity": 0.3367422508717004
+      }
+    ]
+  },
+  "leiden": {
+    "num_communities_mean": 6.6,
+    "modularity_mean": 0.14157044145837022,
+    "modularity_std": 0.0025149306456957402,
+    "stability": {
+      "nmi_mean": 0.8377757785498264,
+      "nmi_std": 0.052143758805892344,
+      "ari_mean": 0.8373913178932764,
+      "ari_std": 0.05793453311098749
+    },
+    "trials_summary": [
+      {
+        "seed": 42,
+        "k": 6,
+        "modularity": 0.13995778647870644
+      },
+      {
+        "seed": 101,
+        "k": 6,
+        "modularity": 0.14544167448273476
+      },
+      {
+        "seed": 2024,
+        "k": 7,
+        "modularity": 0.13877045099433347
+      },
+      {
+        "seed": 7,
+        "k": 6,
+        "modularity": 0.1444597471592014
+      },
+      {
+        "seed": 1923,
+        "k": 7,
+        "modularity": 0.13863247668146314
+      },
+      {
+        "seed": 999,
+        "k": 6,
+        "modularity": 0.14297512194146805
+      },
+      {
+        "seed": 12345,
+        "k": 8,
+        "modularity": 0.13964499742826147
+      },
+      {
+        "seed": 54321,
+        "k": 7,
+        "modularity": 0.14321190017980556
+      },
+      {
+        "seed": 888,
+        "k": 7,
+        "modularity": 0.1388225543630949
+      },
+      {
+        "seed": 2026,
+        "k": 6,
+        "modularity": 0.1437877048746331
+      }
+    ]
+  },
+  "cross_algorithm_agreement": {
+    "nmi": 0.7844797436497707,
+    "ari": 0.7589328420584235,
+    "notes": "Louvain ve Leiden (seed=42) arasındaki NMI ve ARI mutabakatı."
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "successful_null_models": 100,
+  "failed_trials": 0,
+  "clustering": {
+    "observed": 0.4432819717412296,
+    "null_mean": 0.3897683598527623,
+    "null_std": 0.00446033833037842,
+    "z_score": 11.997657559741013,
+    "empirical_p_value": 0.009900990099009901
+  },
+  "shortest_path": {
+    "observed": 1.8290031967451321,
+    "null_mean": 1.8079000290613194,
+    "null_std": 0.0034901427957229466,
+    "z_score": 6.046505521113329,
+    "empirical_p_value": 0.009900990099009901
+  },
+  "modularity": {
+    "observed": 0.34137246691162487,
+    "null_mean": 0.1634254884729091,
+    "null_std": 0.021650325039174762,
+    "z_score": 8.219136577244592,
+    "empirical_p_value": 0.009900990099009901
+  },
+  "small_worldness": {
+    "gamma (C/C_null)": 1.13729593625476,
+    "lambda (L/L_null)": 1.0116727514489667,
+    "sigma": 1.124173735653026,
+    "is_small_world": true
+  },
+  "degree_sequence_preserved": true
+}
