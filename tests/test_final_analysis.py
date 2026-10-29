@@ -18,9 +18,12 @@ import networkx as nx
 import pandas as pd
 import numpy as np
 
+import leidenalg
+
 from scripts.analysis_metrics import compute_network_topology, compute_centralities
 from scripts.analysis_powerlaw import fit_powerlaw_distribution
 from scripts.analysis_community import (
+    nx_to_igraph,
     run_louvain_trials,
     run_leiden_trials,
     analyze_communities,
@@ -150,6 +153,58 @@ def test_community_detection_stability(sample_graph, sample_metadata):
     assert len(results["membership_df"]) == 10
 
 
+def test_leiden_weights_differentiate_partition():
+    """
+    Sentetik bir ağ üzerinde ağırlıklı Leiden'ın kenar ağırlıklarını gerçekten
+    kullandığını ve ağırlıksız bölüntüden kesinlikle farklılaştığını kanıtlar.
+    Ayrıca partition.quality() ile NetworkX ağırlıklı modülerliğin birebir eşitliğini doğrular.
+    """
+    # 6 düğümlü sentetik graf: iki güçlü 3'lü klik ve aralarında zayıf kenarlar
+    G = nx.Graph()
+    G.add_edge(0, 1, weight=10.0)
+    G.add_edge(1, 2, weight=10.0)
+    G.add_edge(0, 2, weight=10.0)
+    G.add_edge(3, 4, weight=10.0)
+    G.add_edge(4, 5, weight=10.0)
+    G.add_edge(3, 5, weight=10.0)
+    # Ağırlıksız bakıldığında onları birbirine yaklaştıran zayıf çapraz kenarlar
+    G.add_edge(0, 3, weight=0.1)
+    G.add_edge(1, 4, weight=0.1)
+    G.add_edge(2, 5, weight=0.1)
+    G.add_edge(0, 4, weight=0.1)
+    G.add_edge(1, 5, weight=0.1)
+
+    ig_G, idx_to_n, _ = nx_to_igraph(G)
+    
+    # 1. Ağırlıklı Leiden
+    part_w = leidenalg.find_partition(
+        ig_G,
+        leidenalg.ModularityVertexPartition,
+        weights=list(ig_G.es["weight"]),
+        seed=42
+    )
+    # 2. Ağırlıksız Leiden
+    part_unw = leidenalg.find_partition(
+        ig_G,
+        leidenalg.ModularityVertexPartition,
+        weights=None,
+        seed=42
+    )
+
+    # Ağırlıkların bölümlemeyi kesinlikle değiştirdiğinin kanıtı:
+    assert part_w.membership != part_unw.membership
+
+    # Ağırlıklı Leiden iki güçlü kliği ayırmalıdır (0,1,2 ve 3,4,5)
+    comm_0 = {idx_to_n[i] for i, c in enumerate(part_w.membership) if c == part_w.membership[0]}
+    comm_1 = {idx_to_n[i] for i, c in enumerate(part_w.membership) if c != part_w.membership[0]}
+    assert comm_0 == {0, 1, 2}
+    assert comm_1 == {3, 4, 5}
+
+    # partition.quality() hedef fonksiyonunun Newman ağırlıklı modülerliğe makine hassasiyetinde eşitliği:
+    nx_mod = nx.community.modularity(G, [comm_0, comm_1], weight="weight")
+    assert np.isclose(part_w.quality(), nx_mod, atol=1e-6)
+
+
 def test_leiden_common_modularity_matches_exported_memberships(sample_graph, sample_metadata):
     """
     Leiden için raporlanan ortak modülerlik değerinin, dışarı aktarılan
@@ -158,6 +213,10 @@ def test_leiden_common_modularity_matches_exported_memberships(sample_graph, sam
     """
     results = analyze_communities(sample_graph, inst_metadata_df=sample_metadata, seeds=[42])
     rep_modularity = results["summary"]["leiden"]["trials_summary"][0]["modularity"]
+    rep_quality = results["summary"]["leiden"]["trials_summary"][0]["partition_quality"]
+
+    # partition.quality() ve ortak NetworkX modülerliğinin eşitliği
+    assert np.isclose(rep_quality, rep_modularity, atol=1e-6)
 
     # Dışarı aktarılan üyeliklerden toplulukları yeniden oluştur
     df_mem = results["membership_df"]
@@ -185,10 +244,12 @@ def test_null_model_unweighted_and_p_value_consistency(sample_graph):
     """
     Null modelin tamamen ağırlıksız topoloji (weight=None) kullandığını,
     ortalama kümelenme, en kısa yol ve modülerliğin ağırlıksız tanımla
-    ve ampirik p-değerlerinin doğru kuyruk formülüyle hesaplandığını doğrular.
+    ve ampirik p-değerlerinin doğru kuyruk formülüyle (Monte Carlo (r+1)/(B+1))
+    bağımsız olarak doğrulanmasını sağlar.
     """
     results = run_null_model_experiments(sample_graph, n_trials=10, base_seed=42)
     summary = results["summary"]
+    null_samples = results["null_samples"]
     
     assert summary["degree_sequence_preserved"] is True
     assert summary["successful_null_models"] == 10
@@ -201,10 +262,30 @@ def test_null_model_unweighted_and_p_value_consistency(sample_graph):
     expected_c_obs = float(nx.average_clustering(G_unweighted))
     assert np.isclose(summary["clustering"]["observed"], expected_c_obs, atol=1e-6)
 
-    # p-değeri sınırları
-    assert 0.0 < summary["clustering"]["empirical_p_value"] <= 1.0
-    assert 0.0 < summary["shortest_path"]["empirical_p_value"] <= 1.0
-    assert 0.0 < summary["modularity"]["empirical_p_value"] <= 1.0
+    # Bağımsız ampirik p-değeri doğrulaması:
+    # C: sağ kuyruk p = [count(null >= obs) + 1] / [B + 1]
+    # Q: sağ kuyruk p = [count(null >= obs) + 1] / [B + 1]
+    # L: iki kuyruk p = min(1.0, 2 * min(p_left, p_right))
+    obs_c = summary["clustering"]["observed"]
+    obs_l = summary["shortest_path"]["observed"]
+    obs_q = summary["modularity"]["observed"]
+
+    arr_c = np.array(null_samples["clustering"])
+    arr_l = np.array(null_samples["shortest_path"])
+    arr_q = np.array(null_samples["modularity"])
+    B = len(arr_c)
+    assert B == 10
+
+    expected_p_c = float((np.sum(arr_c >= obs_c) + 1) / (B + 1))
+    expected_p_q = float((np.sum(arr_q >= obs_q) + 1) / (B + 1))
+
+    p_left_l = (np.sum(arr_l <= obs_l) + 1) / (B + 1)
+    p_right_l = (np.sum(arr_l >= obs_l) + 1) / (B + 1)
+    expected_p_l = float(min(1.0, 2.0 * min(p_left_l, p_right_l)))
+
+    assert np.isclose(summary["clustering"]["empirical_p_value"], expected_p_c, atol=1e-6)
+    assert np.isclose(summary["modularity"]["empirical_p_value"], expected_p_q, atol=1e-6)
+    assert np.isclose(summary["shortest_path"]["empirical_p_value"], expected_p_l, atol=1e-6)
 
     # Small-worldness katsayılarının doğruluğu
     gamma = summary["small_worldness"]["gamma (C/C_null)"]

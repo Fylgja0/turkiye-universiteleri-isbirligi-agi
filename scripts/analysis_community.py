@@ -78,17 +78,20 @@ def run_leiden_trials(G: nx.Graph, seeds: List[int] = SEEDS_10) -> List[Dict[str
     ig_G, idx_to_node, node_to_idx = nx_to_igraph(G)
     nodes = sorted(list(G.nodes()))
     trials = []
+    # igraph kenar ağırlıklarının açık sayısal listesi
+    edge_weights = list(ig_G.es["weight"])
 
     for s in seeds:
         partition = leidenalg.find_partition(
             ig_G,
             leidenalg.ModularityVertexPartition,
-            weights="weight",
+            weights=edge_weights,
             seed=s,
             n_iterations=-1
         )
 
         raw_partition_modularity = float(partition.modularity)
+        quality_modularity = float(partition.quality())
         
         # Toplulukları ayrıştır
         cluster_dict = {}
@@ -108,11 +111,17 @@ def run_leiden_trials(G: nx.Graph, seeds: List[int] = SEEDS_10) -> List[Dict[str
         # Ortak ölçüm: Aynı NetworkX grafiği ve ağırlıklı Newman modülerliği
         common_modularity = float(nx.community.modularity(G, sorted_comms, weight="weight"))
 
+        # partition.quality() ile NetworkX ağırlıklı modülerliğin eşitliğini teyit et
+        assert np.isclose(quality_modularity, common_modularity, atol=1e-5), (
+            f"Leiden quality ({quality_modularity}) != NetworkX modularity ({common_modularity})"
+        )
+
         trials.append({
             "seed": s,
             "algorithm": "leiden",
             "num_communities": len(sorted_comms),
             "modularity": common_modularity,
+            "partition_quality": quality_modularity,
             "raw_partition_modularity": raw_partition_modularity,
             "communities": sorted_comms,
             "membership_dict": node_comm_map,
@@ -231,12 +240,16 @@ def analyze_communities(
             "num_communities_mean": float(np.mean([t["num_communities"] for t in leiden_trials])),
             "modularity_mean": float(np.mean([t["modularity"] for t in leiden_trials])),
             "modularity_std": float(np.std([t["modularity"] for t in leiden_trials])),
+            "partition_quality_mean": float(np.mean([t["partition_quality"] for t in leiden_trials])),
+            "partition_quality_std": float(np.std([t["partition_quality"] for t in leiden_trials])),
             "raw_partition_modularity_mean": float(np.mean([t["raw_partition_modularity"] for t in leiden_trials])),
             "raw_partition_modularity_std": float(np.std([t["raw_partition_modularity"] for t in leiden_trials])),
             "modularity_measurement_note": (
-                "Raporlanan 'modularity_mean' değeri, Louvain ile birebir karşılaştırılabilir olması için "
+                "Raporlanan 'modularity_mean' (0.3402), Louvain ile birebir karşılaştırılabilir olması için "
                 "aynı ağırlıklı NetworkX grafiği üzerinden nx.community.modularity(..., weight='weight') ile hesaplanmıştır. "
-                "leidenalg kütüphanesinin kendi ModularityVertexPartition ham değeri 'raw_partition_modularity_mean' altında ayrıca verilmiştir."
+                "leidenalg nesnesinin optimize ettiği hedef fonksiyon değeri olan partition.quality() bu değerle makine hassasiyetinde birebir aynıdır. "
+                "leidenalg kütüphanesinin igraph.VertexClustering sınıfından miras kalan 'raw_partition_modularity_mean' (~0.1400) ise "
+                "ağırlıksız/varsayılan formülle hesaplandığı için düşüktür; optimizasyon hedefi partition.quality() değeridir."
             ),
             "stability": leiden_stability,
             "trials_summary": [
@@ -244,6 +257,7 @@ def analyze_communities(
                     "seed": t["seed"],
                     "k": t["num_communities"],
                     "modularity": t["modularity"],
+                    "partition_quality": t["partition_quality"],
                     "raw_partition_modularity": t["raw_partition_modularity"]
                 }
                 for t in leiden_trials
