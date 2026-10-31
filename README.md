@@ -116,6 +116,8 @@ turkiye-universiteleri-isbirligi-agi/
 ├── .gitignore
 ├── requirements.txt
 ├── README.md
+├── LICENSE                     # MIT Lisansı
+├── DATA-SOURCES.md             # Veri kaynakları ve kullanım koşulları
 ├── docs/
 │   ├── data_dictionary.md          # Veri sözlüğü ve alan açıklamaları
 │   └── data_manifest.md            # Veri manifestosu, ham veri hash ve boyutları
@@ -219,3 +221,14 @@ python scripts/fetch_openalex.py --dry-run
 
 ## 9. Yapay Zekâ (AI) Kullanım Beyanı
 Bu projenin veri toplama boru hattı mimarisinin kurgulanması (`fetch_openalex.py`), ağ oluşturma algoritmasının optimize edilmesi (`build_network.py`), ileri analiz modellerinin geliştirilmesi (`scripts/analysis_*.py`), birim test senaryolarının yazılması (`tests/test_*.py`) ve dokümantasyon taslaklarının hazırlanmasında **Google Antigravity** yapay zekâ kodlama asistanından faydalanılmıştır. Tüm analizler, model tahminleri ve testler yerel terminal ortamında canlı olarak çalıştırılmış ve sonuçların doğruluğu teyit edilmiştir.
+
+---
+
+## 10. Lisans ve Kullanım Koşulları (License & Terms)
+
+Bu projenin özgün kaynak kodu ve yazar (**Ahmetcan Bağlı**) tarafından hazırlanmış dokümantasyonu [MIT Lisansı](LICENSE) altında sunulmaktadır.
+
+- **Özgün Kod ve Dokümantasyon:** Projede geliştirilen tüm Python betikleri (`scripts/`), birim ve entegrasyon testleri (`tests/`), Jupyter notebook (`notebooks/`) ve dokümantasyon metinleri telif hakkı sahibi Ahmetcan Bağlı olmak üzere MIT Lisansı kapsamındadır. Ayrıntılar için [LICENSE](LICENSE) dosyasına bakınız.
+- **Açık Veri Kaynağı (OpenAlex):** Bu çalışmada kullanılan bilimsel yayınlar ve kurum üstverileri [OpenAlex](https://openalex.org/) API'si üzerinden temin edilmiştir. OpenAlex veritabanı, verilerini kamu malı olarak [Creative Commons CC0 1.0 Universal (CC0 1.0) Public Domain Dedication](https://creativecommons.org/publicdomain/zero/1.0/) lisansı ile sunmaktadır.
+- **Üçüncü Taraf Veriler ve Kütüphaneler:** MIT Lisansı, projede kullanılan harici veri kaynaklarını, API çıktılarını ve üçüncü taraf Python kütüphanelerini (NetworkX, Pandas, NumPy, SciPy, Statsmodels, powerlaw, python-igraph, leidenalg, Folium, Requests, pytest vb.) kapsamaz. Üçüncü taraf içerikler kendi hak sahiplerinin belirlediği özgün lisans ve kullanım koşullarına tabidir.
+- **Ayrıntılı Bilgi:** Tüm veri kaynakları, lisans bildirimleri, yasal mevzuat dayanakları ve üçüncü taraf kütüphane lisanslarının tam listesi için [DATA-SOURCES.md](DATA-SOURCES.md) belgesini inceleyiniz.
